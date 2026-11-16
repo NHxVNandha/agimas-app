@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1e7be6">
+<title>Agi Mas</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Agi Mas">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Animasi pembuka (splash.js) -->
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="splash-row">
+    <div class="splash-text" id="splashText"><img src="splash-text.png" alt=""></div>
+    <img class="splash-motor" id="splashMotor" src="splash-motor.png" alt="">
+  </div>
+  <div class="splash-foot">
+    <div class="splash-bar"><i id="splashBar"></i></div>
+    <p id="splashStatus">Menyiapkan aplikasi…</p>
+    <p class="splash-ver" id="splashVer"></p>
+  </div>
+</div>
+<script src="version.js"></script>
+<script src="splash.js"></script>
+<script src="badge.js"></script>
+
+<!-- Ikon garis (Lucide, lisensi ISC) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .7-1.53l7-6a2 2 0 0 1 2.6 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.7 4.73a2 2 0 0 0 2 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0l1.58 6.14a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96l-6.14 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+    <symbol id="i-gps" viewBox="0 0 24 24"><path d="M2 12h3M19 12h3M12 2v3M12 19v3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.42l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1.5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  </defs>
+</svg>
+
+<header class="bar" id="bar" hidden>
+  <button class="iconbtn" id="back" aria-label="Kembali"><svg class="i"><use href="#i-back"/></svg></button>
+  <h1 id="title"></h1>
+</header>
+
+<main>
+  <!-- Kerangka saat data dimuat (skeleton loader) -->
+  <section id="v-skel" class="skel" aria-busy="true" aria-label="Memuat">
+    <div class="band sk-band"><div class="sk sk-line w40"></div><div class="sk sk-line w70"></div></div>
+    <div class="sk sk-hero"></div>
+    <div class="sk-row3"><div class="sk sk-stat"></div><div class="sk sk-stat"></div><div class="sk sk-stat"></div></div>
+    <div class="sk sk-line w50"></div>
+    <div class="sk-row2"><div class="sk sk-feat"></div><div class="sk sk-feat"></div><div class="sk sk-feat"></div><div class="sk sk-feat"></div></div>
+  </section>
+
+  <!-- Beranda -->
+  <section id="v-home" class="view" hidden>
+    <div class="band">
+      <div class="row">
+        <div class="grow"><h1 id="hello">Selamat datang!</h1><p>Mau diantar ke mana hari ini?</p></div>
+        <a class="avatar" id="adminTop" target="_blank" rel="noopener" aria-label="Chat admin"><svg class="i"><use href="#i-chat"/></svg></a>
+      </div>
+    </div>
+
+    <div class="hero">
+      <span class="pill">Antar · Beli · Bantu</span>
+      <h2>Saget sembarang kalir.</h2>
+      <p>Antar, beli, dan bantu di Madiun dan sekitarnya. Bayar ke driver, tunai atau QRIS.</p>
+      <a class="btn sm" href="#pesan/orang">Pesan sekarang <svg class="i"><use href="#i-arrow"/></svg></a>
+      <div class="hero-side">
+        <img class="hero-logo" src="logo.png" alt="Agimas, saget sembarang kalir" width="102" height="40">
+        <img class="hero-art" src="splash-motor.png" alt="" width="557" height="410">
+      </div>
+    </div>
+
+    <div class="card iostip" id="iosTip" hidden>
+      <div class="row"><span class="ti blue"><svg class="i"><use href="#i-share"/></svg></span>
+        <div class="grow"><b>Pasang Agi Mas di iPhone</b><p class="muted small">Ketuk <b>Bagikan</b> di bawah Safari, lalu <b>"Tambah ke Layar Utama"</b>. Gratis, tanpa App Store.</p></div>
+        <button type="button" class="iconbtn sm" id="iosTipX" aria-label="Tutup petunjuk">✕</button></div>
+    </div>
+
+    <div class="stats">
+      <a class="stat" href="#driver"><span class="ti blue"><svg class="i"><use href="#i-users"/></svg></span><b id="stDrv">–</b><small>Driver aktif</small></a>
+      <a class="stat" href="#bantuan"><span class="ti yellow"><svg class="i"><use href="#i-tag"/></svg></span><b id="stFare">–</b><small>Tarif mulai</small></a>
+      <a class="stat" href="#bantuan"><span class="ti purple"><svg class="i"><use href="#i-clock"/></svg></span><b id="stHours">–</b><small>Jam admin</small></a>
+    </div>
+
+    <h2 class="sec">Empat layanan, satu pintu pesan</h2>
+    <p class="muted sec-sub">Semua pesanan masuk lewat admin supaya harga seragam dan driver yang bertugas selalu jelas.</p>
+    <div class="feats">
+      <a href="#pesan/orang" class="feat blue"><span class="feat-top"><svg class="i"><use href="#i-bike"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Antar penumpang</b><small>Ke kantor, stasiun, pasar, sekolah, atau pulang malam.</small></a>
+      <a href="#pesan/barang" class="feat yellow"><span class="feat-top"><svg class="i"><use href="#i-box"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Antar barang</b><small>Dokumen, paket, oleh-oleh.</small></a>
+      <a href="#pesan/beli" class="feat green"><span class="feat-top"><svg class="i"><use href="#i-bag"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Beli barang</b><small>Makanan, obat, atau belanja pasar.</small></a>
+      <a href="#pesan/lain" class="feat purple"><span class="feat-top"><svg class="i"><use href="#i-spark"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Jasa lainnya</b><small>Ceritakan kebutuhan, admin memberi harga.</small></a>
+    </div>
+
+    <h2 class="sec">Driver hari ini</h2>
+    <details class="card drvcard">
+      <summary class="row">
+        <div class="avs" id="availAv" aria-hidden="true"></div>
+        <div class="grow"><b>Siap mengantar</b><p class="muted small" id="availTxt"></p></div>
+        <svg class="i dim chev" aria-hidden="true"><use href="#i-right"/></svg>
+      </summary>
+      <ul class="dlist" id="homeDrivers"></ul>
+    </details>
+  </section>
+
+  <!-- Driver -->
+  <section id="v-driver" class="view" hidden>
+    <h2 class="headline">Siap mengantar<br>hari ini.</h2>
+    <p class="muted lead">Driver ditugaskan oleh admin sesuai area dan ketersediaan. Driver yang bertugas akan menghubungi Anda lewat WhatsApp.</p>
+    <p class="avail" id="drvLead"></p>
+    <ul class="dlist cards" id="allDrivers"></ul>
+  </section>
+
+  <!-- Bantuan: semua informasi dari website -->
+  <section id="v-bantuan" class="view" hidden>
+    <h2 class="headline">Ada yang bisa<br>kami bantu?</h2>
+    <p class="muted lead">Tarif, cara kerja, pembayaran, dan ketentuan.</p>
+
+    <div class="card">
+      <div class="row"><span class="ti green"><svg class="i"><use href="#i-chat"/></svg></span>
+        <div class="grow"><b id="adminName">Admin</b><p class="muted small" id="adminTxt"></p></div><span class="chip aktif" id="adminChip">Aktif</span></div>
+      <p class="adminnum" id="adminNum"></p>
+      <div class="acts">
+        <a class="btn wa sm" id="adminBtn" target="_blank" rel="noopener"><svg class="i"><use href="#i-chat"/></svg>Chat admin</a>
+        <button type="button" class="btn ghost sm" id="copyNum"><svg class="i"><use href="#i-copy"/></svg>Salin nomor</button>
+      </div>
+      <p class="muted small" id="copyMsg" aria-live="polite"></p>
+    </div>
+
+    <div class="card">
+      <div class="row"><span class="ti yellow"><svg class="i"><use href="#i-tag"/></svg></span><b class="grow">Tarif</b></div>
+      <ul class="tarif" id="rateList"></ul>
+      <p class="muted small" id="rateNote"></p>
+    </div>
+
+    <div class="card">
+      <div class="row"><span class="ti blue"><svg class="i"><use href="#i-list"/></svg></span><b class="grow">Cara kerja</b></div>
+      <p class="muted small">Dari pesan sampai bayar, tujuh langkah.</p>
+      <ol class="steps">
+        <li><b>Kirim pesanan</b><span>Pilih layanan, isi detail, lalu kirim ke WhatsApp admin.</span></li>
+        <li><b>Admin cek pesanan</b><span>Tarif otomatis untuk tiga layanan utama. Jasa lainnya diberi harga oleh admin dari keterangan Anda.</span></li>
+        <li><b>Admin cari driver</b><span>Admin menawarkan pesanan ke grup driver. Driver yang menyanggupi mendapat pesanan.</span></li>
+        <li><b>Anda dikabari</b><span>Admin memberi tahu Anda driver yang bertugas.</span></li>
+        <li><b>Driver menghubungi Anda</b><span>Admin memberikan nomor WhatsApp Anda ke driver, lalu driver menghubungi Anda.</span></li>
+        <li><b>Pesanan dikerjakan</b><span>Driver menjemput, mengantar, atau membelikan sesuai pesanan.</span></li>
+        <li><b>Bayar ke driver</b><span>Bayar sesuai harga pesanan langsung ke driver, tunai atau QRIS.</span></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="row"><span class="ti green"><svg class="i"><use href="#i-wallet"/></svg></span><b class="grow">Pembayaran</b></div>
+      <ul class="rules">
+        <li>Ongkos dibayar langsung ke driver setelah pesanan selesai, tunai atau QRIS.</li>
+        <li>Beli barang: harga barang dibayar sesuai struk atau nota yang dikirim driver.</li>
+        <li>Pesanan dengan nilai belanja besar dapat diminta transfer dulu.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="row"><span class="ti purple"><svg class="i"><use href="#i-shield"/></svg></span><b class="grow">Ketentuan</b></div>
+      <ul class="rules">
+        <li>Harga yang disepakati tidak berubah, kecuali ada tambahan yang disetujui lewat admin.</li>
+        <li>Pembatalan setelah driver berangkat dapat dikenakan biaya jalan.</li>
+        <li>Kami tidak melayani barang terlarang atau berbahaya, dan tidak menerima titipan uang tunai dalam jumlah besar.</li>
+        <li>Nomor WhatsApp Anda dibagikan ke driver yang bertugas, hanya untuk keperluan pesanan.</li>
+      </ul>
+    </div>
+
+    <div class="card" id="shareCard">
+      <div class="row"><span class="ti green"><svg class="i"><use href="#i-share"/></svg></span>
+        <div class="grow"><b>Bagikan aplikasi</b><p class="muted small">Pindai kode QR dengan kamera HP untuk mengunduh aplikasi Agi Mas.</p></div></div>
+      <div class="qrbox" id="qrBox"></div>
+      <p class="qrurl" id="qrUrl"></p>
+      <div class="acts" id="shareActs" hidden>
+        <a class="btn wa sm" id="shareWa" target="_blank" rel="noopener"><svg class="i"><use href="#i-chat"/></svg>Kirim lewat WhatsApp</a>
+        <button type="button" class="btn ghost sm" id="copyLink"><svg class="i"><use href="#i-link"/></svg>Salin link</button>
+      </div>
+      <p class="muted small" id="shareMsg" aria-live="polite"></p>
+    </div>
+
+    <div class="card" id="aboutCard">
+      <div class="row"><span class="ti blue"><svg class="i"><use href="#i-help"/></svg></span><b class="grow">Tentang aplikasi</b><span class="chip ver" id="aboutVer"></span></div>
+      <ul class="rules">
+        <li>Pesanan dikirim lewat WhatsApp admin; aplikasi tidak menyimpan data pribadi Anda selain nama di HP ini.</li>
+        <li>Peta, pencarian alamat, dan jarak memakai data OpenStreetMap. Jalan yang belum ada di peta: geser pin ke lokasi, lalu ketik alamat sendiri.</li>
+        <li>Data driver dan tarif diperbarui admin dan tampil saat aplikasi dibuka.</li>
+      </ul>
+      <details class="stackbox">
+        <summary class="row"><span class="grow">Teknologi yang digunakan</span><svg class="i dim chev" aria-hidden="true"><use href="#i-right"/></svg></summary>
+        <dl class="stack">
+          <dt>Tampilan</dt><dd>HTML, CSS, dan JavaScript tanpa framework · font Plus Jakarta Sans · ikon Lucide</dd>
+          <dt>Aplikasi Android</dt><dd>Capacitor 7 (WebView) · Android 6.0 ke atas</dd>
+          <dt>Peta</dt><dd>MapLibre GL JS 4.7 + OpenFreeMap, data OpenStreetMap</dd>
+          <dt>Cari alamat</dt><dd>Photon (pencarian) · Nominatim (alamat dari titik peta)</dd>
+          <dt>Rute & jarak</dt><dd>OSRM (rute jalan tercepat)</dd>
+          <dt>Cuaca</dt><dd>Open-Meteo (tanda kemungkinan hujan)</dd>
+          <dt>Data & admin</dt><dd>Firebase Firestore & Authentication (paket gratis Spark)</dd>
+          <dt>Pesanan</dt><dd>WhatsApp (wa.me) · link rute Google Maps</dd>
+          <dt>Kode QR</dt><dd>qrcode-generator</dd>
+        </dl>
+      </details>
+      <div id="devBox" hidden>
+        <p class="devline">Kendala aplikasi? Hubungi pengembang<span id="devName"></span>.</p>
+        <div class="acts"><a class="btn ghost sm" id="devWa" target="_blank" rel="noopener" hidden><svg class="i"><use href="#i-chat"/></svg>WhatsApp</a>
+          <a class="btn ghost sm" id="devMail" hidden><svg class="i"><use href="#i-mail"/></svg>Email</a></div>
+      </div>
+    </div>
+
+    <p class="foot"><b>agi mas</b> Layanan antar, beli, dan bantu, Madiun, Jawa Timur.</p>
+    <p class="muted small center" id="stamp"></p>
+  </section>
+
+  <!-- Form pesan -->
+  <section id="v-pesan" class="view" hidden>
+    <p class="muted small formnote">Harga adalah perkiraan. Admin mengonfirmasi harga final sebelum driver berangkat.</p>
+    <form id="form" novalidate>
+      <div class="card route">
+        <div class="stop">
+          <span class="dot a" aria-hidden="true"></span>
+          <div class="grow"><label for="from" id="fromLab"></label><input id="from" autocomplete="street-address"><p class="pt" id="fromPt" hidden></p></div>
+          <button type="button" class="pick" data-pick="from" aria-label="Pilih titik di peta"><svg class="i"><use href="#i-pin"/></svg><span>Peta</span></button>
+        </div>
+        <div class="stop">
+          <span class="dot b" aria-hidden="true"></span>
+          <div class="grow"><label for="to" id="toLab"></label><input id="to"><p class="pt" id="toPt" hidden></p></div>
+          <button type="button" class="pick" data-pick="to" aria-label="Pilih titik tujuan di peta"><svg class="i"><use href="#i-pin"/></svg><span>Peta</span></button>
+        </div>
+      </div>
+
+      <div class="card" id="kmField">
+        <div class="row"><span class="ti blue"><svg class="i"><use href="#i-route"/></svg></span>
+          <label for="km" class="grow">Jarak</label><output id="kmOut" class="big"></output></div>
+        <p class="muted small" id="kmNote">Pilih titik jemput dan tujuan di peta, jarak dihitung otomatis dari rute.</p>
+        <ul class="lines" id="lines" aria-label="Rincian harga"></ul>
+        <div class="band-cmp" id="band" hidden>
+          <div class="cmp-track" aria-hidden="true"><div class="cmp-fill"></div><div class="cmp-dot" id="dot"></div></div>
+          <div class="cmp-lab"><span id="lo"></span><span id="hi"></span></div>
+          <p class="muted small" id="bandNote"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="field" id="itemField"><label for="item" id="itemLab"></label><textarea id="item" rows="2"></textarea></div>
+        <div class="field" id="wField"><label for="w">Berat barang</label><select id="w"></select></div>
+        <div class="field"><label for="name">Nama Anda</label><input id="name" autocomplete="name" placeholder="Contoh: Bu Sari"></div>
+        <div class="field"><label for="note">Catatan <span class="muted">(opsional)</span></label><input id="note" placeholder="Contoh: tunggu di depan gerbang"></div>
+        <p class="note-y small" id="condNote"></p>
+      </div>
+    </form>
+  </section>
+
+  <!-- Kirim ke admin, driver pilihan opsional -->
+  <section id="v-kirim" class="view" hidden>
+    <div class="card summary">
+      <span class="pill soft" id="sumSvc"></span>
+      <div class="sumroute">
+        <div><span class="dot a" aria-hidden="true"></span><span id="sumFrom"></span></div>
+        <div><span class="dot b" aria-hidden="true"></span><span id="sumTo"></span></div>
+      </div>
+      <p class="muted small" id="sumMeta"></p>
+    </div>
+    <fieldset class="card choose">
+      <legend>Driver pilihan <span class="muted small">(opsional)</span></legend>
+      <p class="muted small">Admin tetap yang menugaskan. Jika driver pilihan sedang sibuk, admin mencarikan yang lain.</p>
+      <div id="drivers"></div>
+    </fieldset>
+    <details class="card preview"><summary>Lihat pesan WhatsApp</summary><pre id="preview"></pre></details>
+  </section>
+</main>
+
+<!-- Navigasi bawah (Beranda, Driver, Bantuan) -->
+<nav class="tabs" id="tabs" aria-label="Navigasi utama" hidden>
+  <a href="#" data-tab="home"><svg class="i"><use href="#i-home"/></svg><span>Beranda</span></a>
+  <a href="#driver" data-tab="driver"><svg class="i"><use href="#i-users"/></svg><span>Driver</span></a>
+  <a href="#bantuan" data-tab="bantuan"><svg class="i"><use href="#i-help"/></svg><span>Bantuan</span></a>
+</nav>
+
+<!-- Bilah harga (form dan kirim) -->
+<footer class="sheet" id="sheet" hidden>
+  <div class="grow"><div class="price" id="price"></div><div class="muted small" id="priceNote"></div></div>
+  <a class="btn" id="next" href="#kirim">Lanjut <svg class="i"><use href="#i-arrow"/></svg></a>
+  <a class="btn wa" id="send" target="_blank" rel="noopener"><svg class="i"><use href="#i-chat"/></svg><span>Kirim ke admin</span></a>
+</footer>
+
+<!-- Pemilih titik di peta -->
+<div class="mapsheet" id="mapSheet" role="dialog" aria-modal="true" aria-labelledby="mapTitle" hidden>
+  <div class="maptop">
+    <button type="button" class="iconbtn" id="mapClose" aria-label="Tutup peta"><svg class="i"><use href="#i-back"/></svg></button>
+    <form class="mapsearch grow" id="mapSearch" role="search">
+      <svg class="i dim"><use href="#i-search"/></svg>
+      <input id="mapQ" type="search" placeholder="Cari jalan, kelurahan, kecamatan, tempat" aria-label="Cari alamat" autocomplete="off" enterkeyhint="search">
+      <ul class="sug" id="mapSug" hidden></ul>
+    </form>
+  </div>
+  <div class="mapwrap"><div id="map"></div><div class="maploading" id="mapLoading"><span>Memuat peta…</span></div><div class="mappin" id="mapPin" aria-hidden="true"></div>
+    <button type="button" class="gps" id="mapGps" aria-label="Pakai lokasi saya"><svg class="i"><use href="#i-gps"/></svg></button></div>
+  <div class="mapfoot">
+    <span class="pill soft" id="mapTitle"></span>
+    <p class="addr" id="mapAddr" aria-live="polite"></p>
+    <button type="button" class="btn full" id="mapOk">Pakai lokasi ini</button>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="pricing.js"></script>
+<script src="store.js"></script>
+<script src="region.js"></script>
+<script src="vendor/maplibre-gl.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="map.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
