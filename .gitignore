@@ -1,0 +1,8 @@
+node_modules/
+android/app/build/
+android/.gradle/
+agimas-release.jks
+keystore.properties
+release/
+dist/
+.netlify/
