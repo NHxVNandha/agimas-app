@@ -36,7 +36,7 @@
   .sync small { color: var(--muted); }
   /* Tab */
   .atabs { display: flex; gap: 6px; margin: 18px 0 6px; padding: 5px; background: #fff; border-radius: 16px; box-shadow: 0 1px 2px rgba(11,37,69,.04); }
-  .atabs button { flex: 1; min-height: 42px; border: 0; border-radius: 12px; background: transparent; color: var(--muted); font: 700 .9rem var(--font); cursor: pointer; }
+  .atabs button { flex: 1; min-width: 0; padding: 0 4px; min-height: 42px; border: 0; border-radius: 12px; background: transparent; color: var(--muted); font: 700 .9rem var(--font); cursor: pointer; }
   .atabs button[aria-selected=true] { background: var(--t-blue); color: var(--brand-dark); }
   .pane[hidden] { display: none; }
   .phead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 14px 0 4px; }
@@ -65,6 +65,21 @@
   .pills button[aria-pressed=true].st-aktif { background: var(--t-green); border-color: #9fdcb6; color: #137a3f; }
   .pills button[aria-pressed=true].st-istirahat { background: var(--t-yellow); border-color: #f1d27a; color: #8a6200; }
   .pills button[aria-pressed=true].st-offline { background: #eef2f7; border-color: #cfd8e3; color: #44566c; }
+  /* Ulasan */
+  .revsum { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .revavg { text-align: center; min-width: 110px; }
+  .revavg b { display: block; font-size: 2.6rem; line-height: 1; }
+  .revavg span { color: #f5b301; font-size: 1.1rem; letter-spacing: 2px; }
+  .revbars { flex: 1; min-width: 200px; display: grid; gap: 4px; font-size: .78rem; color: var(--muted); }
+  .revbars div { display: grid; grid-template-columns: 26px 1fr 30px; align-items: center; gap: 8px; }
+  .revbars i { display: block; height: 8px; border-radius: 99px; background: #eef2f7; overflow: hidden; }
+  .revbars i em { display: block; height: 100%; background: #f5b301; border-radius: 99px; }
+  .rev { background: #fff; border-radius: 16px; padding: 14px 16px; margin-top: 10px; box-shadow: 0 1px 2px rgba(11,37,69,.05); }
+  .rev .top { display: flex; align-items: center; gap: 10px; }
+  .rev .st { color: #f5b301; letter-spacing: 1px; }
+  .rev .who2 { flex: 1; font-weight: 700; color: var(--ink); font-size: .9rem; }
+  .rev time { color: var(--muted); font-size: .76rem; }
+  .rev p { margin-top: 6px; white-space: pre-wrap; word-break: break-word; }
   /* Form admin & tarif */
   .fgrid { display: grid; grid-template-columns: 1fr; gap: 12px; }
   @media (min-width: 700px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid .wide { grid-column: 1 / -1; } }
@@ -127,6 +142,7 @@
       <button type="button" role="tab" data-pane="pDriver" aria-selected="true">Driver <span id="tabCount"></span></button>
       <button type="button" role="tab" data-pane="pAdmin" aria-selected="false">Admin</button>
       <button type="button" role="tab" data-pane="pTarif" aria-selected="false">Tarif</button>
+      <button type="button" role="tab" data-pane="pUlasan" aria-selected="false">Ulasan</button>
     </div>
 
     <section class="pane" id="pDriver">
@@ -152,6 +168,11 @@
 
     <section class="pane" id="pTarif" hidden>
       <div class="tgrid" id="tarif"></div>
+    </section>
+
+    <section class="pane" id="pUlasan" hidden>
+      <div class="card revsum" id="revSum"><p class="muted">Memuat ulasan…</p></div>
+      <div id="revList"></div>
     </section>
   </div>
 </main>
@@ -264,10 +285,39 @@
     }, Promise.resolve()).then(function () { return missed; });
   }
 
+  /* Ulasan pelanggan: rata-rata, sebaran bintang, daftar (terbaru di atas), hapus */
+  function stars(n) { return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n); }
+  function loadReviews() {
+    var t = token();
+    if (!t) { $("revSum").innerHTML = '<p class="muted">Sesi habis. Masuk lagi untuk melihat ulasan.</p>'; return; }
+    $("revSum").innerHTML = '<p class="muted">Memuat ulasan…</p>'; $("revList").innerHTML = "";
+    Store.listReviews(t).then(function (list) {
+      if (!list.length) { $("revSum").innerHTML = '<p class="muted">Belum ada ulasan dari pelanggan.</p>'; return; }
+      var sum = 0, cnt = [0, 0, 0, 0, 0, 0];
+      list.forEach(function (r) { sum += r.stars; cnt[r.stars]++; });
+      var avg = sum / list.length;
+      $("revSum").innerHTML = '<div class="revavg"><b>' + avg.toFixed(1).replace(".", ",") + '</b><span>' + stars(Math.round(avg)) + '</span><p class="muted small">' + list.length + ' ulasan</p></div>' +
+        '<div class="revbars">' + [5, 4, 3, 2, 1].map(function (s) { return "<div><span>" + s + "★</span><i><em style=\"width:" + (cnt[s] / list.length * 100) + "%\"></em></i><span>" + cnt[s] + "</span></div>"; }).join("") + "</div>";
+      $("revList").innerHTML = list.map(function (r, i) {
+        return '<div class="rev" data-i="' + i + '"><div class="top"><span class="st">' + stars(r.stars) + '</span><span class="who2">' + esc(r.name || "Tanpa nama") + '</span><time>' + (r.at ? fmt(r.at) : "") + '</time>' +
+          '<button type="button" class="del" aria-label="Hapus ulasan"><svg class="i"><use href="#i-trash"/></svg></button></div>' + (r.text ? "<p>" + esc(r.text) + "</p>" : "") + "</div>";
+      }).join("");
+      $("revList").onclick = function (e) {
+        var d = e.target.closest(".del"); if (!d) return;
+        var r = list[d.closest(".rev").dataset.i];
+        if (!confirm("Hapus ulasan ini?")) return;
+        Store.deleteReview(token(), r.id).then(loadReviews).catch(function () { alert("Gagal menghapus ulasan."); });
+      };
+    }).catch(function (e) {
+      $("revSum").innerHTML = '<p class="muted">' + (e.status === 403 ? "Belum bisa membaca ulasan: pasang aturan database terbaru (firestore.rules) di Firebase." : "Gagal memuat ulasan. Periksa koneksi.") + "</p>";
+    });
+  }
+
   // Tab
   document.querySelector(".atabs").addEventListener("click", function (e) {
     var b = e.target.closest("button[data-pane]"); if (!b) return;
     Array.prototype.forEach.call(this.children, function (x) { x.setAttribute("aria-selected", String(x === b)); $(x.dataset.pane).hidden = x !== b; });
+    if (b.dataset.pane === "pUlasan") loadReviews();
   });
   $("drivers").addEventListener("input", function (e) {
     var row = e.target.closest(".drow"); if (!row || !e.target.dataset.k) return;

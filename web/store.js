@@ -51,5 +51,27 @@
     });
   }
 
-  window.Store = { on: on, load: load, login: login, save: save };
+  /* ---------- Ulasan (rating, kritik & saran) di koleksi "ulasan" ----------
+     Pelanggan boleh mengirim (tanpa login); hanya admin yang boleh membaca & menghapus (lihat firestore.rules). */
+  function colUrl() { return "https://firestore.googleapis.com/v1/projects/" + C.firebaseProjectId + "/databases/(default)/documents/ulasan"; }
+  function sendReview(r) {
+    if (!on()) return Promise.reject(new Error("Firebase belum disetel"));
+    return fetch(colUrl() + "?key=" + C.firebaseApiKey, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fields: { stars: { integerValue: String(r.stars) }, text: { stringValue: r.text }, name: { stringValue: r.name } } })
+    }).then(json);
+  }
+  function listReviews(token) {
+    return fetch(colUrl() + "?pageSize=300", { headers: { Authorization: "Bearer " + token }, cache: "no-store" }).then(json).then(function (r) {
+      return (r.documents || []).map(function (d) {
+        var f = d.fields || {};
+        return { id: d.name, stars: Number((f.stars || {}).integerValue) || 0, text: (f.text || {}).stringValue || "", name: (f.name || {}).stringValue || "", at: d.createTime };
+      }).sort(function (a, b) { return a.at < b.at ? 1 : -1; });   // terbaru di atas
+    });
+  }
+  function deleteReview(token, id) {
+    return fetch("https://firestore.googleapis.com/v1/" + id, { method: "DELETE", headers: { Authorization: "Bearer " + token } }).then(json);
+  }
+
+  window.Store = { on: on, load: load, login: login, save: save, sendReview: sendReview, listReviews: listReviews, deleteReview: deleteReview };
 })();
