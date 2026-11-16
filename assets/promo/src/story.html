@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Story IG Agi Mas</title>
+<link rel="stylesheet" href="/web/fonts.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  body { font-family: "Plus Jakarta Sans", sans-serif; color: #0b2545; background: #f3f8fe; position: relative; }
+  .bg { position: absolute; inset: 0 0 auto 0; height: 1180px; background: linear-gradient(160deg, #2b8cf0 0%, #1e7be6 45%, #1361c4 100%); border-radius: 0 0 90px 90px; overflow: hidden; }
+  .bg::before, .bg::after { content: ""; position: absolute; border-radius: 50%; background: rgba(255,255,255,.08); }
+  .bg::before { width: 760px; height: 760px; right: -260px; top: -200px; }
+  .bg::after { width: 520px; height: 520px; left: -220px; top: 620px; }
+  .roads { position: absolute; inset: 0; opacity: .12; background:
+     linear-gradient(90deg, transparent 49.6%, #fff 49.6% 50.4%, transparent 50.4%) 0 0 / 220px 100%,
+     linear-gradient(0deg, transparent 49.6%, #fff 49.6% 50.4%, transparent 50.4%) 0 0 / 100% 220px; }
+  .top { position: absolute; top: 230px; left: 0; right: 0; text-align: center; color: #fff; }
+  .logo { height: 86px; padding: 10px 22px; border-radius: 26px; background: #f7f7f7; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+  .kicker { margin-top: 30px; font-size: 30px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; opacity: .92; }
+  h1 { margin-top: 18px; font-size: 92px; line-height: 1.03; font-weight: 800; letter-spacing: -.025em; }
+  h1 em { font-style: normal; color: #ffd84d; }
+  /* HP */
+  .phone { position: absolute; left: 50%; top: 700px; width: 470px; height: 960px; margin-left: -235px; border-radius: 68px; background: #0b1a2e; padding: 16px; box-shadow: 0 50px 90px rgba(11,37,69,.35), inset 0 0 0 3px #2a3a52; transform: rotate(-4deg); }
+  .phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 54px; display: block; }
+  .phone::after { content: ""; position: absolute; top: 30px; left: 50%; width: 120px; height: 34px; margin-left: -60px; border-radius: 20px; background: #0b1a2e; }
+  .motor { position: absolute; left: 36px; top: 1290px; width: 330px; filter: drop-shadow(0 18px 24px rgba(11,37,69,.25)); }
+  .chip { position: absolute; display: flex; align-items: center; gap: 14px; padding: 18px 26px; border-radius: 26px; background: #fff; box-shadow: 0 16px 40px rgba(11,37,69,.18); font-size: 30px; font-weight: 800; }
+  .chip i { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; font-style: normal; font-size: 28px; }
+  .c1 { right: 40px; top: 900px; } .c1 i { background: #fff4d6; }
+  .c2 { right: 26px; top: 1060px; } .c2 i { background: #e3f5ea; }
+  .c3 { left: 40px; top: 1100px; } .c3 i { background: #e6f1fd; }
+  /* Kartu unduh */
+  .cta { position: absolute; left: 60px; right: 60px; top: 1500px; display: flex; align-items: center; gap: 34px; padding: 34px; border-radius: 44px; background: #fff; box-shadow: 0 24px 60px rgba(11,37,69,.16); }
+  .qr { flex: none; width: 210px; height: 210px; padding: 12px; border-radius: 24px; border: 3px solid #e3ebf5; }
+  .qr svg { width: 100%; height: 100%; display: block; }
+  .cta h2 { font-size: 54px; font-weight: 800; line-height: 1.05; letter-spacing: -.02em; }
+  .cta h2 em { font-style: normal; color: #1e7be6; }
+  .cta p { margin-top: 10px; font-size: 27px; color: #4b6280; font-weight: 600; }
+  .url { display: inline-block; margin-top: 14px; padding: 10px 18px; border-radius: 14px; background: #e6f1fd; color: #0f5bb5; font-size: 26px; font-weight: 800; }
+  .facts { position: absolute; left: 0; right: 0; top: 1792px; text-align: center; font-size: 26px; font-weight: 700; color: #4b6280; }
+  .facts b { color: #0b2545; }
+</style>
+</head>
+<body>
+<div class="bg"><div class="roads"></div></div>
+<div class="top">
+  <img class="logo" src="/web/logo.png" alt="">
+  <p class="kicker">Antar · Beli · Bantu — Madiun</p>
+  <h1>Pesan ojek &amp; titip<br>belanja, <em>cukup<br>dari HP.</em></h1>
+</div>
+<div class="phone"><img src="app-home.png" alt=""></div>
+<div class="chip c1"><i>💰</i>Harga langsung terlihat</div>
+<div class="chip c2"><i>💬</i>Kirim lewat WhatsApp</div>
+<div class="chip c3"><i>📍</i>Jarak otomatis dari peta</div>
+<img class="motor" src="/web/splash-motor.png" alt="">
+<div class="cta">
+  <div class="qr" id="qr"></div>
+  <div>
+    <h2>Unduh <em>GRATIS</em></h2>
+    <p>Android &amp; iPhone · pindai QR atau buka:</p>
+    <span class="url">solusiagimas.netlify.app/unduh</span>
+  </div>
+</div>
+<p class="facts">Tarif mulai <b>Rp5.500</b> · Admin <b>24 jam</b> · Bayar tunai atau QRIS</p>
+<script src="/web/vendor/qrcode.js"></script>
+<script>
+  var q = qrcode(0, "M"); q.addData("https://solusiagimas.netlify.app/unduh/"); q.make();
+  document.getElementById("qr").innerHTML = q.createSvgTag({ cellSize: 8, margin: 0, scalable: true });
+</script>
+</body>
+</html>
