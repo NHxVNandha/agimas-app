@@ -1,13 +1,14 @@
 (function () {
   var P = window.Pricing, D, T, META;
-  var STATUS = { aktif: "Aktif", istirahat: "Istirahat", offline: "Tidak narik" };
   /* Pembanding: kisaran tarif ojek online Zona I (Kemenhub), hanya untuk antar penumpang (sama seperti website). */
   var BAND = { loMin: 8000, hiMin: 10000, loKm: 2000, hiKm: 2500 };
-  var TITLES = { driver: "Driver", bantuan: "Bantuan", kirim: "Kirim ke admin" };
-  var o = { night: false, rain: false, svc: "orang", km: null, w: 0, name: "", item: "", from: "", to: "", note: "", driver: "", fromPt: null, toPt: null };
+  var TITLES = { ulasan: "Ulasan", bantuan: "Bantuan", kirim: "Kirim ke admin" };
+  var VIEWS = ["home", "pesan", "kirim", "ulasan", "bantuan"];
+  var o = { night: false, rain: false, svc: "orang", beliType: "makan", beliCat: "", km: null, w: 0, name: "", item: "", from: "", to: "", note: "", nearest: null, fromPt: null, toPt: null };
   var routeSeq = 0, routing = false;
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function adminWa(text) { return P.validPhone(D.admin.phone) ? P.waLink(D.admin.phone, text) : "#bantuan"; }
 
   // Nama pelanggan diingat di HP ini saja, supaya pesanan berikutnya lebih cepat.
   try { o.name = localStorage.getItem("agimas.name") || ""; } catch (e) {}
@@ -18,14 +19,19 @@
     try { localStorage.setItem("agimas.name", o.name); } catch (e) {}
   }
 
+  function press(box, val) { Array.prototype.forEach.call($(box).children, function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === val)); }); }
+
   function renderForm() {
-    var s = P.SVC[o.svc], lain = o.svc === "lain";
+    var f = P.fields(o), lain = f.noKm;
+    $("beliBox").hidden = o.svc !== "beli";
+    if (o.svc === "beli") { press("beliType", o.beliType); $("catBox").hidden = o.beliType !== "harian"; press("beliCat", o.beliCat); }
     $("kmField").hidden = lain;
-    $("wField").hidden = o.svc === "orang" || lain;
-    $("itemField").hidden = !s.item;
-    $("itemLab").textContent = s.item || ""; $("item").placeholder = s.itemPh || "";
-    $("fromLab").textContent = s.from; $("from").placeholder = s.fromPh;
-    $("toLab").textContent = s.to; $("to").placeholder = s.toPh;
+    $("toStop").hidden = !f.to;
+    $("wField").hidden = !(o.svc === "barang" || o.svc === "beli");
+    $("itemField").hidden = !f.item;
+    $("itemLab").textContent = f.item || ""; $("item").placeholder = f.itemPh || "";
+    $("fromLab").textContent = f.from; $("from").placeholder = f.fromPh;
+    $("toLab").textContent = f.to || ""; $("to").placeholder = f.toPh || "";
     var calc = !lain && routing; // rute sedang dihitung: tampilkan kerangka
     if (calc) $("kmOut").innerHTML = '<span class="sk skt" style="width:64px;height:1.1em"></span>';
     else $("kmOut").textContent = o.km == null ? "–" : P.numTxt(o.km) + " km";
@@ -56,6 +62,7 @@
       $("lo").textContent = P.rp(lo); $("hi").textContent = P.rp(hi);
       $("bandNote").textContent = "Garis kuning: kisaran tarif ojek online Zona I (Jawa di luar Jabodetabek) untuk jarak yang sama. Titik biru: tarif Agi Mas." + (total < lo ? " Tarif ini di bawah batas bawah kisaran." : "");
     }
+    $("condNote").hidden = lain;
     $("condNote").textContent = (o.night ? "Sekarang jam malam (21.00–05.00): tambahan malam +" + P.rp(T.night.add) + " setiap " + P.numTxt(T.night.every) + " km sudah dihitung. "
         : "Malam (21.00–05.00): tambahan +" + P.rp(T.night.add) + " setiap " + P.numTxt(T.night.every) + " km dihitung otomatis. ") +
       (o.rain ? "Data cuaca: kemungkinan hujan di titik jemput — admin dapat menambah +" + P.rp(T.rain.perKm) + " per km."
@@ -65,7 +72,7 @@
 
   /* Titik dari peta: tampilkan tanda, lalu hitung jarak rute jika jemput dan tujuan sudah ada. */
   function pick(k) {
-    var label = k === "from" ? P.SVC[o.svc].from : P.SVC[o.svc].to;
+    var f = P.fields(o), label = k === "from" ? f.from : f.to;
     MapPick.open(label, o[k + "Pt"] || (k === "to" ? o.fromPt : o.toPt), function (pt, addr) {
       o[k + "Pt"] = pt; o.km = null; // titik berubah: jarak dihitung ulang
       if (k === "from") checkRain(pt);
@@ -97,6 +104,7 @@
     });
   }
   function updateRoute() {
+    if (P.fields(o).noKm) { renderForm(); return; }
     if (!o.fromPt || !o.toPt) { $("kmNote").textContent = "Pilih juga " + (o.fromPt ? "titik tujuan" : "titik jemput") + " di peta."; renderForm(); return; }
     var seq = ++routeSeq;
     $("kmNote").textContent = "Menghitung jarak rute…"; routing = true; renderForm();
@@ -109,31 +117,8 @@
     });
   }
 
-  function renderDrivers() {
-    var box = $("drivers"), from = o.fromPt;
-    var list = D.drivers.map(function (d) {
-      var ok = d.status === "aktif", dist = from && d.lat != null ? P.straightKm(from, d) : null;
-      return { name: d.name, label: d.name, dist: dist, ok: ok,
-        sub: "Area: " + d.area + (dist != null ? " · ±" + P.numTxt(dist.toFixed(1)) + " km dari titik jemput" : "") + (ok ? "" : " · " + (STATUS[d.status] || "Tidak aktif")) };
-    }).sort(function (a, b) {
-      return (b.ok - a.ok) || ((a.dist == null ? 1e9 : a.dist) - (b.dist == null ? 1e9 : b.dist));
-    });
-    if (list[0] && list[0].ok && list[0].dist != null) list[0].near = true;
-    var opts = [{ name: "", label: "Bebas", sub: "Admin memilihkan driver terdekat", ok: true }].concat(list);
-    if (!opts.some(function (x) { return x.ok && x.name === o.driver; })) o.driver = "";
-    box.innerHTML = opts.map(function (x) {
-      return '<label class="driver' + (x.ok ? "" : " off") + '"><input type="radio" name="drv" value="' + esc(x.name) + '"' +
-        (x.ok ? "" : " disabled") + (x.name === o.driver ? " checked" : "") + '>' +
-        (x.name ? '<div class="av" aria-hidden="true">' + esc(initial(x.name)) + '</div>' : '<div class="av any" aria-hidden="true"><svg class="i"><use href="#i-spark"/></svg></div>') +
-        '<div class="dinfo"><b>' + esc(x.label) + (x.near ? '<span class="near">Terdekat</span>' : "") + '</b><span>' + esc(x.sub) + '</span></div></label>';
-    }).join("");
-  }
-
-  function markDriver() {
-    Array.prototype.forEach.call(document.querySelectorAll("#drivers .driver"), function (l) { l.classList.toggle("sel", l.querySelector("input").checked); });
-  }
-
   function renderSend() {
+    o.nearest = P.nearestDriver(D.drivers, o.fromPt); // driver aktif terdekat, otomatis (untuk admin)
     var text = P.waText(T, D.admin.name, o);
     // Pratinjau seperti tampilan WhatsApp: *tebal*, _miring_
     $("preview").innerHTML = esc(text).replace(/\*([^*\n]+)\*/g, "<b>$1</b>").replace(/(^|\s)_([^_\n]+)_(?=\s|$)/g, "$1<i>$2</i>");
@@ -141,36 +126,37 @@
     $("send").setAttribute("aria-disabled", String(!ok));
     $("send").href = ok ? P.waLink(D.admin.phone, text) : "#kirim";
     $("send").querySelector("span").textContent = ok ? "Kirim ke admin" : "Nomor admin belum diisi";
-    var s = P.SVC[o.svc];
-    $("sumSvc").textContent = s.name;
-    $("sumFrom").textContent = o.from || s.from + " belum diisi";
-    $("sumTo").textContent = o.to || s.to + " belum diisi";
-    $("sumMeta").textContent = [o.svc === "lain" ? "" : P.numTxt(o.km) + " km", o.item, o.driver ? "Driver: " + o.driver : ""].filter(Boolean).join(" · ");
+    var f = P.fields(o);
+    $("sumSvc").textContent = f.name + " · " + f.desc;
+    $("sumFrom").textContent = o.from || f.from + " belum diisi";
+    $("sumToRow").hidden = !f.to;
+    $("sumTo").textContent = o.to || (f.to || "") + " belum diisi";
+    $("sumMeta").textContent = [f.noKm ? "" : P.numTxt(o.km) + " km", o.item].filter(Boolean).join(" · ");
   }
-  function initial(name) { return name.replace(/^Mas\s+/i, "").charAt(0).toUpperCase() || "?"; }
 
   function route() {
     var parts = location.hash.replace("#", "").split("/");
-    var view = ["pesan", "kirim", "driver", "bantuan"].indexOf(parts[0]) >= 0 ? parts[0] : "home";
-    if (view === "pesan" && P.SVC[parts[1]]) o.svc = parts[1];
-    if (view === "kirim" && o.svc !== "lain" && o.km == null) { location.replace("#pesan/" + o.svc); return; }
-    ["home", "pesan", "kirim", "driver", "bantuan"].forEach(function (v) { $("v-" + v).hidden = v !== view; });
-    var tab = view === "home" || view === "driver" || view === "bantuan";
+    var view = VIEWS.indexOf(parts[0]) > 0 ? parts[0] : "home";
+    if (view === "pesan" && P.SVC[parts[1]]) {
+      var prev = o.svc + o.beliType;
+      o.svc = parts[1];
+      if (o.svc === "beli" && P.BELI[parts[2]]) o.beliType = parts[2];
+      // isian barang/daftar belanja berbeda arti tiap layanan: jangan terbawa
+      if (o.svc + o.beliType !== prev) { o.item = ""; $("item").value = ""; }
+    }
+    if (view === "kirim" && !P.fields(o).noKm && o.km == null) { location.replace("#pesan/" + o.svc); return; }
+    VIEWS.forEach(function (v) { $("v-" + v).hidden = v !== view; });
+    var tab = view === "home" || view === "ulasan" || view === "bantuan";
     $("bar").hidden = view === "home";
     $("title").textContent = TITLES[view] || P.SVC[o.svc].name;
     $("tabs").hidden = !tab; $("sheet").hidden = tab;
     Array.prototype.forEach.call($("tabs").children, function (a) { if (a.dataset.tab === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     $("next").hidden = view !== "pesan"; $("send").hidden = view !== "kirim";
     if (view === "pesan") renderForm();
-    if (view === "kirim") { readForm(); renderForm(); renderDrivers(); markDriver(); renderSend(); }
+    if (view === "kirim") { readForm(); renderForm(); renderSend(); }
     scrollTo(0, 0);
   }
 
-  function driverItem(d) {
-    return '<li class="' + (d.status === "aktif" ? "" : "off") + '"><div class="av" aria-hidden="true">' + esc(initial(d.name)) + '</div>' +
-      '<div class="dinfo"><b>' + esc(d.name) + '</b><span>Area: ' + esc(d.area) + '</span></div>' +
-      '<span class="chip ' + esc(d.status) + '">' + esc(STATUS[d.status] || d.status) + '</span></li>';
-  }
   /* "Setiap hari, 05.00–23.00" → "05.00–23.00" (jam layanan admin) */
   function hoursShort(h) { if (/24\s*jam/i.test(h || "")) return "24 jam"; var m = String(h || "").match(/\d{1,2}[.:]\d{2}\s*[–-]\s*\d{1,2}[.:]\d{2}/); return m ? m[0].replace(/\s/g, "").replace("-", "–") : (h || "–"); }
 
@@ -187,28 +173,21 @@
   }
 
   function renderHome() {
-    var t = T.orang, act = D.drivers.filter(function (d) { return d.status === "aktif"; }), active = act.length;
-    var hr = new Date().getHours();
+    var t = T.orang, hr = new Date().getHours();
     $("hello").textContent = "Selamat " + (hr < 11 ? "pagi" : hr < 15 ? "siang" : hr < 18 ? "sore" : "malam") + "!";
-    $("stDrv").textContent = active; $("stFare").textContent = P.rp(t.minFare).replace("Rp ", "Rp"); $("stHours").textContent = hoursShort(D.admin.hours); $("stHours").className = "sm";
-    $("availTxt").textContent = active + " dari " + D.drivers.length + " driver aktif sekarang";
-    // Aktif di atas; daftar sama di kartu Beranda (bisa dibuka) dan tab Driver.
-    var sorted = D.drivers.slice().sort(function (a, b) { return (b.status === "aktif") - (a.status === "aktif"); });
-    $("homeDrivers").innerHTML = sorted.map(driverItem).join("") || '<li class="muted">Belum ada driver.</li>';
-    $("allDrivers").innerHTML = sorted.map(driverItem).join("") || '<li class="muted">Belum ada driver.</li>';
-    $("drvLead").textContent = active + " dari " + D.drivers.length + " driver aktif sekarang.";
-    $("availAv").innerHTML = act.slice(0, 4).map(function (d) { return "<span>" + esc(initial(d.name)) + "</span>"; }).join("") + (active > 4 ? '<span class="more">+' + (active - 4) + "</span>" : "");
+    $("hlFare").textContent = P.rp(t.minFare).replace("Rp ", "Rp"); $("hlHours").textContent = hoursShort(D.admin.hours);
+    $("lainBtn").href = adminWa("Halo " + D.admin.name + ", saya mau tanya layanan lainnya: ");
 
     // Bantuan: admin, tarif lengkap
-    var ok = P.validPhone(D.admin.phone), wa = ok ? P.waLink(D.admin.phone, "Halo " + D.admin.name + ", saya mau tanya.") : "#bantuan";
+    var ok = P.validPhone(D.admin.phone), wa = adminWa("Halo " + D.admin.name + ", saya mau tanya.");
     $("adminName").textContent = D.admin.name; $("adminTxt").textContent = D.admin.hours || "";
     $("adminNum").textContent = ok ? "+62 " + D.admin.phone.slice(2, 5) + "-" + D.admin.phone.slice(5, 9) + "-" + D.admin.phone.slice(9) : "Nomor belum diisi";
     $("adminBtn").href = wa; $("adminTop").href = wa;
     $("adminBtn").setAttribute("aria-disabled", String(!ok)); $("copyNum").disabled = !ok;
     var row = function (a, b) { return "<li><span>" + esc(a) + "</span><span>" + esc(b) + "</span></li>"; };
     var base = function (k) { var x = T[k]; return P.numTxt(x.minKm) + " km pertama " + P.rp(x.minFare) + ", lalu " + P.rp(x.perKm) + "/km"; };
-    $("rateList").innerHTML = row("Antar penumpang", base("orang")) + row("Antar barang", base("barang") + " + biaya berat") +
-      row("Beli barang", base("beli") + " + berat + jasa belanja " + P.rp(T.shop)) + row("Jasa lainnya", "Harga dari admin") +
+    $("rateList").innerHTML = row("Agi Antar (penumpang)", base("orang")) + row("Agi Kirim (barang)", base("barang") + " + biaya berat") +
+      row("Agi Beli (makanan & kebutuhan harian)", base("beli") + " + berat + jasa belanja " + P.rp(T.shop)) + row("Agi Bersih & lainnya", "Harga dari admin") +
       T.weights.filter(function (w) { return w.add > 0; }).map(function (w) { return row("Berat " + w.label, "+" + P.rp(w.add)); }).join("") +
       row("Malam (21.00–05.00)", "+" + P.rp(T.night.add) + " setiap " + P.numTxt(T.night.every) + " km · dihitung otomatis") + row("Hujan", "+" + P.rp(T.rain.perKm) + " per km · ditetapkan admin");
     $("rateNote").textContent = "Tambahan malam dihitung otomatis dari jam HP. Tambahan hujan ditetapkan admin; aplikasi memberi tanda bila data cuaca menunjukkan hujan di titik jemput. Tarif adalah perkiraan. Pembanding untuk antar penumpang: aturan tarif ojek online Zona I dari Kementerian Perhubungan (Rp2.000–2.500 per km, biaya minimal Rp8.000–10.000).";
@@ -225,13 +204,41 @@
       : META.source === "tersimpan" ? "Sedang offline, memakai data terakhir yang tersimpan." : "";
   }
 
+  /* ---------- Ulasan: bintang 1–5 + kritik & saran, disimpan di Firebase (dibaca admin) ---------- */
+  var STAR_TXT = ["", "Kurang sekali", "Kurang", "Cukup", "Bagus", "Sangat bagus!"], stars = 0;
+  function setStars(n) {
+    stars = n;
+    Array.prototype.forEach.call($("stars").children, function (b) { var v = +b.dataset.v; b.classList.toggle("on", v <= n); b.setAttribute("aria-checked", String(v === n)); });
+    $("starLab").textContent = n ? n + " bintang · " + STAR_TXT[n] : "Ketuk bintang";
+  }
+  function revMsg(html, err) { $("revMsg").innerHTML = html; $("revMsg").className = "revmsg" + (err ? " err" : ""); }
+  function initReview() {
+    $("stars").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) { setStars(+b.dataset.v); revMsg(""); } });
+    $("revName").value = o.name;
+    $("revForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var r = { stars: stars, text: $("revText").value.trim().slice(0, 1000), name: $("revName").value.trim().slice(0, 60) };
+      if (!r.stars) { revMsg("Pilih bintang dulu (1–5).", true); return; }
+      $("revSend").disabled = true; revMsg("Mengirim…");
+      Store.sendReview(r).then(function () {
+        $("revForm").hidden = true; $("revThanks").hidden = false; revMsg("");
+      }).catch(function () {
+        // Cadangan: kirim lewat WhatsApp admin bila penyimpanan gagal (offline / belum disetel)
+        var wa = adminWa("Ulasan aplikasi Agi Mas: " + "★".repeat(r.stars) + " (" + r.stars + "/5)\n" + (r.text || "-") + (r.name ? "\n— " + r.name : ""));
+        revMsg('Gagal mengirim. Periksa koneksi, atau <a href="' + esc(wa) + '" target="_blank" rel="noopener">kirim lewat WhatsApp admin</a>.', true);
+      }).then(function () { $("revSend").disabled = false; });
+    });
+    $("revAgain").addEventListener("click", function () { setStars(0); $("revText").value = ""; $("revThanks").hidden = true; $("revForm").hidden = false; });
+  }
+
   function start(res) {
     META = res; D = res.data; T = D.tarif;
     T.weights.forEach(function (w, i) { var op = document.createElement("option"); op.value = i; op.textContent = w.label + (w.add ? " (+" + P.rp(w.add) + ")" : ""); $("w").appendChild(op); });
     $("name").value = o.name;
     $("form").addEventListener("input", function () { readForm(); renderForm(); });
     $("form").addEventListener("click", function (e) { var b = e.target.closest("[data-pick]"); if (b) pick(b.dataset.pick); });
-    $("drivers").addEventListener("change", function (e) { o.driver = e.target.value; markDriver(); renderSend(); });
+    $("beliType").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) { o.beliType = b.dataset.v; if (o.beliType !== "harian") o.beliCat = ""; renderForm(); } });
+    $("beliCat").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) { o.beliCat = b.dataset.v; renderForm(); } });
     $("copyLink").addEventListener("click", function () {
       var url = (D.about || {}).downloadUrl;
       function good() { $("shareMsg").textContent = "Link tersalin."; }
@@ -243,6 +250,7 @@
       function bad() { $("copyMsg").textContent = "Tekan lama nomor untuk menyalin."; }
       try { navigator.clipboard.writeText("+" + D.admin.phone).then(good, bad); } catch (e) { bad(); }
     });
+    initReview();
     function goBack() { history.length > 1 ? history.back() : (location.hash = ""); }
     $("back").addEventListener("click", goBack);
     // Tombol back HP (dipanggil MainActivity di APK). true = kembali ke layar sebelumnya; false = di Beranda, aplikasi ditutup.

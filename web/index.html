@@ -60,6 +60,10 @@
     <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
     <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M11.53 2.3a.53.53 0 0 1 .95 0l2.31 4.68a2.12 2.12 0 0 0 1.6 1.16l5.16.76a.53.53 0 0 1 .3.9l-3.74 3.64a2.12 2.12 0 0 0-.61 1.88l.88 5.14a.53.53 0 0 1-.77.56l-4.62-2.43a2.12 2.12 0 0 0-1.97 0L6.4 21.01a.53.53 0 0 1-.77-.56l.88-5.14a2.12 2.12 0 0 0-.61-1.88L2.16 9.8a.53.53 0 0 1 .3-.91l5.16-.75a2.12 2.12 0 0 0 1.6-1.16z"/></symbol>
+    <symbol id="i-food" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></symbol>
+    <symbol id="i-basket" viewBox="0 0 24 24"><path d="m15 11-1 9M19 11l-4-7M2 11h20M3.5 11l1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4M4.5 15.5h15M5 11l4-7M9 11l1 9"/></symbol>
+    <symbol id="i-brush" viewBox="0 0 24 24"><path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></symbol>
   </defs>
 </svg>
 
@@ -73,9 +77,9 @@
   <section id="v-skel" class="skel" aria-busy="true" aria-label="Memuat">
     <div class="band sk-band"><div class="sk sk-line w40"></div><div class="sk sk-line w70"></div></div>
     <div class="sk sk-hero"></div>
-    <div class="sk-row3"><div class="sk sk-stat"></div><div class="sk sk-stat"></div><div class="sk sk-stat"></div></div>
+    <div class="sk-row3"><div class="sk sk-stat"></div><div class="sk sk-stat"></div><div class="sk sk-stat"></div></div><!-- sorotan -->
     <div class="sk sk-line w50"></div>
-    <div class="sk-row2"><div class="sk sk-feat"></div><div class="sk sk-feat"></div><div class="sk sk-feat"></div><div class="sk sk-feat"></div></div>
+    <div class="sk-row2"><div class="sk sk-feat"></div><div class="sk sk-feat"></div><div class="sk sk-feat"></div><div class="sk sk-feat"></div><div class="sk sk-feat"></div><div class="sk sk-feat"></div></div>
   </section>
 
   <!-- Beranda -->
@@ -104,38 +108,49 @@
         <button type="button" class="iconbtn sm" id="iosTipX" aria-label="Tutup petunjuk">✕</button></div>
     </div>
 
-    <div class="stats">
-      <a class="stat" href="#driver"><span class="ti blue"><svg class="i"><use href="#i-users"/></svg></span><b id="stDrv">–</b><small>Driver aktif</small></a>
-      <a class="stat" href="#bantuan"><span class="ti yellow"><svg class="i"><use href="#i-tag"/></svg></span><b id="stFare">–</b><small>Tarif mulai</small></a>
-      <a class="stat" href="#bantuan"><span class="ti purple"><svg class="i"><use href="#i-clock"/></svg></span><b id="stHours">–</b><small>Jam admin</small></a>
+    <div class="hl" aria-label="Sorotan Agimas">
+      <div class="hlc a"><span class="hlk">Agimas Murah</span><b>Tarif mulai <span id="hlFare">Rp5.500</span></b><small>Hemat, harga jelas sebelum pesan.</small></div>
+      <div class="hlc b"><span class="hlk">KDMP</span><b>Kirim Dekat Murah Pol</b><small>Kirim barang jarak dekat, harga bersahabat.</small></div>
+      <div class="hlc c"><span class="hlk">Admin</span><b id="hlHours">24 jam</b><small>Siap melayani setiap hari.</small></div>
+      <div class="hlc d"><span class="hlk">Kata pelanggan 😄</span><b>Psikolog mahal, makanya Tuhan ciptakan Agimas.</b></div>
     </div>
 
-    <h2 class="sec">Empat layanan, satu pintu pesan</h2>
-    <p class="muted sec-sub">Semua pesanan masuk lewat admin supaya harga seragam dan driver yang bertugas selalu jelas.</p>
-    <div class="feats">
-      <a href="#pesan/orang" class="feat blue"><span class="feat-top"><svg class="i"><use href="#i-bike"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Antar penumpang</b><small>Ke kantor, stasiun, pasar, sekolah, atau pulang malam.</small></a>
-      <a href="#pesan/barang" class="feat yellow"><span class="feat-top"><svg class="i"><use href="#i-box"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Antar barang</b><small>Dokumen, paket, oleh-oleh.</small></a>
-      <a href="#pesan/beli" class="feat green"><span class="feat-top"><svg class="i"><use href="#i-bag"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Beli barang</b><small>Makanan, obat, atau belanja pasar.</small></a>
-      <a href="#pesan/lain" class="feat purple"><span class="feat-top"><svg class="i"><use href="#i-spark"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Jasa lainnya</b><small>Ceritakan kebutuhan, admin memberi harga.</small></a>
+    <h2 class="sec">Mau pesan apa?</h2>
+    <p class="muted sec-sub">Semua pesanan masuk lewat admin, lalu driver terdekat yang bertugas.</p>
+    <div class="feats six">
+      <a href="#pesan/orang" class="feat blue"><span class="feat-top"><svg class="i"><use href="#i-bike"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Agi Antar</b><small>Antar penumpang ke kantor, stasiun, pasar, sekolah.</small></a>
+      <a href="#pesan/barang" class="feat yellow"><span class="feat-top"><svg class="i"><use href="#i-box"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Agi Kirim</b><small>Paket, dokumen, oleh-oleh.</small></a>
+      <a href="#pesan/beli/makan" class="feat green"><span class="feat-top"><svg class="i"><use href="#i-food"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Makanan &amp; Minuman</b><small>Agi Beli dari warung &amp; resto.</small></a>
+      <a href="#pesan/beli/harian" class="feat teal"><span class="feat-top"><svg class="i"><use href="#i-basket"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Kebutuhan Harian</b><small>Agi Beli di supermarket atau pasar tradisional.</small></a>
+      <a href="#pesan/bersih" class="feat purple"><span class="feat-top"><svg class="i"><use href="#i-brush"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Agi Bersih</b><small>Bersih-bersih rumah, kamar mandi, halaman.</small></a>
+      <a id="lainBtn" class="feat gray" target="_blank" rel="noopener"><span class="feat-top"><svg class="i"><use href="#i-chat"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Lainnya</b><small>Kebutuhan lain? Chat admin langsung.</small></a>
     </div>
-
-    <h2 class="sec">Driver hari ini</h2>
-    <details class="card drvcard">
-      <summary class="row">
-        <div class="avs" id="availAv" aria-hidden="true"></div>
-        <div class="grow"><b>Siap mengantar</b><p class="muted small" id="availTxt"></p></div>
-        <svg class="i dim chev" aria-hidden="true"><use href="#i-right"/></svg>
-      </summary>
-      <ul class="dlist" id="homeDrivers"></ul>
-    </details>
   </section>
 
-  <!-- Driver -->
-  <section id="v-driver" class="view" hidden>
-    <h2 class="headline">Siap mengantar<br>hari ini.</h2>
-    <p class="muted lead">Driver ditugaskan oleh admin sesuai area dan ketersediaan. Driver yang bertugas akan menghubungi Anda lewat WhatsApp.</p>
-    <p class="avail" id="drvLead"></p>
-    <ul class="dlist cards" id="allDrivers"></ul>
+  <!-- Ulasan: rating, kritik & saran -->
+  <section id="v-ulasan" class="view" hidden>
+    <h2 class="headline">Bagaimana<br>pengalamanmu?</h2>
+    <p class="muted lead">Beri bintang dan kritik/saran. Masukanmu dibaca langsung oleh admin Agimas.</p>
+    <form class="card" id="revForm" novalidate>
+      <div class="stars" id="stars" role="radiogroup" aria-label="Beri bintang 1 sampai 5">
+        <button type="button" role="radio" aria-checked="false" data-v="1" aria-label="1 bintang"><svg class="i"><use href="#i-star"/></svg></button>
+        <button type="button" role="radio" aria-checked="false" data-v="2" aria-label="2 bintang"><svg class="i"><use href="#i-star"/></svg></button>
+        <button type="button" role="radio" aria-checked="false" data-v="3" aria-label="3 bintang"><svg class="i"><use href="#i-star"/></svg></button>
+        <button type="button" role="radio" aria-checked="false" data-v="4" aria-label="4 bintang"><svg class="i"><use href="#i-star"/></svg></button>
+        <button type="button" role="radio" aria-checked="false" data-v="5" aria-label="5 bintang"><svg class="i"><use href="#i-star"/></svg></button>
+      </div>
+      <p class="starlab" id="starLab">Ketuk bintang</p>
+      <div class="field"><label for="revText">Kritik &amp; saran</label><textarea id="revText" rows="4" maxlength="1000" placeholder="Ceritakan pengalamanmu, apa yang perlu diperbaiki…"></textarea></div>
+      <div class="field"><label for="revName">Nama <span class="muted">(opsional)</span></label><input id="revName" maxlength="60" autocomplete="name" placeholder="Boleh dikosongkan"></div>
+      <button class="btn full" type="submit" id="revSend">Kirim ulasan</button>
+      <p class="revmsg" id="revMsg" aria-live="polite"></p>
+    </form>
+    <div class="card thanks" id="revThanks" hidden>
+      <div class="thanks-ic" aria-hidden="true"><svg class="i"><use href="#i-star"/></svg></div>
+      <h3>Terima kasih!</h3>
+      <p class="muted">Ulasanmu sudah terkirim ke admin Agimas.</p>
+      <button type="button" class="btn ghost sm" id="revAgain">Tulis ulasan lagi</button>
+    </div>
   </section>
 
   <!-- Bantuan: semua informasi dari website -->
@@ -241,13 +256,19 @@
   <section id="v-pesan" class="view" hidden>
     <p class="muted small formnote">Harga adalah perkiraan. Admin mengonfirmasi harga final sebelum driver berangkat.</p>
     <form id="form" novalidate>
+      <div class="card" id="beliBox" hidden>
+        <p class="lbl">Mau beli apa?</p>
+        <div class="segx" id="beliType"><button type="button" data-v="makan"><svg class="i"><use href="#i-food"/></svg>Makanan &amp; minuman</button><button type="button" data-v="harian"><svg class="i"><use href="#i-basket"/></svg>Kebutuhan harian</button></div>
+        <div id="catBox" hidden><p class="lbl">Belanja di</p>
+          <div class="segx" id="beliCat"><button type="button" data-v="supermarket">Supermarket</button><button type="button" data-v="pasar">Pasar tradisional</button></div></div>
+      </div>
       <div class="card route">
         <div class="stop">
           <span class="dot a" aria-hidden="true"></span>
           <div class="grow"><label for="from" id="fromLab"></label><input id="from" autocomplete="street-address"><p class="pt" id="fromPt" hidden></p></div>
           <button type="button" class="pick" data-pick="from" aria-label="Pilih titik di peta"><svg class="i"><use href="#i-pin"/></svg><span>Peta</span></button>
         </div>
-        <div class="stop">
+        <div class="stop" id="toStop">
           <span class="dot b" aria-hidden="true"></span>
           <div class="grow"><label for="to" id="toLab"></label><input id="to"><p class="pt" id="toPt" hidden></p></div>
           <button type="button" class="pick" data-pick="to" aria-label="Pilih titik tujuan di peta"><svg class="i"><use href="#i-pin"/></svg><span>Peta</span></button>
@@ -276,29 +297,28 @@
     </form>
   </section>
 
-  <!-- Kirim ke admin, driver pilihan opsional -->
+  <!-- Kirim ke admin (driver terdekat dicarikan otomatis) -->
   <section id="v-kirim" class="view" hidden>
     <div class="card summary">
       <span class="pill soft" id="sumSvc"></span>
       <div class="sumroute">
         <div><span class="dot a" aria-hidden="true"></span><span id="sumFrom"></span></div>
-        <div><span class="dot b" aria-hidden="true"></span><span id="sumTo"></span></div>
+        <div id="sumToRow"><span class="dot b" aria-hidden="true"></span><span id="sumTo"></span></div>
       </div>
       <p class="muted small" id="sumMeta"></p>
     </div>
-    <fieldset class="card choose">
-      <legend>Driver pilihan <span class="muted small">(opsional)</span></legend>
-      <p class="muted small">Admin tetap yang menugaskan. Jika driver pilihan sedang sibuk, admin mencarikan yang lain.</p>
-      <div id="drivers"></div>
-    </fieldset>
+    <div class="card row nearcard">
+      <span class="ti green"><svg class="i"><use href="#i-bike"/></svg></span>
+      <div class="grow"><b>Driver terdekat dicarikan otomatis</b><p class="muted small">Admin menugaskan driver aktif terdekat dari titik jemput, lalu driver menghubungi Anda lewat WhatsApp.</p></div>
+    </div>
     <details class="card preview"><summary>Lihat pesan WhatsApp</summary><pre id="preview"></pre></details>
   </section>
 </main>
 
-<!-- Navigasi bawah (Beranda, Driver, Bantuan) -->
+<!-- Navigasi bawah (Beranda, Ulasan, Bantuan) -->
 <nav class="tabs" id="tabs" aria-label="Navigasi utama" hidden>
   <a href="#" data-tab="home"><svg class="i"><use href="#i-home"/></svg><span>Beranda</span></a>
-  <a href="#driver" data-tab="driver"><svg class="i"><use href="#i-users"/></svg><span>Driver</span></a>
+  <a href="#ulasan" data-tab="ulasan"><svg class="i"><use href="#i-star"/></svg><span>Ulasan</span></a>
   <a href="#bantuan" data-tab="bantuan"><svg class="i"><use href="#i-help"/></svg><span>Bantuan</span></a>
 </nav>
 

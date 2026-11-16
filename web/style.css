@@ -115,6 +115,43 @@ b { color: var(--ink); font-weight: 700; }
 .feat.blue { background: var(--t-blue); } .feat.yellow { background: var(--t-yellow); } .feat.green { background: var(--t-green); } .feat.purple { background: var(--t-purple); }
 .feat:active, .stat:active, .card.link:active { transform: scale(.98); }
 
+/* Sorotan: Agimas Murah, KDMP, Admin 24 jam, slogan — geser di HP */
+.hl { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 10px; margin: 16px -16px 0; padding: 0 16px 4px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.hl::-webkit-scrollbar { display: none; }
+.hlc { scroll-snap-align: start; display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 20px; color: var(--ink); min-height: 118px; }
+.hlc .hlk { align-self: flex-start; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.7); font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.hlc b { font-size: 1.12rem; line-height: 1.25; margin-top: 4px; }
+.hlc small { color: #4b6280; font-size: .78rem; }
+.hlc.a { background: linear-gradient(135deg, #ffe58a, #ffd25a); }
+.hlc.b { background: linear-gradient(135deg, #cfe5ff, #a9d0ff); }
+.hlc.c { background: linear-gradient(135deg, #d6f5e3, #b6ebcd); }
+.hlc.d { background: linear-gradient(135deg, #ece6ff, #d9cdfc); }
+.hlc.d b { font-size: 1.02rem; font-style: italic; }
+@media (min-width: 640px) { .hl { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); margin: 16px 0 0; padding: 0; overflow: visible; } }
+.feat.teal { background: #dff4f1; } .feat.gray { background: #eef2f7; }
+/* Pilihan Agi Beli */
+.lbl { font-weight: 700; color: var(--ink); font-size: .86rem; margin-bottom: 8px; }
+.segx { display: flex; gap: 8px; }
+.segx button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; padding: 6px 10px; border: 1.5px solid var(--line); border-radius: 14px; background: #fff; color: var(--fg); font: 700 .84rem var(--font); cursor: pointer; text-align: center; }
+.segx button .i { width: 18px; height: 18px; }
+.segx button[aria-pressed=true] { border-color: var(--brand); background: var(--t-blue); color: var(--brand-dark); }
+#catBox { margin-top: 12px; }
+.nearcard .ti { flex: none; }
+/* Ulasan */
+.stars { display: flex; justify-content: center; gap: 8px; }
+.stars button { display: grid; place-items: center; width: 52px; height: 52px; border: 0; border-radius: 14px; background: var(--bg); color: #c9d4e2; cursor: pointer; }
+.stars button .i { width: 32px; height: 32px; }
+.stars button.on { color: #f5b301; background: #fff4d6; }
+.stars button.on .i { fill: #f5b301; }
+.starlab { text-align: center; font-weight: 700; color: var(--ink); margin: 10px 0 14px; min-height: 1.5em; }
+.revmsg { text-align: center; font-size: .85rem; font-weight: 600; margin-top: 10px; min-height: 1.2em; }
+.revmsg.err { color: #c0392b; } .revmsg a { color: var(--brand); }
+.thanks { text-align: center; padding: 28px 16px; }
+.thanks-ic { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 20px; background: #fff4d6; color: #f5b301; }
+.thanks-ic .i { width: 34px; height: 34px; fill: #f5b301; }
+.thanks h3 { font-size: 1.3rem; margin-bottom: 4px; }
+.thanks .btn { margin-top: 14px; }
+
 /* Kartu putih */
 .card { display: block; background: var(--surface); border-radius: var(--radius); padding: 16px; margin: 12px 0; box-shadow: 0 1px 2px rgba(11, 37, 69, .04); border: 0; }
 .card > .row + * { margin-top: 12px; }
@@ -316,10 +353,10 @@ input[type=range] { padding: 0; height: 28px; border: 0; background: none; accen
   .hero p { font-size: .95rem; max-width: 46ch; }
   .hero-side { width: 40%; right: 20px; top: 20px; bottom: 16px; }
   .hero-logo { height: 44px; }
-  .feats { grid-template-columns: repeat(4, 1fr); }
+  .feats { grid-template-columns: repeat(3, 1fr); }
   .feat { min-height: 150px; }
   .sk-hero { margin-top: -96px; height: 250px; }
-  .sk-row2 { grid-template-columns: repeat(4, 1fr); }
+  .sk-row2 { grid-template-columns: repeat(3, 1fr); }
   .dlist.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .dlist.cards li { margin-bottom: 0; }
   .headline { font-size: 2.1rem; }
