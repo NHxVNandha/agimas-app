@@ -13,10 +13,24 @@ assert.strictEqual(P.quote(T, "beli", 6, 0).total, 13500);            // + jasa 
 assert.ok(P.validPhone("6281234567890"));
 assert.ok(!P.validPhone("") && !P.validPhone("081234567890"));
 
-const txt = P.waText(T, "Admin Agimas", { svc: "barang", km: 6, w: 1, name: "Bu Sari", item: "dokumen", from: "A & B", to: "C", driver: "Mas Plencing 2" });
-assert.ok(txt.startsWith("Halo Admin Agimas,\nsaya mau pesan *Antar barang*"));
-assert.ok(txt.includes("Driver pilihan: *Mas Plencing 2* (jika tersedia)"));
-assert.ok(P.waText(T, "A", { svc: "orang", km: 6, w: 0 }).includes("Driver pilihan: *bebas*"));
+const txt = P.waText(T, "Admin Agimas", { svc: "barang", km: 6, w: 1, name: "Bu Sari", item: "dokumen", from: "A & B", to: "C", nearest: { name: "Mas Plencing 2", km: 1.14 } });
+assert.ok(txt.startsWith("Halo Admin Agimas,\nsaya mau pesan *Agi Kirim* (kirim barang)"));
+assert.ok(txt.includes("Driver terdekat (otomatis): *Mas Plencing 2* — ±1,1 km dari titik jemput"));
+assert.ok(P.waText(T, "A", { svc: "orang", km: 6, w: 0 }).includes("Driver: *dicarikan admin*"));
+// Agi Beli: jenis belanja & kategori
+const tb = P.waText(T, "A", { svc: "beli", beliType: "harian", beliCat: "pasar", km: 3, w: 0, item: "beras 5 kg" });
+assert.ok(tb.includes("*Agi Beli* (belanja kebutuhan harian — pasar tradisional)") && tb.includes("Daftar belanja: beras 5 kg"));
+assert.ok(P.waText(T, "A", { svc: "beli", beliType: "makan", km: 3, w: 0 }).includes("(beli makanan & minuman)"));
+assert.strictEqual(P.fields({ svc: "beli", beliType: "harian", beliCat: "supermarket" }).fromPh, "Contoh: Superindo Madiun");
+// Agi Bersih: tanpa jarak & tanpa tujuan, harga dari admin
+const tbs = P.waText(T, "A", { svc: "bersih", from: "Jl. A", item: "rumah 2 kamar" });
+assert.ok(tbs.includes("*Agi Bersih* (jasa bersih-bersih)") && tbs.includes("Mohon penawaran harga.") && !tbs.includes("Tujuan") && !tbs.includes("Jarak:"));
+// driver terdekat: hanya yang aktif & punya koordinat
+const drv = [{ name: "Jauh", status: "aktif", lat: -7.70, lng: 111.55 }, { name: "Dekat", status: "aktif", lat: -7.618, lng: 111.524 },
+             { name: "Istirahat", status: "istirahat", lat: -7.6177, lng: 111.5235 }, { name: "TanpaLokasi", status: "aktif" }];
+assert.strictEqual(P.nearestDriver(drv, { lat: -7.6177, lng: 111.5235 }).name, "Dekat");
+assert.strictEqual(P.nearestDriver(drv, null), null);
+assert.strictEqual(P.nearestDriver([{ name: "X", status: "aktif" }], { lat: -7.6, lng: 111.5 }), null);
 assert.ok(txt.includes("Berat: 5–10 kg") && txt.includes("*PERKIRAAN HARGA: Rp 12.500*") && txt.includes("Jarak: *6 km*"));
 assert.ok(txt.includes("\n\n*RUTE*\n") && txt.includes("\n\n*DETAIL PESANAN*\n"));      // bagian dipisah baris kosong
 assert.ok(txt.includes("- Biaya berat 5–10 kg: Rp 3.000"));                               // rincian harga

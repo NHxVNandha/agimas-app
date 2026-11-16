@@ -1,11 +1,42 @@
 /* Logika harga dan teks WhatsApp. Diambil dari website agimassolution.netlify.app. Dipakai oleh app.js dan test.js. */
 (function (root) {
+  /* Layanan Agimas. noKm = harga dari admin (tanpa jarak); to: null = tanpa titik tujuan. */
   var SVC = {
-    orang: { name: "Antar penumpang", from: "Lokasi jemput", to: "Tujuan", fromPh: "Contoh: Stasiun Madiun", toPh: "Contoh: Alun-alun Kota Madiun" },
-    barang: { name: "Antar barang", from: "Ambil barang di", to: "Antar ke", fromPh: "Contoh: Toko di Jl. Pahlawan", toPh: "Contoh: Perumahan Kartoharjo", item: "Isi barang", itemPh: "Contoh: paket dokumen" },
-    beli: { name: "Beli barang", from: "Beli di (toko atau pasar)", to: "Antar ke", fromPh: "Contoh: Pasar Sleko", toPh: "Contoh: Jl. Cokroaminoto", item: "Barang yang dibeli", itemPh: "Contoh: 2 bungkus nasi pecel" },
-    lain: { name: "Jasa lainnya", from: "Lokasi", to: "Tujuan (jika ada)", fromPh: "Contoh: Jl. Panglima Sudirman No. 5", toPh: "Kosongkan jika tidak perlu", item: "Jasa yang dibutuhkan", itemPh: "Contoh: antre di kantor layanan" }
+    orang: { name: "Agi Antar", desc: "antar penumpang", from: "Lokasi jemput", to: "Tujuan", fromPh: "Contoh: Stasiun Madiun", toPh: "Contoh: Alun-alun Kota Madiun" },
+    barang: { name: "Agi Kirim", desc: "kirim barang", from: "Ambil barang di", to: "Antar ke", fromPh: "Contoh: Toko di Jl. Pahlawan", toPh: "Contoh: Perumahan Kartoharjo", item: "Isi barang", itemPh: "Contoh: paket dokumen" },
+    beli: { name: "Agi Beli", desc: "beli makanan & kebutuhan", from: "Beli di", to: "Antar ke", fromPh: "Contoh: Warung Pecel Bu Jo", toPh: "Contoh: Jl. Cokroaminoto", item: "Yang dibeli", itemPh: "Contoh: 2 nasi pecel, 2 es teh" },
+    bersih: { name: "Agi Bersih", desc: "jasa bersih-bersih", from: "Lokasi", to: null, fromPh: "Contoh: Jl. Panglima Sudirman No. 5", item: "Yang perlu dibersihkan", itemPh: "Contoh: rumah 2 kamar, kamar mandi, halaman", noKm: true },
+    lain: { name: "Lainnya", desc: "jasa lainnya", from: "Lokasi", to: "Tujuan (jika ada)", fromPh: "Contoh: Jl. Panglima Sudirman No. 5", toPh: "Kosongkan jika tidak perlu", item: "Jasa yang dibutuhkan", itemPh: "Contoh: antre di kantor layanan", noKm: true }
   };
+  /* Agi Beli: jenis belanja, dan kategori toko untuk kebutuhan harian */
+  var BELI = {
+    makan: { label: "Makanan & minuman", from: "Beli di (warung/resto)", fromPh: "Contoh: Warung Pecel Bu Jo", item: "Makanan/minuman yang dibeli", itemPh: "Contoh: 2 nasi pecel, 2 es teh" },
+    harian: { label: "Kebutuhan harian", from: "Beli di", item: "Daftar belanja", itemPh: "Contoh: beras 5 kg, minyak 2 liter, telur 1 kg" }
+  };
+  var CAT = { supermarket: { label: "Supermarket", fromPh: "Contoh: Superindo Madiun" }, pasar: { label: "Pasar tradisional", fromPh: "Contoh: Pasar Besar Madiun" } };
+
+  /* Label isian sesuai layanan (+ jenis belanja & kategori untuk Agi Beli). */
+  function fields(o) {
+    var s = SVC[o.svc], f = { name: s.name, desc: s.desc, from: s.from, fromPh: s.fromPh, to: s.to, toPh: s.toPh, item: s.item, itemPh: s.itemPh, noKm: !!s.noKm };
+    if (o.svc === "beli") {
+      var b = BELI[o.beliType] || BELI.makan; f.from = b.from; f.fromPh = b.fromPh || f.fromPh; f.item = b.item; f.itemPh = b.itemPh;
+      f.desc = o.beliType === "harian" ? "belanja kebutuhan harian" + (CAT[o.beliCat] ? " — " + CAT[o.beliCat].label.toLowerCase() : "") : "beli makanan & minuman";
+      if (o.beliType === "harian" && CAT[o.beliCat]) f.fromPh = CAT[o.beliCat].fromPh;
+    }
+    return f;
+  }
+
+  /* Driver aktif terdekat dari titik jemput (garis lurus), butuh koordinat area driver (diisi saat admin menyimpan). */
+  function nearestDriver(drivers, pt) {
+    if (!pt) return null;
+    var best = null;
+    (drivers || []).forEach(function (d) {
+      if (d.status !== "aktif" || d.lat == null) return;
+      var km = straightKm(pt, d);
+      if (!best || km < best.km) best = { name: d.name, area: d.area, km: km };
+    });
+    return best;
+  }
 
   function rp(n) { return "Rp " + Math.round(n).toLocaleString("id-ID"); }
   function numTxt(k) { return String(k).replace(".", ","); }
@@ -33,17 +64,16 @@
 
   function validPhone(d) { return /^62\d{8,13}$/.test(String(d)); }
 
-  /* Pesan ke admin. o: { svc, km, w, name, item, from, to, note, driver } — driver = nama driver pilihan, opsional */
+  /* Pesan ke admin. o: { svc, beliType, beliCat, km, w, name, item, from, to, note, nearest:{name,km}, ... } */
   /* Teks dikelompokkan per bagian dengan baris kosong; *teks* = tebal di WhatsApp. */
   function waText(T, adminName, o) {
-    var s = SVC[o.svc], lain = o.svc === "lain";
+    var s = fields(o), lain = s.noKm;
     function v(x) { return String(x || "-").replace(/[*_~]/g, ""); } // isian pelanggan: jangan merusak format tebal
-    var L = ["Halo " + adminName + ",", "saya mau pesan *" + s.name + "* lewat aplikasi Agi Mas.", ""];
+    var L = ["Halo " + adminName + ",", "saya mau pesan *" + s.name + "* (" + s.desc + ") lewat aplikasi Agi Mas.", ""];
     L.push("*PEMESAN*", "Nama: " + v(o.name), "");
     L.push("*RUTE*", s.from + ": " + v(o.from));
     if (o.fromPt) L.push(mapLink(o.fromPt));
-    L.push(s.to + ": " + v(o.to));
-    if (o.toPt) L.push(mapLink(o.toPt));
+    if (s.to) { L.push(s.to + ": " + v(o.to)); if (o.toPt) L.push(mapLink(o.toPt)); }
     if (!lain) L.push("Jarak: *" + numTxt(o.km) + " km*");
     if (o.fromPt && o.toPt) L.push("*Rute di Google Maps* (jemput → tujuan):", routeLink(o.fromPt, o.toPt));
     L.push("");
@@ -52,7 +82,7 @@
     if (o.svc === "barang" || o.svc === "beli") det.push("Berat: " + (T.weights[o.w] || T.weights[0]).label);
     if (o.note) det.push("Catatan: " + v(o.note));
     if (o.rain) det.push("Cuaca: *kemungkinan hujan di titik jemput* (data cuaca, mohon dicek)");
-    det.push("Driver pilihan: *" + (o.driver ? v(o.driver) + "* (jika tersedia)" : "bebas*, admin yang menentukan"));
+    det.push(o.nearest ? "Driver terdekat (otomatis): *" + v(o.nearest.name) + "* — ±" + numTxt(o.nearest.km.toFixed(1)) + " km dari titik jemput" : "Driver: *dicarikan admin*");
     L.push("*DETAIL PESANAN*"); L.push.apply(L, det); L.push("");
     if (lain) L.push("*HARGA*", "Mohon penawaran harga.");
     else {
@@ -125,6 +155,6 @@
     return d;
   }
 
-  var api = { SVC: SVC, rp: rp, numTxt: numTxt, quote: quote, validPhone: validPhone, waText: waText, waLink: waLink, validate: validate, normPhone: normPhone, mapLink: mapLink, straightKm: straightKm, billKm: billKm, inRegion: inRegion, isNight: isNight };
+  var api = { SVC: SVC, rp: rp, numTxt: numTxt, quote: quote, validPhone: validPhone, waText: waText, waLink: waLink, validate: validate, normPhone: normPhone, fields: fields, nearestDriver: nearestDriver, BELI: BELI, CAT: CAT, mapLink: mapLink, straightKm: straightKm, billKm: billKm, inRegion: inRegion, isNight: isNight };
   if (typeof module !== "undefined") module.exports = api; else root.Pricing = api;
 })(this);
