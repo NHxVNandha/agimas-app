@@ -1,5 +1,5 @@
 /* Peta gratis tanpa API key:
-   - Peta vektor: MapLibre GL + OpenFreeMap (gaya "positron", terang dan bersih).
+   - Peta vektor: MapLibre GL + OpenFreeMap (gaya "liberty", lengkap dengan patokan).
    - Saran pencarian saat mengetik: Photon (komoot) — jalan, kelurahan, kecamatan, tempat.
    - Alamat titik pin: Nominatim reverse. Rute: OSRM.
    - Wilayah layanan: window.REGION (region.js). Di luar wilayah diberi abu-abu dan tidak bisa dipilih.
@@ -7,7 +7,7 @@
    Cukup untuk usaha lokal; jika pesanan ratusan per jam, pindah ke layanan berbayar/self-host. */
 (function () {
   var MADIUN = { lat: -7.6298, lng: 111.5239 };
-  var STYLE = "https://tiles.openfreemap.org/styles/positron";
+  var STYLE = "https://tiles.openfreemap.org/styles/liberty"; // "liberty": menampilkan patokan (toko, masjid, sekolah, SPBU)
   var NOMI = "https://nominatim.openstreetmap.org";
   var PHOTON = "https://photon.komoot.io/api/";
   var R = window.REGION;
