@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Agi Mas</string>
+    <string name="title_activity_main">Agi Mas</string>
+    <string name="package_name">id.agimas.app</string>
+    <string name="custom_url_scheme">id.agimas.app</string>
+</resources>
