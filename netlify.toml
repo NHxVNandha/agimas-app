@@ -1,0 +1,3 @@
+# Deploy: npm run site, lalu npx netlify-cli deploy --prod (folder dist/ sudah dirakit, tanpa build di Netlify)
+[build]
+  publish = "dist"

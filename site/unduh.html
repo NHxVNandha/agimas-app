@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1e7be6">
+<title>Unduh Agi Mas</title>
+<meta name="description" content="Unduh aplikasi Agi Mas — antar, beli, dan bantu di Madiun dan sekitarnya. Android (APK) dan iPhone.">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/fonts.css">
+<style>
+  :root { --bg: #f3f8fe; --ink: #0b2545; --fg: #1d3655; --muted: #6a7f97; --line: #e3ebf5; --brand: #1e7be6; --wa: #1fa855; --t-blue: #e6f1fd; --t-yellow: #fff4d6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.55 "Plus Jakarta Sans", system-ui, -apple-system, sans-serif; }
+  .band { background: var(--brand); color: #fff; padding: max(28px, env(safe-area-inset-top)) 20px 90px; text-align: center; }
+  .band h1 { margin: 14px 0 4px; font-size: 1.6rem; }
+  .band p { margin: 0; opacity: .9; }
+  .logo { height: 46px; padding: 5px 10px; border-radius: 12px; background: #f7f7f7; }
+  main { max-width: 560px; margin: -64px auto 40px; padding: 0 16px; }
+  .card { background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(11,37,69,.05); }
+  h2 { margin: 0 0 4px; color: var(--ink); font-size: 1.15rem; }
+  .muted { color: var(--muted); font-size: .88rem; margin: 0; }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; margin-top: 16px; border-radius: 999px; background: var(--brand); color: #fff; font-weight: 700; text-decoration: none; font-size: 1rem; }
+  .btn.alt { background: var(--t-blue); color: #0f5bb5; }
+  ol { margin: 14px 0 0; padding: 0; list-style: none; counter-reset: s; }
+  ol li { position: relative; padding: 0 0 12px 42px; counter-increment: s; }
+  ol li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 9px; background: var(--t-blue); color: #0f5bb5; font-weight: 800; display: grid; place-items: center; font-size: .85rem; }
+  ol b { color: var(--ink); }
+  .ico { display: inline-block; vertical-align: -4px; width: 20px; height: 20px; fill: none; stroke: #0f5bb5; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .warn { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: var(--t-yellow); color: #6b5000; font-size: .88rem; }
+  .qr { display: grid; place-items: center; margin-top: 12px; }
+  .qr svg { width: 200px; height: 200px; padding: 10px; border: 1px solid var(--line); border-radius: 16px; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--t-blue); color: #0f5bb5; font-size: .72rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 8px; }
+  [hidden] { display: none !important; }
+  footer { text-align: center; color: var(--muted); font-size: .8rem; padding-bottom: 90px; } /* ruang untuk badge Netlify */
+</style>
+</head>
+<body>
+<div class="band">
+  <img class="logo" src="/logo.png" alt="Agimas, saget sembarang kalir">
+  <h1>Unduh aplikasi Agi Mas</h1>
+  <p>Antar, beli, dan bantu di Madiun dan sekitarnya</p>
+</div>
+<main>
+  <!-- Android -->
+  <section class="card" id="android">
+    <span class="tag">Android</span>
+    <h2>Pasang di HP Android</h2>
+    <p class="muted">File APK, gratis, langsung dari Agi Mas (bukan Play Store).</p>
+    <a class="btn" href="/unduh/AgiMas.apk" download>Unduh aplikasi (APK)</a>
+    <ol>
+      <li><b>Unduh</b> lalu buka file <b>AgiMas.apk</b> dari notifikasi atau folder Unduhan.</li>
+      <li>Jika diminta, <b>izinkan "Instal aplikasi tidak dikenal"</b> untuk browser/File, lalu kembali.</li>
+      <li>Ketuk <b>Instal</b>. Jika muncul peringatan Play Protect, pilih <b>"Tetap instal"</b>.</li>
+    </ol>
+  </section>
+
+  <!-- iPhone / iPad -->
+  <section class="card" id="ios">
+    <span class="tag">iPhone / iPad</span>
+    <h2>Pasang di iPhone</h2>
+    <p class="muted">Lewat Safari, tanpa App Store. Gratis dan tidak kedaluwarsa.</p>
+    <p class="warn" id="notSafari" hidden>Halaman ini dibuka di dalam aplikasi lain. <b>Buka di Safari</b> dulu: ketuk menu (⋯ atau ikon kompas), lalu pilih "Buka di Safari".</p>
+    <ol>
+      <li>Buka <b>Safari</b> ke alamat <b id="siteUrl"></b></li>
+      <li>Ketuk tombol <b>Bagikan</b> <svg class="ico" viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> di bawah layar.</li>
+      <li>Gulir lalu pilih <b>"Tambah ke Layar Utama"</b> <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>, lalu <b>Tambah</b>.</li>
+      <li>Buka <b>Agi Mas</b> dari ikon di layar utama.</li>
+    </ol>
+    <a class="btn alt" href="/">Buka aplikasi web</a>
+  </section>
+
+  <!-- Komputer: tampilkan QR halaman ini -->
+  <section class="card" id="desktop" hidden>
+    <span class="tag">Dari komputer</span>
+    <h2>Pindai dengan kamera HP</h2>
+    <p class="muted">Halaman ini akan terbuka di HP dan menampilkan cara pasang yang sesuai.</p>
+    <div class="qr" id="qr"></div>
+  </section>
+</main>
+<footer>agi mas · Layanan antar, beli, dan bantu, Madiun, Jawa Timur</footer>
+<script src="/vendor/qrcode.js"></script>
+<script>
+  // Tampilkan petunjuk sesuai jenis perangkat; yang lain tetap bisa dilihat di bawahnya.
+  var ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1), android = /Android/.test(ua);
+  var main = document.querySelector("main"), a = document.getElementById("android"), i = document.getElementById("ios");
+  document.getElementById("siteUrl").textContent = location.host;
+  if (ios) {
+    main.insertBefore(i, a);                                  // iPhone: petunjuk iOS di atas
+    if (/CriOS|FxiOS|EdgiOS|FBAN|FBAV|Instagram|Line\/|WhatsApp/i.test(ua)) document.getElementById("notSafari").hidden = false;
+  } else if (!android) {
+    document.getElementById("desktop").hidden = false; main.insertBefore(document.getElementById("desktop"), a);
+    try { var q = qrcode(0, "M"); q.addData(location.href.split("#")[0]); q.make(); document.getElementById("qr").innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true }); } catch (e) {}
+  }
+</script>
+</body>
+</html>
