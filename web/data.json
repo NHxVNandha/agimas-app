@@ -1,0 +1,100 @@
+{
+  "tarif": {
+    "orang": {
+      "minFare": 5500,
+      "minKm": 4,
+      "perKm": 2000
+    },
+    "barang": {
+      "minFare": 5500,
+      "minKm": 4,
+      "perKm": 2000
+    },
+    "beli": {
+      "minFare": 5500,
+      "minKm": 4,
+      "perKm": 2000
+    },
+    "shop": 4000,
+    "weights": [
+      {
+        "label": "Sampai 5 kg",
+        "add": 0
+      },
+      {
+        "label": "5–10 kg",
+        "add": 3000
+      },
+      {
+        "label": "10–20 kg",
+        "add": 8000
+      },
+      {
+        "label": "20–30 kg",
+        "add": 15000
+      }
+    ],
+    "night": {
+      "add": 1500,
+      "every": 3
+    },
+    "rain": {
+      "perKm": 2000
+    }
+  },
+  "admin": {
+    "name": "Admin Agimas",
+    "phone": "6287818083068",
+    "hours": "Setiap hari, 24 jam"
+  },
+  "drivers": [
+    {
+      "id": "d1",
+      "name": "Mas Plencing 1",
+      "area": "Banjarejo",
+      "status": "aktif"
+    },
+    {
+      "id": "d2",
+      "name": "Mas Plencing 2",
+      "area": "Oro-oro Ombo",
+      "status": "aktif"
+    },
+    {
+      "id": "d3",
+      "name": "Mas Plencing 3",
+      "area": "Mojopurno",
+      "status": "aktif"
+    },
+    {
+      "id": "d4",
+      "name": "Mas Plencing 4",
+      "area": "Manguharjo",
+      "status": "aktif"
+    },
+    {
+      "id": "d5",
+      "name": "Mas Plencing 5",
+      "area": "Demangan",
+      "status": "aktif"
+    },
+    {
+      "id": "d6",
+      "name": "Mas Plencing 6",
+      "area": "Nglames",
+      "status": "aktif"
+    },
+    {
+      "id": "d7",
+      "name": "Mas Plencing 7",
+      "area": "Belum diisi",
+      "status": "aktif"
+    }
+  ],
+  "about": {
+    "developer": "Nandot",
+    "whatsapp": "62895395094858",
+    "email": "kurnianhxvnandha@gmail.com",
+    "downloadUrl": "https://solusiagimas.netlify.app/unduh/"
+  }
+}
