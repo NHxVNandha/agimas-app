@@ -178,6 +178,7 @@
     $("hello").textContent = "Selamat " + (hr < 11 ? "pagi" : hr < 15 ? "siang" : hr < 18 ? "sore" : "malam") + "!";
     $("hlFare").textContent = P.rp(t.minFare).replace("Rp ", "Rp"); $("hlHours").textContent = hoursShort(D.admin.hours);
     $("lainBtn").href = adminWa("Halo " + D.admin.name + ", saya mau tanya layanan lainnya: ");
+    $("hlDots").innerHTML = Array.prototype.map.call($("hl").children, function (x, i) { return i ? "<i></i>" : '<i class="on"></i>'; }).join("");
 
     // Bantuan: admin, tarif lengkap
     var ok = P.validPhone(D.admin.phone), wa = adminWa("Halo " + D.admin.name + ", saya mau tanya.");
@@ -377,6 +378,22 @@
     if (document.getElementById("splash")) window.addEventListener("agimas-splash-done", after); else after();
   }
 
+  /* Kartu sorotan Beranda: titik ikut posisi geser; sekali di HP baru, kartu "mengintip" ke kiri sebagai tanda bisa digeser. */
+  function initHighlights() {
+    var hl = $("hl"), dots = $("hlDots").children;
+    hl.addEventListener("scroll", function () {
+      var step = hl.children[1].offsetLeft - hl.children[0].offsetLeft, i = Math.round(hl.scrollLeft / step);
+      if (hl.scrollLeft + hl.clientWidth >= hl.scrollWidth - 4) i = dots.length - 1; // kartu terakhir
+      Array.prototype.forEach.call(dots, function (d, k) { d.classList.toggle("on", k === i); });
+    }, { passive: true });
+    var seen = false;
+    try { seen = !!localStorage.getItem("agimas.hlhint"); localStorage.setItem("agimas.hlhint", "1"); } catch (e) {}
+    var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (seen || still) return;
+    function nudge() { setTimeout(function () { if (hl.scrollWidth <= hl.clientWidth) return; hl.classList.add("nudge"); setTimeout(function () { hl.classList.remove("nudge"); }, 1700); }, 400); }
+    if (document.getElementById("splash")) window.addEventListener("agimas-splash-done", nudge); else nudge();
+  }
+
   function start(res) {
     META = res; D = res.data; T = D.tarif;
     T.weights.forEach(function (w, i) { var op = document.createElement("option"); op.value = i; op.textContent = w.label + (w.add ? " (+" + P.rp(w.add) + ")" : ""); $("w").appendChild(op); });
@@ -396,7 +413,7 @@
       function bad() { $("copyMsg").textContent = "Tekan lama nomor untuk menyalin."; }
       try { navigator.clipboard.writeText("+" + D.admin.phone).then(good, bad); } catch (e) { bad(); }
     });
-    initReview(); initUpdate();
+    initReview(); initUpdate(); initHighlights();
     function goBack() { history.length > 1 ? history.back() : (location.hash = ""); }
     $("back").addEventListener("click", goBack);
     // Tombol back HP (dipanggil MainActivity di APK). true = kembali ke layar sebelumnya; false = di Beranda, aplikasi ditutup.
