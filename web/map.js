@@ -164,6 +164,20 @@
     }, Math.max(600, 1100 - (Date.now() - lastRev)));
   }
 
+  /* Warna lebih hidup ala Google Maps: tanah terang, taman hijau, air biru, gedung datar terang (tanpa 3D abu-abu). */
+  var COLORS = {
+    background: ["background-color", "#f1f3f4"], park: ["fill-color", "#c3e6b4"], landcover_grass: ["fill-color", "#bfe3ae"],
+    landcover_wood: ["fill-color", "#a8d99a"], landuse_pitch: ["fill-color", "#c3e6b4"], landuse_cemetery: ["fill-color", "#d2e8c4"],
+    landuse_hospital: ["fill-color", "#fbdada"], landuse_school: ["fill-color", "#f6efc9"], water: ["fill-color", "#9cc8f7"],
+    waterway_river: ["line-color", "#9cc8f7"], waterway_other: ["line-color", "#9cc8f7"], building: ["fill-color", "#e6e3df"],
+    landuse_residential: ["fill-color", "#e9ecef"]
+  };
+  function recolor() {
+    Object.keys(COLORS).forEach(function (id) { if (map.getLayer(id)) map.setPaintProperty(id, COLORS[id][0], COLORS[id][1]); });
+    if (map.getLayer("building-3d")) map.setLayoutProperty("building-3d", "visibility", "none");
+    if (map.getLayer("building")) map.setLayerZoomRange("building", 16, 24); // seperti Google: gedung baru tampil saat diperbesar
+  }
+
   function addRegionLayers() {
     if (!R) return;
     var world = [[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]];
@@ -185,7 +199,7 @@
     map.touchZoomRotate.disableRotation();
     map.on("load", function () {
       $("mapLoading").classList.add("done");
-      addRegionLayers();
+      recolor(); addRegionLayers();
       // Atribusi tetap ada (wajib), tapi dilipat jadi tombol (i) agar peta bersih.
       var a = document.querySelector("#map .maplibregl-ctrl-attrib"); if (a) a.classList.remove("maplibregl-compact-show");
     });
