@@ -16,14 +16,15 @@ service cloud.firestore {
         && request.resource.data.json.size() < 200000;
     }
 
-    // Ulasan pelanggan (bintang 1–5, kritik & saran): siapa saja boleh mengirim, hanya admin yang membaca & menghapus.
+    // Ulasan pelanggan (bintang 1–5, kritik & saran): siapa saja boleh mengirim dan membaca (tampil di aplikasi), hanya admin yang menghapus.
     match /ulasan/{id} {
       allow create: if request.resource.data.keys().hasOnly(['stars', 'text', 'name'])
         && request.resource.data.stars is int
-        && request.resource.data.stars >= 1 && request.resource.data.stars <= 5
-        && request.resource.data.text is string && request.resource.data.text.size() <= 1000
-        && request.resource.data.name is string && request.resource.data.name.size() <= 60;
-      allow read, delete: if isAdmin();
+        && request.resource.data.stars > 0 && request.resource.data.stars < 6
+        && request.resource.data.text is string && request.resource.data.text.size() < 1001
+        && request.resource.data.name is string && request.resource.data.name.size() < 61;
+      allow read: if true;
+      allow delete: if isAdmin();
     }
   }
 }

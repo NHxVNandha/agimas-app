@@ -154,6 +154,7 @@
     $("next").hidden = view !== "pesan"; $("send").hidden = view !== "kirim";
     if (view === "pesan") renderForm();
     if (view === "kirim") { readForm(); renderForm(); renderSend(); }
+    if (view === "ulasan") loadPublicReviews();
     scrollTo(0, 0);
   }
 
@@ -212,7 +213,37 @@
     $("starLab").textContent = n ? n + " bintang · " + STAR_TXT[n] : "Ketuk bintang";
   }
   function revMsg(html, err) { $("revMsg").innerHTML = html; $("revMsg").className = "revmsg" + (err ? " err" : ""); }
+  /* Ulasan semua pelanggan di bawah formulir: rata-rata, persentase & jumlah per bintang, daftar terbaru di atas. */
+  var PUB_STEP = 20, pubAll = [], pubShown = 0;
+  function starTxt(n) { return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n); }
+  function renderPubList() {
+    $("pubList").innerHTML = pubAll.slice(0, pubShown).map(function (r) {
+      var name = r.name || "Anonim", when = r.at ? new Date(r.at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "";
+      return '<article class="pubrev"><div class="top"><span class="av" aria-hidden="true">' + esc(name.charAt(0).toUpperCase()) + '</span>' +
+        '<div class="who"><b>' + esc(name) + '</b><span aria-label="' + r.stars + ' bintang">' + starTxt(r.stars) + '</span></div><time>' + when + "</time></div>" +
+        (r.text ? "<p>" + esc(r.text) + "</p>" : "") + "</article>";
+    }).join("") + (pubShown < pubAll.length ? '<button type="button" class="btn ghost sm" id="pubMore">Lihat ulasan lainnya (' + (pubAll.length - pubShown) + ')</button>' : "");
+  }
+  function loadPublicReviews() {
+    Store.listReviews().then(function (list) {
+      pubAll = list.filter(function (r) { return r.stars >= 1 && r.stars <= 5; }); pubShown = PUB_STEP;
+      if (!pubAll.length) { $("pubSum").innerHTML = '<p class="muted">Belum ada ulasan. Jadilah yang pertama!</p>'; $("pubList").innerHTML = ""; return; }
+      var sum = 0, cnt = [0, 0, 0, 0, 0, 0], n = pubAll.length;
+      pubAll.forEach(function (r) { sum += r.stars; cnt[r.stars]++; });
+      var avg = sum / n;
+      $("pubSum").innerHTML = '<div class="pubavg"><b>' + avg.toFixed(1).replace(".", ",") + "</b><span>" + starTxt(Math.round(avg)) + "</span><small>" + n + " ulasan</small></div>" +
+        '<div class="pubbars">' + [5, 4, 3, 2, 1].map(function (s) {
+          var pct = Math.round(cnt[s] / n * 100);
+          return "<div><span>" + s + '★</span><i><em style="width:' + pct + '%"></em></i><small>' + pct + "% · " + cnt[s] + "</small></div>";
+        }).join("") + "</div>";
+      renderPubList();
+    }).catch(function (e) {
+      $("pubSum").innerHTML = '<p class="muted">' + (e.status === 403 ? "Ulasan belum bisa ditampilkan." : "Gagal memuat ulasan. Periksa koneksi internet.") + "</p>";
+      $("pubList").innerHTML = "";
+    });
+  }
   function initReview() {
+    $("pubList").addEventListener("click", function (e) { if (e.target.closest("#pubMore")) { pubShown += PUB_STEP; renderPubList(); } });
     $("stars").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) { setStars(+b.dataset.v); revMsg(""); } });
     $("revName").value = o.name;
     $("revForm").addEventListener("submit", function (e) {
@@ -221,7 +252,7 @@
       if (!r.stars) { revMsg("Pilih bintang dulu (1–5).", true); return; }
       $("revSend").disabled = true; revMsg("Mengirim…");
       Store.sendReview(r).then(function () {
-        $("revForm").hidden = true; $("revThanks").hidden = false; revMsg("");
+        $("revForm").hidden = true; $("revThanks").hidden = false; revMsg(""); loadPublicReviews();
       }).catch(function () {
         // Cadangan: kirim lewat WhatsApp admin bila penyimpanan gagal (offline / belum disetel)
         var wa = adminWa("Ulasan aplikasi Agi Mas: " + "★".repeat(r.stars) + " (" + r.stars + "/5)\n" + (r.text || "-") + (r.name ? "\n— " + r.name : ""));

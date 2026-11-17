@@ -62,7 +62,9 @@
     }).then(json);
   }
   function listReviews(token) {
-    return fetch(colUrl() + "?pageSize=300", { headers: { Authorization: "Bearer " + token }, cache: "no-store" }).then(json).then(function (r) {
+    if (!on()) return Promise.reject(new Error("Firebase belum disetel"));
+    var opt = token ? { headers: { Authorization: "Bearer " + token }, cache: "no-store" } : { cache: "no-store" };
+    return fetch(colUrl() + "?pageSize=300" + (token ? "" : "&key=" + C.firebaseApiKey), opt).then(json).then(function (r) {
       return (r.documents || []).map(function (d) {
         var f = d.fields || {};
         return { id: d.name, stars: Number((f.stars || {}).integerValue) || 0, text: (f.text || {}).stringValue || "", name: (f.name || {}).stringValue || "", at: d.createTime };

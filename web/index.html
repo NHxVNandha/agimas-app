@@ -131,7 +131,7 @@
   <!-- Ulasan: rating, kritik & saran -->
   <section id="v-ulasan" class="view" hidden>
     <h2 class="headline">Bagaimana<br>pengalamanmu?</h2>
-    <p class="muted lead">Beri bintang dan kritik/saran. Masukanmu dibaca langsung oleh admin Agimas.</p>
+    <p class="muted lead">Beri bintang dan kritik/saran. Masukanmu dibaca admin Agimas dan tampil untuk pelanggan lain.</p>
     <form class="card" id="revForm" novalidate>
       <div class="stars" id="stars" role="radiogroup" aria-label="Beri bintang 1 sampai 5">
         <button type="button" role="radio" aria-checked="false" data-v="1" aria-label="1 bintang"><svg class="i"><use href="#i-star"/></svg></button>
@@ -142,16 +142,20 @@
       </div>
       <p class="starlab" id="starLab">Ketuk bintang</p>
       <div class="field"><label for="revText">Kritik &amp; saran</label><textarea id="revText" rows="4" maxlength="1000" placeholder="Ceritakan pengalamanmu, apa yang perlu diperbaiki…"></textarea></div>
-      <div class="field"><label for="revName">Nama <span class="muted">(opsional)</span></label><input id="revName" maxlength="60" autocomplete="name" placeholder="Boleh dikosongkan"></div>
+      <div class="field"><label for="revName">Nama <span class="muted">(opsional)</span></label><input id="revName" maxlength="60" autocomplete="name" placeholder="Kosongkan untuk tampil sebagai Anonim"></div>
       <button class="btn full" type="submit" id="revSend">Kirim ulasan</button>
       <p class="revmsg" id="revMsg" aria-live="polite"></p>
     </form>
     <div class="card thanks" id="revThanks" hidden>
       <div class="thanks-ic" aria-hidden="true"><svg class="i"><use href="#i-star"/></svg></div>
       <h3>Terima kasih!</h3>
-      <p class="muted">Ulasanmu sudah terkirim ke admin Agimas.</p>
+      <p class="muted">Ulasanmu sudah terkirim dan tampil di bawah.</p>
       <button type="button" class="btn ghost sm" id="revAgain">Tulis ulasan lagi</button>
     </div>
+
+    <h3 class="pubhead">Ulasan pelanggan</h3>
+    <div class="card pubsum" id="pubSum"><p class="muted">Memuat ulasan…</p></div>
+    <div id="pubList"></div>
   </section>
 
   <!-- Bantuan: semua informasi dari website -->

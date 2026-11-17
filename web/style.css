@@ -381,6 +381,27 @@ input[type=range] { padding: 0; height: 28px; border: 0; background: none; accen
 .newsdlg #newsNote { margin-top: 14px; }
 .newsdlg #newsLater { margin-top: 8px; }
 .newsprog { margin-top: 16px; }
+/* Ulasan pelanggan di tab Ulasan: ringkasan bintang + daftar (nama kosong = Anonim) */
+.pubhead { margin: 26px 4px 10px; font-size: 1.05rem; color: var(--ink); }
+.pubsum { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.pubavg { text-align: center; min-width: 96px; }
+.pubavg b { display: block; font-size: 2.4rem; line-height: 1; color: var(--ink); }
+.pubavg span { color: #f5b301; font-size: 1rem; letter-spacing: 2px; }
+.pubavg small { display: block; color: var(--muted); font-size: .76rem; margin-top: 2px; }
+.pubbars { flex: 1; min-width: 170px; display: grid; gap: 4px; font-size: .76rem; color: var(--muted); }
+.pubbars div { display: grid; grid-template-columns: 24px 1fr 62px; align-items: center; gap: 8px; }
+.pubbars small { text-align: right; white-space: nowrap; font-size: .74rem; }
+.pubbars i { display: block; height: 8px; border-radius: 99px; background: #eef2f7; overflow: hidden; }
+.pubbars em { display: block; height: 100%; background: #f5b301; border-radius: 99px; }
+.pubrev { background: #fff; border-radius: 18px; padding: 14px 16px; margin-top: 10px; box-shadow: 0 1px 2px rgba(11, 37, 69, .05); }
+.pubrev .top { display: flex; align-items: center; gap: 10px; }
+.pubrev .av { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--t-blue); color: var(--brand-dark); font-weight: 800; font-size: .85rem; flex: none; }
+.pubrev .who { flex: 1; min-width: 0; }
+.pubrev .who b { display: block; font-size: .9rem; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pubrev .who span { color: #f5b301; font-size: .82rem; letter-spacing: 1px; }
+.pubrev time { color: var(--muted); font-size: .74rem; flex: none; }
+.pubrev p { margin-top: 8px; white-space: pre-wrap; word-break: break-word; font-size: .9rem; color: #33475e; }
+#pubMore { margin: 12px auto 0; display: flex; }
 .newsprog .track { height: 10px; border-radius: 99px; background: var(--t-blue); overflow: hidden; }
 .newsprog .track i { display: block; height: 100%; width: 0; background: var(--brand); border-radius: 99px; transition: width .2s; }
 .newsprog p { margin-top: 8px; font-size: .85rem; color: #33475e; }
