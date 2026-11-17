@@ -1,6 +1,7 @@
 /* Peta gratis tanpa API key:
    - Peta vektor: MapLibre GL + OpenFreeMap (gaya "liberty", lengkap dengan patokan).
-   - Saran pencarian saat mengetik: Photon (komoot) — jalan, kelurahan, kecamatan, tempat.
+   - Saran pencarian saat mengetik: Photon (komoot) — jalan, kelurahan, kecamatan, tempat
+     + places.json (toko & usaha dari Overture Maps, dibuat tools/build-places.py) yang dicari di HP.
    - Alamat titik pin: Nominatim reverse. Rute: OSRM.
    - Wilayah layanan: window.REGION (region.js). Di luar wilayah diberi abu-abu dan tidak bisa dipilih.
    shortcut: server publik OSM/Photon/Nominatim/OSRM punya batas pemakaian wajar.
@@ -57,7 +58,29 @@
     }).catch(function () { return { km: Pricing.straightKm(a, b) * 1.3, approx: true }; });
   }
 
-  /* ---------- Saran pencarian (Photon) ---------- */
+  /* ---------- Toko & usaha (places.json, Overture Maps) ---------- */
+  var placesP;
+  function norm(s) { return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
+  function places() {
+    return placesP || (placesP = fetch("places.json").then(json).then(function (d) {
+      return d.p.map(function (x) { var n = norm(x[0]); return { n: n, k: n.replace(/ /g, ""), name: x[0], pt: { lat: x[1], lng: x[2] }, cat: d.c[x[3]], loc: d.l[x[4]] }; });
+    }).catch(function () { placesP = null; return []; })); // gagal: coba lagi pada pencarian berikutnya
+  }
+  /* Semua kata harus ada di nama ("superindo" juga cocok dengan "Super Indo"); awalan cocok didahulukan, lalu yang terdekat. */
+  function findPlaces(list, q, c) {
+    var nq = norm(q), words = nq.split(" "), kq = nq.replace(/ /g, ""), hits = [];
+    if (!kq) return hits;
+    list.forEach(function (x) {
+      if (x.k.indexOf(kq) < 0 && !words.every(function (w) { return x.n.indexOf(w) >= 0; })) return;
+      hits.push({ x: x, s: (x.n.indexOf(nq) === 0 ? 0 : 1000) + Pricing.straightKm(c, x.pt) });
+    });
+    return hits.sort(function (a, b) { return a.s - b.s; }).slice(0, 6).map(function (h) {
+      var x = h.x;
+      return { title: x.name, sub: uniq([x.cat || "Tempat", x.loc]).join(" · "), pt: x.pt, kind: "Tempat", label: uniq([x.name, x.loc]).join(", ") };
+    });
+  }
+
+  /* ---------- Saran pencarian (Photon + toko & usaha) ---------- */
   var KIND = {
     village: "Desa/Kelurahan", suburb: "Kelurahan", neighbourhood: "Lingkungan", hamlet: "Dusun", quarter: "Kelurahan",
     city: "Kota", town: "Kecamatan", county: "Kabupaten", district: "Kecamatan", municipality: "Kecamatan", state: "Provinsi"
@@ -73,9 +96,12 @@
     var seq = ++sugSeq, c = map ? map.getCenter() : MADIUN;
     showSug([90, 70, 80].map(function (w) { return '<li class="sk-item" aria-hidden="true"><span class="sk sk-ic"></span><div><span class="sk skt" style="width:' + w + '%"></span><span class="sk skt" style="width:' + (w - 30) + '%;height:.7em"></span></div></li>'; }).join("") + '<li class="sr">Mencari…</li>');
     var url = PHOTON + "?limit=10&q=" + encodeURIComponent(q) + "&lat=" + c.lat + "&lon=" + c.lng + (R ? "&bbox=" + R.bbox.join(",") : "");
-    fetch(url).then(json).then(function (fc) {
+    var photon = fetch(url).then(json).catch(function () { return null; });
+    Promise.all([photon, places()]).then(function (res) {
       if (seq !== sugSeq) return;
-      var seen = {}, items = fc.features.map(function (f) {
+      var fc = res[0], local = findPlaces(res[1], q, c);
+      if (!fc && !local.length) throw new Error("offline");
+      var seen = {}, items = (fc ? fc.features : []).map(function (f) {
         var p = f.properties, pt = { lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0] }, kind = kindOf(p);
         var title = p.name || (p.street ? p.street + (p.housenumber ? " " + p.housenumber : "") : "");
         var sub = uniq([kind, p.name && p.street ? p.street : "", p.locality || p.district, p.city || p.county]).filter(function (x) { return x !== title; }).join(" · ");
@@ -85,7 +111,13 @@
         var key = x.title + "|" + x.sub;
         if (!x.title || seen[key] || !inRegion(x.pt)) return false;
         seen[key] = 1; return true;
-      }).slice(0, 7);
+      });
+      // Jalan/wilayah dari Photon di atas, lalu toko & usaha; tempat Photon yang sama dengan toko (±150 m) dibuang.
+      var areas = items.filter(function (x) { return x.kind !== "Tempat"; }).slice(0, 3);
+      var spots = items.filter(function (x) {
+        return x.kind === "Tempat" && !local.some(function (l) { return norm(l.title) === norm(x.title) && Pricing.straightKm(l.pt, x.pt) < 0.15; });
+      });
+      items = areas.concat(local, spots).slice(0, 10);
       pending = items;
       showSug(items.length ? items.map(function (x, i) {
         return '<li><button type="button" data-i="' + i + '"><svg class="i"><use href="#i-pin"/></svg><span><b>' + esc(x.title) + '</b><small>' + esc(x.sub) + '</small></span></button></li>';
@@ -149,7 +181,7 @@
       maxBounds: b ? [[b[0] - pad, b[1] - pad], [b[2] + pad, b[3] + pad]] : undefined,
       dragRotate: false, pitchWithRotate: false, touchPitch: false, attributionControl: false
     });
-    map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-left");
+    map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: "Data toko &copy; Overture Maps Foundation" }), "bottom-left");
     map.touchZoomRotate.disableRotation();
     map.on("load", function () {
       $("mapLoading").classList.add("done");
