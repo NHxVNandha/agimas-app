@@ -61,6 +61,7 @@
     <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><path d="M11.53 2.3a.53.53 0 0 1 .95 0l2.31 4.68a2.12 2.12 0 0 0 1.6 1.16l5.16.76a.53.53 0 0 1 .3.9l-3.74 3.64a2.12 2.12 0 0 0-.61 1.88l.88 5.14a.53.53 0 0 1-.77.56l-4.62-2.43a2.12 2.12 0 0 0-1.97 0L6.4 21.01a.53.53 0 0 1-.77-.56l.88-5.14a2.12 2.12 0 0 0-.61-1.88L2.16 9.8a.53.53 0 0 1 .3-.91l5.16-.75a2.12 2.12 0 0 0 1.6-1.16z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
     <symbol id="i-food" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></symbol>
     <symbol id="i-basket" viewBox="0 0 24 24"><path d="m15 11-1 9M19 11l-4-7M2 11h20M3.5 11l1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4M4.5 15.5h15M5 11l4-7M9 11l1 9"/></symbol>
     <symbol id="i-brush" viewBox="0 0 24 24"><path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></symbol>
@@ -224,16 +225,22 @@
       <div class="row"><span class="ti blue"><svg class="i"><use href="#i-help"/></svg></span><b class="grow">Tentang aplikasi</b><span class="chip ver" id="aboutVer"></span></div>
       <ul class="rules">
         <li>Pesanan dikirim lewat WhatsApp admin; aplikasi tidak menyimpan data pribadi Anda selain nama di HP ini.</li>
-        <li>Peta, pencarian alamat, dan jarak memakai data OpenStreetMap. Jalan yang belum ada di peta: geser pin ke lokasi, lalu ketik alamat sendiri.</li>
+        <li>Peta, pencarian alamat, dan jarak memakai data OpenStreetMap; data toko & usaha dari Overture Maps. Jalan yang belum ada di peta: geser pin ke lokasi, lalu ketik alamat sendiri.</li>
+        <li>Aplikasi memberi tahu bila ada versi baru beserta daftar fiturnya.</li>
         <li>Data driver dan tarif diperbarui admin dan tampil saat aplikasi dibuka.</li>
       </ul>
+      <div class="acts updacts">
+        <button type="button" class="btn ghost sm" id="updCheck"><svg class="i"><use href="#i-refresh"/></svg>Cek pembaruan</button>
+        <button type="button" class="btn ghost sm" id="newsOpen"><svg class="i"><use href="#i-star"/></svg>Yang baru</button>
+      </div>
+      <p class="muted small" id="updMsg" aria-live="polite"></p>
       <details class="stackbox">
         <summary class="row"><span class="grow">Teknologi yang digunakan</span><svg class="i dim chev" aria-hidden="true"><use href="#i-right"/></svg></summary>
         <dl class="stack">
           <dt>Tampilan</dt><dd>HTML, CSS, dan JavaScript tanpa framework · font Plus Jakarta Sans · ikon Lucide</dd>
           <dt>Aplikasi Android</dt><dd>Capacitor 7 (WebView) · Android 6.0 ke atas</dd>
           <dt>Peta</dt><dd>MapLibre GL JS 4.7 + OpenFreeMap, data OpenStreetMap</dd>
-          <dt>Cari alamat</dt><dd>Photon (pencarian) · Nominatim (alamat dari titik peta)</dd>
+          <dt>Cari alamat</dt><dd>Photon (pencarian) · Nominatim (alamat dari titik peta) · Overture Maps (toko & usaha)</dd>
           <dt>Rute & jarak</dt><dd>OSRM (rute jalan tercepat)</dd>
           <dt>Cuaca</dt><dd>Open-Meteo (tanda kemungkinan hujan)</dd>
           <dt>Data & admin</dt><dd>Firebase Firestore & Authentication (paket gratis Spark)</dd>
@@ -347,6 +354,20 @@
     <button type="button" class="btn full" id="mapOk">Pakai lokasi ini</button>
   </div>
 </div>
+
+<div class="updbar" id="updBar" role="status" hidden>
+  <span class="grow">Versi <b id="updVer"></b> sudah tersedia</span>
+  <button type="button" class="btn sm" id="updNow">Perbarui</button>
+</div>
+<dialog class="newsdlg" id="newsDlg" aria-labelledby="newsTitle">
+  <div class="newshead"><span class="ti blue"><svg class="i"><use href="#i-star"/></svg></span>
+  <h2 id="newsTitle">Yang baru di Agi Mas</h2></div>
+  <div id="newsList"></div>
+  <p class="muted small" id="newsNote" hidden>Pembaruan dipasang di atas versi lama. Data di aplikasi tidak hilang.</p>
+  <div class="newsprog" id="newsProg" hidden><div class="track"><i id="newsBar"></i></div><p id="newsProgTxt" aria-live="polite"></p></div>
+  <button type="button" class="btn full" id="newsOk">Oke, mengerti</button>
+  <button type="button" class="btn ghost full" id="newsLater" hidden>Nanti saja</button>
+</dialog>
 
 <script src="config.js"></script>
 <script src="pricing.js"></script>

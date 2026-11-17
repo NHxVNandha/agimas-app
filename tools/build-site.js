@@ -16,7 +16,7 @@ if (!apks.length) throw new Error("Tidak ada APK di release/. Jalankan npm run a
 const latest = apks[apks.length - 1];
 fs.copyFileSync(path.join(root, "release", latest), path.join(dist, "unduh", "AgiMas.apk"));
 
-// Header Netlify: tipe file APK, panel admin tidak diindeks mesin pencari, service worker selalu dicek ulang.
+// Header Netlify: tipe file APK, panel admin tidak diindeks mesin pencari, service worker & versi selalu dicek ulang.
 fs.writeFileSync(path.join(dist, "_headers"), [
   "/unduh/AgiMas.apk",
   "  Content-Type: application/vnd.android.package-archive",
@@ -27,6 +27,10 @@ fs.writeFileSync(path.join(dist, "_headers"), [
   "/sw.js",
   "  Cache-Control: no-cache",
   "/data.json",
+  "  Cache-Control: no-cache",
+  // APK membaca versi terbaru & catatan pembaruan dari sini (beda asal: https://localhost), jadi perlu izin CORS.
+  "/version.js",
+  "  Access-Control-Allow-Origin: *",
   "  Cache-Control: no-cache",
   ""
 ].join("\n"));

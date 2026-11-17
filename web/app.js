@@ -231,6 +231,121 @@
     $("revAgain").addEventListener("click", function () { setStars(0); $("revText").value = ""; $("revThanks").hidden = true; $("revForm").hidden = false; });
   }
 
+  /* ---------- Pembaruan aplikasi ----------
+     Web/iPhone: file diambil dari server, jadi versi baru cukup dimuat ulang.
+     APK: tampilan tersimpan di dalam APK (tanpa badge Netlify). Versi baru dicek di server; pengguna melihat daftar fitur
+     barunya lalu mengunduh APK terbaru langsung dari aplikasi (dipasang di atas versi lama, data tetap).
+     "Yang baru" tampil sekali setelah versi berubah. */
+  var VER = window.AGIMAS_VERSION || "0", lastCheck = 0, remote = null;
+  var SITE = "https://solusiagimas.netlify.app/";
+  var NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  var OLD_APK = NATIVE && location.hostname === "solusiagimas.netlify.app"; // APK 3.0 memuat dari server: minta pasang APK baru
+  // APK 3.2+: plugin native AppUpdate mengunduh APK di dalam aplikasi dengan progres (AppUpdatePlugin.java).
+  var IN_APP = NATIVE && (window.Capacitor.PluginHeaders || []).some(function (p) { return p.name === "AppUpdate"; });
+  var waitPerm = false, NOTE = "";
+  function newer(a, b) { a = String(a).split("."); b = String(b).split("."); for (var i = 0; i < 3; i++) { var d = (+a[i] || 0) - (+b[i] || 0); if (d) return d > 0; } return false; }
+  /* list: catatan versi; dl: versi yang bisa diunduh (APK) atau kosong (hanya info). */
+  function showNews(list, dl) {
+    var dlg = $("newsDlg");
+    list = list.slice(0, 3);
+    if (!list.length || !dlg.showModal) return;
+    $("newsTitle").textContent = dl ? "Versi " + dl + " sudah tersedia" : "Yang baru di Agi Mas";
+    $("newsList").innerHTML = list.map(function (c) {
+      return '<section><h3>Versi ' + esc(c.v) + (c.v === VER && !dl ? ' <span class="chip">Sekarang</span>' : "") + "</h3><ul>" + c.items.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ul></section>";
+    }).join("");
+    $("newsOk").textContent = dl ? "Unduh & pasang" : "Oke, mengerti";
+    $("newsOk").dataset.dl = dl ? "1" : "";
+    $("newsLater").hidden = !dl;
+    $("newsNote").hidden = !dl;
+    $("newsNote").textContent = NOTE || (NOTE = $("newsNote").textContent);
+    $("newsProg").hidden = true; $("newsOk").disabled = false;
+    if (!dlg.open) dlg.showModal();
+  }
+  function localNews(since) { return (window.AGIMAS_CHANGES || []).filter(function (c) { return !since || newer(c.v, since); }); }
+  function remoteNews() { return remote.changes.filter(function (c) { return OLD_APK || newer(c.v, VER); }); }
+  function prog(text, pct) { $("newsProg").hidden = false; $("newsBar").style.width = pct + "%"; $("newsProgTxt").textContent = text; }
+  function mb(n) { return (n / 1048576).toFixed(1).replace(".", ","); }
+  /* Unduh di dalam aplikasi lalu buka layar pasang Android. Izin "pasang aplikasi" diminta sekali (Android 8+). */
+  function inAppUpdate() {
+    var C = window.Capacitor;
+    C.nativePromise("AppUpdate", "canInstall", {}).then(function (r) {
+      if (!r.allowed) {
+        waitPerm = true;
+        $("newsNote").hidden = false;
+        $("newsNote").textContent = "Langkah sekali saja: nyalakan \"Izinkan dari sumber ini\" untuk Agi Mas, lalu kembali ke aplikasi. Unduhan mulai otomatis.";
+        C.nativePromise("AppUpdate", "openInstallSettings", {});
+        return;
+      }
+      $("newsOk").disabled = true; $("newsOk").textContent = "Mengunduh…"; $("newsLater").hidden = true; $("newsNote").hidden = true;
+      prog("Mengunduh… 0%", 0);
+      C.nativeCallback("AppUpdate", "download", { url: SITE + "unduh/AgiMas.apk" }, function (d, err) {
+        if (err || !d) {
+          prog("Gagal: " + ((err && err.message) || "periksa koneksi internet") + ".", 0);
+          $("newsOk").disabled = false; $("newsOk").textContent = "Coba lagi"; $("newsLater").hidden = false; return;
+        }
+        if (d.done) {
+          prog("Unduhan selesai. Ketuk \"Update\" lalu \"Buka\" di layar pemasangan.", 100);
+          $("newsOk").disabled = false; $("newsOk").textContent = "Pasang lagi"; $("newsLater").hidden = false; return;
+        }
+        var pct = d.total > 0 ? Math.round(d.loaded / d.total * 100) : 0;
+        prog("Mengunduh… " + (d.total > 0 ? pct + "% · " + mb(d.loaded) + " / " + mb(d.total) + " MB" : mb(d.loaded) + " MB"), pct);
+      });
+    }).catch(function () { prog("Gagal memulai pembaruan.", 0); });
+  }
+  function checkUpdate(manual) {
+    lastCheck = Date.now();
+    if (manual) { $("updMsg").textContent = "Mengecek…"; $("updCheck").disabled = true; }
+    return fetch((NATIVE ? SITE : "") + "version.js?t=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (t) {
+      var m = /AGIMAS_VERSION\s*=\s*"([^"]+)"/.exec(t), c = /AGIMAS_CHANGES\s*=\s*(\[[\s\S]*\]);/.exec(t), changes = [];
+      try { changes = c ? JSON.parse(c[1]) : []; } catch (e) {}
+      remote = { v: m && m[1], changes: changes };
+      if (remote.v && (newer(remote.v, VER) || OLD_APK)) {
+        $("updVer").textContent = remote.v; $("updBar").hidden = false;
+        if (manual) $("updMsg").textContent = "Versi " + remote.v + " tersedia. Tekan Perbarui di atas.";
+      } else if (manual) $("updMsg").textContent = "Sudah versi terbaru (" + VER + ").";
+    }).catch(function () { if (manual) $("updMsg").textContent = "Gagal mengecek. Periksa koneksi internet."; })
+      .then(function () { if (manual) $("updCheck").disabled = false; });
+  }
+  function initUpdate() {
+    $("updCheck").addEventListener("click", function () { checkUpdate(true); });
+    $("newsOpen").addEventListener("click", function () { showNews(localNews(""), ""); });
+    $("newsLater").addEventListener("click", function () { $("newsDlg").close(); });
+    $("newsOk").addEventListener("click", function () {
+      if (this.dataset.dl && IN_APP) { inAppUpdate(); return; }
+      $("newsDlg").close();
+      // Alamat di luar aplikasi dibuka Capacitor di browser HP, yang mengunduh APK-nya. APK 3.0 menganggap alamat Netlify
+      // https sebagai miliknya sendiri, jadi dipakai http (Netlify mengalihkan ke https di browser).
+      if (this.dataset.dl) location.href = (OLD_APK ? SITE.replace("https:", "http:") : SITE) + "unduh/AgiMas.apk";
+    });
+    $("updNow").addEventListener("click", function () {
+      if (NATIVE) { var l = remote ? remoteNews() : []; showNews(l.length ? l : [{ v: remote.v, items: ["Perbaikan dan penyempurnaan."] }], remote.v); return; }
+      // Web: hapus salinan lama di HP lalu muat ulang, supaya semua file diambil baru dari server.
+      $("updNow").disabled = true; $("updNow").textContent = "Memperbarui…";
+      var wipe = window.caches ? caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); }) : Promise.resolve();
+      wipe.catch(function () {}).then(function () { location.reload(); });
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) return;
+      // Kembali dari pengaturan izin: lanjutkan unduhan bila izin sudah dinyalakan.
+      if (waitPerm) {
+        waitPerm = false;
+        window.Capacitor.nativePromise("AppUpdate", "canInstall", {}).then(function (r) {
+          if (r.allowed) inAppUpdate(); else $("newsNote").textContent = "Izin belum dinyalakan. Ketuk Unduh & pasang untuk mencoba lagi.";
+        });
+      }
+      if (Date.now() - lastCheck > 10 * 60 * 1000) checkUpdate(false);
+    });
+    var seen = "";
+    try { seen = localStorage.getItem("agimas.seenVersion") || ""; localStorage.setItem("agimas.seenVersion", VER); } catch (e) { seen = VER; }
+    function after() {
+      // Belum pernah tercatat (pengguna baru / dari APK lama): tampilkan catatan versi ini saja.
+      var prev = (window.AGIMAS_CHANGES || [])[1];
+      if (seen !== VER && !OLD_APK) showNews(localNews(seen || (prev ? prev.v : "")), "");
+      checkUpdate(false);
+    }
+    if (document.getElementById("splash")) window.addEventListener("agimas-splash-done", after); else after();
+  }
+
   function start(res) {
     META = res; D = res.data; T = D.tarif;
     T.weights.forEach(function (w, i) { var op = document.createElement("option"); op.value = i; op.textContent = w.label + (w.add ? " (+" + P.rp(w.add) + ")" : ""); $("w").appendChild(op); });
@@ -250,11 +365,12 @@
       function bad() { $("copyMsg").textContent = "Tekan lama nomor untuk menyalin."; }
       try { navigator.clipboard.writeText("+" + D.admin.phone).then(good, bad); } catch (e) { bad(); }
     });
-    initReview();
+    initReview(); initUpdate();
     function goBack() { history.length > 1 ? history.back() : (location.hash = ""); }
     $("back").addEventListener("click", goBack);
     // Tombol back HP (dipanggil MainActivity di APK). true = kembali ke layar sebelumnya; false = di Beranda, aplikasi ditutup.
     window.agimasBack = function () {
+      if ($("newsDlg").open) { $("newsDlg").close(); return true; }
       if (location.hash.length > 1 || !$("mapSheet").hidden) { goBack(); return true; }
       return false;
     };
@@ -275,5 +391,5 @@
   });
 
   // Di APK (Capacitor) file sudah ada di dalam aplikasi, service worker tidak perlu.
-  if ("serviceWorker" in navigator && !window.Capacitor) navigator.serviceWorker.register("sw.js");
+  if ("serviceWorker" in navigator && !NATIVE) navigator.serviceWorker.register("sw.js");
 })();

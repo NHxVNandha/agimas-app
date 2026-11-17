@@ -7,6 +7,7 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        registerPlugin(AppUpdatePlugin.class); // pembaruan di dalam aplikasi (harus sebelum super.onCreate)
         super.onCreate(savedInstanceState);
         // Tombol back HP: tanya aplikasi web dulu (window.agimasBack di app.js).
         // true = sudah kembali ke layar sebelumnya; selain itu (sudah di Beranda) = tutup aplikasi.

@@ -11,7 +11,7 @@
   document.getElementById("splashVer").textContent = "Versi " + (window.AGIMAS_VERSION || "-");
 
   function setBar(f, msg) { bar.style.width = Math.round(f * 100) + "%"; if (msg) status.textContent = msg; }
-  function remove() { if (sp.parentNode) sp.parentNode.removeChild(sp); }
+  function remove() { if (sp.parentNode) sp.parentNode.removeChild(sp); window.dispatchEvent(new Event("agimas-splash-done")); }
   function fade() { setBar(1, "Siap"); setTimeout(function () { sp.classList.add("done"); setTimeout(remove, 450); }, 150); }
   /* Animasi selesai: tunggu data (maks. MAX_WAIT sejak dibuka), lalu memudar. */
   function finish() {

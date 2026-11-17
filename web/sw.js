@@ -5,9 +5,15 @@ self.addEventListener("install", function (e) { e.waitUntil(caches.open(CACHE).t
 self.addEventListener("activate", function (e) {
   e.waitUntil(caches.keys().then(function (ks) { return Promise.all(ks.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); })); }));
 });
+// Internet lambat (> 4 detik): pakai salinan tersimpan dulu agar aplikasi tetap cepat terbuka. Cek versi (no-store) tidak disimpan.
 self.addEventListener("fetch", function (e) {
-  if (e.request.method !== "GET" || !e.request.url.startsWith(self.location.origin)) return;
-  e.respondWith(fetch(e.request).then(function (r) {
-    var copy = r.clone(); caches.open(CACHE).then(function (c) { c.put(e.request, copy); }); return r;
-  }).catch(function () { return caches.match(e.request); }));
+  if (e.request.method !== "GET" || !e.request.url.startsWith(self.location.origin) || e.request.cache === "no-store") return;
+  e.respondWith(caches.match(e.request).then(function (hit) {
+    var net = fetch(e.request).then(function (r) {
+      if (r.ok) { var copy = r.clone(); caches.open(CACHE).then(function (c) { c.put(e.request, copy); }); }
+      return r;
+    });
+    if (!hit) return net;
+    return Promise.race([net.catch(function () { return hit; }), new Promise(function (ok) { setTimeout(function () { ok(hit); }, 4000); })]);
+  }));
 });
