@@ -75,6 +75,32 @@ assert.ok(tn.includes("*PERKIRAAN HARGA: Rp 12.500*") && tn.includes("- Tambahan
 assert.ok(tn.includes("Sudah termasuk tambahan malam") && tn.includes("kemungkinan hujan di titik jemput"));
 assert.ok(!P.waText(T, "A", { svc: "orang", km: 6, w: 0 }).includes("hujan di titik jemput"));
 
+// menu mitra & stok
+const MT = { id: "lk", name: "Lingkar Kopi", menu: [
+  { id: "a", name: "Nebula", price: 15000, available: true, stock: null },
+  { id: "b", name: "Kopi Susu", price: 8000, available: true, stock: 3 },
+  { id: "c", name: "Teh", price: 5000, available: false, stock: null },
+  { id: "e", name: "Roti", price: 7000, available: true, stock: 0 }] };
+assert.ok(!P.soldOut(MT.menu[0]) && !P.soldOut(MT.menu[1]) && P.soldOut(MT.menu[2]) && P.soldOut(MT.menu[3]));
+const cart = P.cartOf(MT, { b: 2, a: 1, c: 0 });
+assert.deepStrictEqual(cart.map(c => c.id + c.qty), ["a1", "b2"]);           // urut sesuai menu, jumlah 0 dibuang
+assert.strictEqual(P.menuTotal(cart), 31000);
+assert.deepStrictEqual(P.checkCart(MT, { a: 9, b: 3 }), []);                  // stok tidak dihitung / pas
+const bad = P.checkCart(MT, { b: 4, c: 1, e: 1, zz: 1 });
+assert.deepStrictEqual(bad.map(x => x.id + ":" + x.why), ["b:sisa 3", "c:habis", "e:habis", "zz:tidak dijual lagi"]);
+const tm = P.waText(T, "A", { svc: "beli", beliType: "makan", km: 2, w: 0, mitraName: "Lingkar Kopi", cart: cart, item: "" });
+assert.ok(tm.includes("*PESANAN MENU — LINGKAR KOPI*\n- 1x Nebula @ Rp 15.000 = Rp 15.000\n- 2x Kopi Susu @ Rp 8.000 = Rp 16.000\nSubtotal menu: *Rp 31.000*"));
+const ongkir = P.quote(T, "beli", 2, 0).total;
+assert.ok(tm.includes("*PERKIRAAN ONGKIR: " + P.rp(ongkir) + "*") && tm.includes("*TOTAL (menu + ongkir): " + P.rp(31000 + ongkir) + "*"));
+assert.ok(!tm.includes("Makanan/minuman yang dibeli"));                       // isian bebas kosong: tidak ditulis
+assert.ok(P.waText(T, "A", { svc: "beli", beliType: "makan", km: 2, w: 0, cart: cart, item: "es batu dipisah" }).includes("Pesanan tambahan: es batu dipisah"));
+assert.ok(!P.waText(T, "A", { svc: "beli", beliType: "makan", km: 2, w: 0, item: "x" }).includes("ONGKIR"));  // tanpa menu: seperti biasa
+d = clone(); d.mitra = [JSON.parse(JSON.stringify(MT))]; assert.strictEqual(P.validate(d), "");
+d.mitra[0].menu[0].price = -1; assert.ok(P.validate(d).includes("Harga Nebula"));
+d.mitra[0].menu[0].price = 15000; d.mitra[0].menu[1].stock = 2.5; assert.ok(P.validate(d).includes("Stok Kopi Susu"));
+d.mitra[0].menu[1].stock = 2; d.mitra[0].menu[2].name = ""; assert.ok(P.validate(d).includes("menu lingkar kopi ke-3"));
+d = clone(); d.mitra = [{ name: "", menu: [] }]; assert.ok(P.validate(d).includes("mitra ke-1"));
+
 console.log("semua tes lulus");
 
 // wilayah layanan

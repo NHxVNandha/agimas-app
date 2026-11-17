@@ -129,8 +129,14 @@ b { color: var(--ink); font-weight: 700; }
 .hlc.b { background: linear-gradient(135deg, #cfe5ff, #a9d0ff); }
 .hlc.c { background: linear-gradient(135deg, #d6f5e3, #b6ebcd); }
 .hlc.d { background: linear-gradient(135deg, #ece6ff, #d9cdfc); }
+.hlc.m { background: linear-gradient(135deg, #f8e7d2, #efcfa8); color: var(--ink); text-decoration: none; }
+.hlc.m small b { font-size: inherit; color: #7a4b1c; }
 .hlc.d b { font-size: 1.02rem; font-style: italic; }
-@media (min-width: 640px) { .hl { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); margin: 16px 0 0; padding: 0; overflow: visible; } .hldots { display: none; } }
+/* Titik penanda: posisi kartu yang sedang tampil, tanda bahwa kartu bisa digeser (hanya saat kartu digeser, di HP). */
+.hldots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.hldots i { width: 7px; height: 7px; border-radius: 99px; background: #c9d6e6; transition: width .25s, background .25s; }
+.hldots i.on { width: 20px; background: var(--brand); }
+@media (min-width: 640px) { .hl { grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin: 16px 0 0; padding: 0; overflow: visible; } .hldots { display: none; } }
 .feat.teal { background: #dff4f1; } .feat.gray { background: #eef2f7; }
 /* Pilihan Agi Beli */
 .lbl { font-weight: 700; color: var(--ink); font-size: .86rem; margin-bottom: 8px; }
@@ -410,3 +416,28 @@ input[type=range] { padding: 0; height: 28px; border: 0; background: none; accen
 .newsprog p { margin-top: 8px; font-size: .85rem; color: #33475e; }
 .hl.nudge .hlc { animation: hlnudge 1.6s ease-in-out; }
 @keyframes hlnudge { 0%, 100% { transform: none; } 30%, 55% { transform: translateX(-56px); } }
+
+/* Menu mitra di form Agi Beli: pilih jumlah, habis = abu-abu */
+.menubox { padding: 16px; }
+.mhd { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.mhd .ti { background: #f3e6d6; color: #7a4b1c; }
+.mhd b { display: block; font-size: 1.02rem; color: var(--ink); }
+.mhd small { color: var(--muted); font-size: .8rem; }
+.mcat { margin: 14px 2px 4px; font-size: .74rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.mitem { display: flex; align-items: center; gap: 12px; padding: 10px 2px; border-top: 1px solid var(--line); }
+.mitem:first-of-type { border-top: 0; }
+.mitem .grow { min-width: 0; }
+.mitem b { display: block; font-size: .94rem; color: var(--ink); }
+.mitem small { display: block; color: var(--muted); font-size: .78rem; line-height: 1.35; }
+.mprice { font-weight: 700; font-size: .86rem; color: var(--brand-dark); }
+.mstk { margin-left: 6px; padding: 1px 8px; border-radius: 99px; background: var(--t-yellow); color: #8a6200; font-size: .7rem; font-weight: 700; }
+.mitem.off b, .mitem.off .mprice { color: #9aa9bb; }
+.mitem.off .mstk { background: #eef2f7; color: var(--muted); }
+.qty { display: flex; align-items: center; gap: 4px; flex: none; }
+.qty button { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; color: var(--brand-dark); font: 800 1.05rem var(--font); line-height: 1; cursor: pointer; }
+.qty button:disabled { opacity: .35; cursor: default; }
+.qty output { min-width: 22px; text-align: center; font-weight: 800; color: var(--ink); }
+.qty.has button[data-q="1"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+.menumsg { margin-top: 8px; font-size: .84rem; font-weight: 600; color: #c0392b; }
+.menumsg:empty { display: none; }
+.menusum { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1.5px dashed var(--line); font-weight: 700; color: var(--ink); font-size: .9rem; }

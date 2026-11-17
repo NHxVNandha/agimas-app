@@ -80,6 +80,34 @@
   .rev .who2 { flex: 1; font-weight: 700; color: var(--ink); font-size: .9rem; }
   .rev time { color: var(--muted); font-size: .76rem; }
   .rev p { margin-top: 6px; white-space: pre-wrap; word-break: break-word; }
+  /* Mitra & menu */
+  .mcard { padding: 16px; margin-top: 12px; }
+  .mhead { display: flex; align-items: center; gap: 10px; }
+  .mhead .av { width: 40px; height: 40px; border-radius: 13px; background: #f3e6d6; color: #7a4b1c; }
+  .sw { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; font-weight: 700; font-size: .86rem; color: var(--ink); cursor: pointer; }
+  .sw input { width: 20px; height: 20px; accent-color: var(--brand); }
+  .mtools { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 16px 0 6px; }
+  .mtools b { font-size: .95rem; }
+  .mrow { border: 1.5px solid var(--line); border-radius: 16px; padding: 10px; margin-top: 8px; display: grid; gap: 8px; }
+  .mrow.habis { background: #f7f9fc; }
+  .mrow.habis .mname { color: var(--muted); text-decoration: line-through; }
+  .mr { display: grid; gap: 8px; align-items: center; }
+  .mr1 { grid-template-columns: 1fr 110px 36px; }
+  .mr2 { grid-template-columns: 120px 1fr; }
+  .mr3 { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .mrow input { padding: 9px 11px; font-size: .88rem; }
+  .mname { font-weight: 700; }
+  .stk { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; font-size: .78rem; color: var(--muted); }
+  .stk .sg { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .stk input { width: 66px; text-align: center; }
+  .stk button { min-width: 40px; min-height: 36px; border: 1.5px solid var(--line); background: #fff; border-radius: 10px; font: 700 .8rem var(--font); color: var(--ink); cursor: pointer; }
+  .avpills { display: flex; gap: 4px; }
+  .avpills button { min-height: 34px; padding: 0 12px; border: 1.5px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; font: 700 .76rem var(--font); cursor: pointer; }
+  .avpills button[aria-pressed=true][data-av="1"] { background: var(--t-green); border-color: #9fdcb6; color: #137a3f; }
+  .avpills button[aria-pressed=true][data-av="0"] { background: #fdecea; border-color: #f3b8b1; color: #c0392b; }
+  .stkinfo { font-size: .74rem; color: var(--muted); }
+  @media (max-width: 420px) { .mr1 { grid-template-columns: 1fr 92px 36px; } .mr2 { grid-template-columns: 1fr; } .atabs button { font-size: .8rem; } }
+  .atabs button { white-space: nowrap; }
   /* Form admin & tarif */
   .fgrid { display: grid; grid-template-columns: 1fr; gap: 12px; }
   @media (min-width: 700px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid .wide { grid-column: 1 / -1; } }
@@ -143,6 +171,7 @@
       <button type="button" role="tab" data-pane="pDriver" aria-selected="true">Driver <span id="tabCount"></span></button>
       <button type="button" role="tab" data-pane="pAdmin" aria-selected="false">Admin</button>
       <button type="button" role="tab" data-pane="pTarif" aria-selected="false">Tarif</button>
+      <button type="button" role="tab" data-pane="pMitra" aria-selected="false">Mitra</button>
       <button type="button" role="tab" data-pane="pUlasan" aria-selected="false">Ulasan</button>
     </div>
 
@@ -169,6 +198,14 @@
 
     <section class="pane" id="pTarif" hidden>
       <div class="tgrid" id="tarif"></div>
+    </section>
+
+    <section class="pane" id="pMitra" hidden>
+      <div class="phead">
+        <p class="muted small" style="flex:1;min-width:220px">Mitra yang <b>tampil di aplikasi</b> muncul di Beranda; pelanggan memilih menu, harga menu + ongkir dihitung otomatis. Stok: kosongkan bila tidak dihitung. Menu <b>Habis</b> atau stok 0 tidak bisa dipesan.</p>
+        <button class="btn ghost sm" type="button" id="addMitra"><svg class="i"><use href="#i-plus"/></svg>Tambah mitra</button>
+      </div>
+      <div id="mitras"></div>
     </section>
 
     <section class="pane" id="pUlasan" hidden>
@@ -237,7 +274,45 @@
     }).join("") || '<p class="muted">Belum ada driver. Tekan "Tambah driver".</p>';
   }
 
+  /* ---------- Mitra & menu ---------- */
+  function intOrNull(v) { v = String(v).trim(); return v === "" ? null : Number(v.replace(/[.,\s]/g, "")); }
+  function uid(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+  function stockInfo(m) {
+    if (!m.available) return "Habis (ditandai)";
+    if (m.stock == null) return "Stok tidak dihitung";
+    return m.stock <= 0 ? "Habis (stok 0)" : "Sisa " + m.stock;
+  }
+  function renderMitra() {
+    $("mitras").innerHTML = D.mitra.map(function (mt, i) {
+      var found = mt.lat != null && mt.geoArea === mt.place;
+      var geo = found ? "📍 Di peta: " + esc(mt.geoPlace || mt.place) : (mt.place ? "📍 Lokasi dicari saat disimpan" : "📍 Isi alamat agar titik ambil terisi otomatis untuk pelanggan");
+      return '<div class="card mcard" data-m="' + i + '">' +
+        '<div class="mhead"><div class="av" aria-hidden="true">' + esc(initial(mt.name)) + '</div>' +
+        '<input class="dname" data-mk="name" value="' + esc(mt.name) + '" placeholder="Nama mitra, misal Lingkar Kopi" aria-label="Nama mitra">' +
+        '<button type="button" class="del" data-act="delMitra" aria-label="Hapus mitra ' + esc(mt.name) + '"><svg class="i"><use href="#i-trash"/></svg></button></div>' +
+        '<label class="sw"><input type="checkbox" data-mk="active"' + (mt.active ? " checked" : "") + '> Tampil di aplikasi</label>' +
+        '<div class="fgrid" style="margin-top:8px"><div class="field"><label>Keterangan singkat</label><input data-mk="tagline" value="' + esc(mt.tagline || "") + '" placeholder="Misal: Kopi kafe harga gerobak"></div>' +
+        '<div class="field"><label>Alamat / tempat ambil pesanan</label><input data-mk="place" value="' + esc(mt.place || "") + '" placeholder="Misal: Jl. Sri Rejeki, Sukosari, Madiun"></div></div>' +
+        '<p class="geo' + (found ? " found" : "") + '">' + geo + "</p>" +
+        '<div class="mtools"><b>Menu (' + mt.menu.length + ')</b>' +
         '<button type="button" class="btn ghost sm" data-act="refill"><svg class="i"><use href="#i-refresh"/></svg>Isi ulang stok hari ini</button></div>' +
+        mt.menu.map(function (m, j) {
+          var habis = P.soldOut(m);
+          return '<div class="mrow' + (habis ? " habis" : "") + '" data-j="' + j + '">' +
+            '<div class="mr mr1"><input class="mname" data-k="name" value="' + esc(m.name) + '" placeholder="Nama menu" aria-label="Nama menu">' +
+            '<input data-k="price" inputmode="numeric" value="' + esc(m.price == null ? "" : m.price) + '" placeholder="Harga" aria-label="Harga ' + esc(m.name) + '">' +
+            '<button type="button" class="del" data-act="delMenu" aria-label="Hapus menu ' + esc(m.name) + '"><svg class="i"><use href="#i-trash"/></svg></button></div>' +
+            '<div class="mr mr2"><input data-k="cat" value="' + esc(m.cat || "") + '" placeholder="Kategori" aria-label="Kategori"><input data-k="desc" value="' + esc(m.desc || "") + '" placeholder="Keterangan (opsional)" aria-label="Keterangan"></div>' +
+            '<div class="mr3"><div class="avpills" role="group" aria-label="Status ' + esc(m.name) + '"><button type="button" data-av="1" aria-pressed="' + !!m.available + '">Tersedia</button><button type="button" data-av="0" aria-pressed="' + !m.available + '">Habis</button></div>' +
+            '<span class="stkinfo">' + stockInfo(m) + "</span></div>" +
+            '<div class="stk"><span class="sg"><span>Stok</span><input data-k="stock" inputmode="numeric" value="' + esc(m.stock == null ? "" : m.stock) + '" placeholder="–" aria-label="Stok ' + esc(m.name) + '">' +
+            '<button type="button" data-dec="1" aria-label="Kurangi 1">−1</button><button type="button" data-dec="5" aria-label="Kurangi 5">−5</button></span>' +
+            '<span class="sg"><span>Stok awal harian</span><input data-k="stockStart" inputmode="numeric" value="' + esc(m.stockStart == null ? "" : m.stockStart) + '" placeholder="–" aria-label="Stok awal harian ' + esc(m.name) + '"></span></div></div>';
+        }).join("") +
+        '<button type="button" class="btn ghost sm" data-act="addMenu" style="margin-top:10px"><svg class="i"><use href="#i-plus"/></svg>Tambah menu</button></div>';
+    }).join("") || '<p class="muted" style="margin-top:12px">Belum ada mitra. Tekan "Tambah mitra".</p>';
+  }
+
   function field(id, label, v) { return '<div><label for="' + id + '">' + label + '</label><input id="' + id + '" inputmode="decimal" value="' + esc(v) + '"></div>'; }
   function renderTarif() {
     var T = D.tarif, h = "";
@@ -254,7 +329,8 @@
     D = res.data; fromFirebase = res.source === "online"; savedAt = res.updatedAt || ""; dirty = false;
     $("aName").value = D.admin.name; $("aPhone").value = D.admin.phone; $("aHours").value = D.admin.hours || "";
     $("whoEmail").textContent = tokenEmail();
-    renderDrivers(); renderTarif(); renderSync(); msg(""); show("editor");
+    D.mitra = D.mitra || [];
+    renderDrivers(); renderTarif(); renderMitra(); renderSync(); msg(""); show("editor");
   }
 
   /* Baca semua isian ke objek baru; driver sudah di-update langsung lewat event. */
@@ -269,20 +345,31 @@
       if (x.lat != null && x.geoArea === y.area) { y.lat = x.lat; y.lng = x.lng; y.geoArea = x.geoArea; y.geoPlace = x.geoPlace; } // koordinat masih cocok dengan area
       return y;
     });
+    d.mitra = (d.mitra || []).map(function (x) {
+      var y = { id: x.id, name: String(x.name || "").trim(), tagline: String(x.tagline || "").trim(), place: String(x.place || "").trim(), active: !!x.active,
+        menu: x.menu.map(function (m) {
+          return { id: m.id, name: String(m.name || "").trim(), price: m.price, cat: String(m.cat || "").trim(), desc: String(m.desc || "").trim(),
+            available: !!m.available, stock: m.stock, stockStart: m.stockStart };
+        }) };
+      if (x.lat != null && x.geoArea === y.place) { y.lat = x.lat; y.lng = x.lng; y.geoArea = x.geoArea; y.geoPlace = x.geoPlace; } // koordinat masih cocok dengan alamat
+      return y;
+    });
     return d;
   }
 
   /* Cari koordinat area driver yang baru/berubah (untuk "driver terdekat"). Satu per satu, jeda 1,1 detik (aturan Nominatim).
      Mengembalikan nama area yang tidak ditemukan. */
   function geocodeAreas(d) {
-    var todo = d.drivers.filter(function (x) { return x.lat == null && x.area !== "Belum diisi"; }), missed = [];
-    return todo.reduce(function (p, x, i) {
+    var todo = d.drivers.filter(function (x) { return x.lat == null && x.area !== "Belum diisi"; }).map(function (x) { return { o: x, q: x.area }; })
+      .concat((d.mitra || []).filter(function (x) { return x.lat == null && x.place; }).map(function (x) { return { o: x, q: x.place }; })), missed = [];
+    return todo.reduce(function (p, t, i) {
+      var x = t.o;
       return p.then(function () {
-        msg("Mencari lokasi area " + x.area + " (" + (i + 1) + "/" + todo.length + ")…");
+        msg("Mencari lokasi " + t.q + " (" + (i + 1) + "/" + todo.length + ")…");
         // Dicari di Madiun dan sekitarnya. Nama kembar? Admin menulis "Desa, Kecamatan", misal "Banjarejo, Taman".
-        return MapPick.search(x.area, true).then(function (r) {
-          if (r) { x.lat = +r.lat.toFixed(5); x.lng = +r.lng.toFixed(5); x.geoArea = x.area; x.geoPlace = r.place; } else missed.push(x.area);
-        }).catch(function () { missed.push(x.area); }).then(function () { return new Promise(function (ok) { setTimeout(ok, i < todo.length - 1 ? 1100 : 0); }); });
+        return MapPick.search(t.q, true).then(function (r) {
+          if (r) { x.lat = +r.lat.toFixed(5); x.lng = +r.lng.toFixed(5); x.geoArea = t.q; x.geoPlace = r.place; } else missed.push(t.q);
+        }).catch(function () { missed.push(t.q); }).then(function () { return new Promise(function (ok) { setTimeout(ok, i < todo.length - 1 ? 1100 : 0); }); });
       });
     }, Promise.resolve()).then(function () { return missed; });
   }
@@ -321,6 +408,43 @@
     Array.prototype.forEach.call(this.children, function (x) { x.setAttribute("aria-selected", String(x === b)); $(x.dataset.pane).hidden = x !== b; });
     if (b.dataset.pane === "pUlasan") loadReviews();
   });
+  // Mitra & menu: isian diperbarui langsung (tanpa menggambar ulang agar kursor tidak lompat); tombol menggambar ulang.
+  function mitraAt(el) { var c = el.closest(".mcard"); return c ? D.mitra[c.dataset.m] : null; }
+  $("mitras").addEventListener("input", function (e) {
+    var mt = mitraAt(e.target); if (!mt) return;
+    var t = e.target, row = t.closest(".mrow");
+    if (t.dataset.mk === "active") mt.active = t.checked;
+    else if (t.dataset.mk) mt[t.dataset.mk] = t.value;
+    else if (row && t.dataset.k) {
+      var m = mt.menu[row.dataset.j], k = t.dataset.k;
+      m[k] = k === "price" || k === "stock" || k === "stockStart" ? intOrNull(t.value) : t.value;
+      if (k === "stock") { row.querySelector(".stkinfo").textContent = stockInfo(m); row.classList.toggle("habis", P.soldOut(m)); }
+    }
+    changed();
+  });
+  $("mitras").addEventListener("click", function (e) {
+    var mt = mitraAt(e.target); if (!mt) return;
+    var b = e.target.closest("button"); if (!b) return;
+    var row = b.closest(".mrow"), m = row ? mt.menu[row.dataset.j] : null, act = b.dataset.act;
+    if (act === "delMitra") { if (!confirm("Hapus mitra " + (mt.name || "ini") + " beserta menunya?")) return; D.mitra.splice(D.mitra.indexOf(mt), 1); }
+    else if (act === "addMenu") mt.menu.push({ id: uid("m"), name: "", price: null, cat: "", desc: "", available: true, stock: null, stockStart: null });
+    else if (act === "delMenu") { if (!confirm("Hapus menu " + (m.name || "ini") + "?")) return; mt.menu.splice(row.dataset.j, 1); }
+    else if (act === "refill") {
+      // Stok kembali ke stok awal harian (menu yang punya stok awal), dan semuanya ditandai tersedia lagi.
+      mt.menu.forEach(function (x) { if (x.stockStart != null) x.stock = x.stockStart; x.available = true; });
+    }
+    else if (b.dataset.av) m.available = b.dataset.av === "1";
+    else if (b.dataset.dec) { if (m.stock == null) { alert("Isi jumlah stok dulu untuk " + (m.name || "menu ini") + "."); return; } m.stock = Math.max(0, m.stock - Number(b.dataset.dec)); }
+    else return;
+    var mi = D.mitra.indexOf(mt);
+    renderMitra(); changed();
+    if (act === "refill") msg("Stok " + (mt.name || "mitra") + " diisi ulang. Tekan Simpan perubahan.");
+    if (act === "addMenu") { var rows = document.querySelectorAll('.mcard[data-m="' + mi + '"] .mname'); rows[rows.length - 1].focus(); }
+  });
+  $("addMitra").addEventListener("click", function () {
+    D.mitra.push({ id: uid("p"), name: "", tagline: "", place: "", active: false, menu: [] }); renderMitra(); changed();
+    document.querySelector('.mcard[data-m="' + (D.mitra.length - 1) + '"] .dname').focus();
+  });
   $("drivers").addEventListener("input", function (e) {
     var row = e.target.closest(".drow"); if (!row || !e.target.dataset.k) return;
     D.drivers[row.dataset.i][e.target.dataset.k] = e.target.value;
@@ -347,7 +471,7 @@
     $("save").disabled = true; var missed = [];
     geocodeAreas(d).then(function (m) { missed = m; msg("Menyimpan…"); return Store.save(t, d); }).then(function (row) {
       D = row.data; $("aPhone").value = D.admin.phone; fromFirebase = true; savedAt = row.updatedAt; dirty = false;
-      renderDrivers(); renderSync();
+      D.mitra = D.mitra || []; renderDrivers(); renderMitra(); renderSync();
       msg("Tersimpan." + (missed.length ? " Lokasi area tidak ditemukan: " + missed.join(", ") + " — tambahkan kecamatan, misal \"Banjarejo, Taman\"." : ""), "ok");
     }).catch(function (e) {
       if (e.status === 401) { sessionStorage.removeItem(TOKEN_KEY); show("login"); $("sheet").hidden = true; $("loginMsg").textContent = "Sesi habis. Masuk lagi lalu tekan Simpan."; }

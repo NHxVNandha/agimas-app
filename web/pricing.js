@@ -38,6 +38,29 @@
     return best;
   }
 
+  /* ---------- Menu mitra (misal Lingkar Kopi) ----------
+     Menu: { id, name, price, cat, desc, available, stock, stockStart }. stock null = jumlah tidak dihitung.
+     Habis bila ditandai habis oleh admin atau stok angka 0. */
+  function soldOut(m) { return !m.available || (m.stock != null && m.stock <= 0); }
+  /* Pilihan pelanggan { idMenu: jumlah } -> daftar pesanan [{ id, name, price, qty }] (urut sesuai menu). */
+  function cartOf(mitra, picks) {
+    return ((mitra && mitra.menu) || []).filter(function (m) { return picks[m.id] > 0; })
+      .map(function (m) { return { id: m.id, name: m.name, price: m.price, qty: picks[m.id] }; });
+  }
+  function menuTotal(cart) { return (cart || []).reduce(function (a, c) { return a + c.price * c.qty; }, 0); }
+  /* Cek pesanan terhadap menu terbaru (sebelum dikirim): menu dihapus, habis, atau stok kurang. */
+  function checkCart(mitra, picks) {
+    var bad = [], menu = (mitra && mitra.menu) || [];
+    Object.keys(picks).forEach(function (id) {
+      var q = picks[id]; if (!(q > 0)) return;
+      var m = menu.filter(function (x) { return x.id === id; })[0];
+      if (!m) bad.push({ id: id, why: "tidak dijual lagi" });
+      else if (soldOut(m)) bad.push({ id: id, name: m.name, why: "habis" });
+      else if (m.stock != null && q > m.stock) bad.push({ id: id, name: m.name, why: "sisa " + m.stock, max: m.stock });
+    });
+    return bad;
+  }
+
   function rp(n) { return "Rp " + Math.round(n).toLocaleString("id-ID"); }
   function numTxt(k) { return String(k).replace(".", ","); }
 
@@ -77,8 +100,14 @@
     if (!lain) L.push("Jarak: *" + numTxt(o.km) + " km*");
     if (o.fromPt && o.toPt) L.push("*Rute di Google Maps* (jemput → tujuan):", routeLink(o.fromPt, o.toPt));
     L.push("");
+    var cart = o.cart || [], mt = menuTotal(cart);
+    if (cart.length) {
+      L.push("*PESANAN MENU" + (o.mitraName ? " — " + v(o.mitraName).toUpperCase() : "") + "*");
+      cart.forEach(function (c) { L.push("- " + c.qty + "x " + v(c.name) + " @ " + rp(c.price) + " = " + rp(c.price * c.qty)); });
+      L.push("Subtotal menu: *" + rp(mt) + "*", "");
+    }
     var det = [];
-    if (s.item) det.push(s.item + ": " + v(o.item));
+    if (s.item && (!cart.length || o.item)) det.push((cart.length ? "Pesanan tambahan" : s.item) + ": " + v(o.item));
     if (o.svc === "barang" || o.svc === "beli") det.push("Berat: " + (T.weights[o.w] || T.weights[0]).label);
     if (o.note) det.push("Catatan: " + v(o.note));
     if (o.rain) det.push("Cuaca: *kemungkinan hujan di titik jemput* (data cuaca, mohon dicek)");
@@ -87,8 +116,9 @@
     if (lain) L.push("*HARGA*", "Mohon penawaran harga.");
     else {
       var q = quote(T, o.svc, o.km, o.w, { night: o.night });
-      L.push("*PERKIRAAN HARGA: " + rp(q.total) + "*");
+      L.push("*PERKIRAAN " + (cart.length ? "ONGKIR" : "HARGA") + ": " + rp(q.total) + "*");
       q.lines.forEach(function (l) { L.push("- " + l.t + ": " + rp(l.v)); });
+      if (cart.length) L.push("*TOTAL (menu + ongkir): " + rp(mt + q.total) + "*");
       L.push(o.night ? "_Sudah termasuk tambahan malam. Tambahan hujan (jika hujan) ditetapkan admin._" : "_Tambahan hujan (jika hujan) ditetapkan admin._");
     }
     L.push("", "Nomor WhatsApp ini boleh dibagikan ke driver yang bertugas.", "Terima kasih.");
@@ -140,6 +170,20 @@
     if (!T.night || !n(T.night.add, 0) || !n(T.night.every, 0.5) || !T.rain || !n(T.rain.perKm, 0)) return "Tambahan malam/hujan tidak valid.";
     if (!String(d.admin.name || "").trim()) return "Nama admin wajib diisi.";
     if (!validPhone(d.admin.phone)) return "Nomor WhatsApp admin tidak valid. Contoh: 0812 3456 7890.";
+    var ms = d.mitra || [];
+    if (!Array.isArray(ms)) return "Data mitra tidak valid.";
+    for (var a = 0; a < ms.length; a++) {
+      var mt = ms[a], mn = String(mt.name || "").trim() || "ke-" + (a + 1);
+      if (!String(mt.name || "").trim()) return "Nama mitra ke-" + (a + 1) + " wajib diisi.";
+      if (!Array.isArray(mt.menu)) return "Menu " + mn + " tidak valid.";
+      for (var b = 0; b < mt.menu.length; b++) {
+        var m = mt.menu[b], lab = "Menu " + mn + " ke-" + (b + 1);
+        if (!String(m.name || "").trim()) return "Nama " + lab.toLowerCase() + " wajib diisi.";
+        if (!n(m.price, 0) || m.price % 1) return "Harga " + m.name + " (" + mn + ") tidak valid.";
+        if (m.stock != null && (!n(m.stock, 0) || m.stock % 1)) return "Stok " + m.name + " (" + mn + ") harus angka bulat 0 atau lebih, atau dikosongkan.";
+        if (m.stockStart != null && (!n(m.stockStart, 0) || m.stockStart % 1)) return "Stok awal " + m.name + " (" + mn + ") harus angka bulat, atau dikosongkan.";
+      }
+    }
     for (var i = 0; i < d.drivers.length; i++) {
       var x = d.drivers[i];
       if (!String(x.name || "").trim()) return "Nama driver ke-" + (i + 1) + " wajib diisi.";
@@ -155,6 +199,6 @@
     return d;
   }
 
-  var api = { SVC: SVC, rp: rp, numTxt: numTxt, quote: quote, validPhone: validPhone, waText: waText, waLink: waLink, validate: validate, normPhone: normPhone, fields: fields, nearestDriver: nearestDriver, BELI: BELI, CAT: CAT, mapLink: mapLink, straightKm: straightKm, billKm: billKm, inRegion: inRegion, isNight: isNight };
+  var api = { SVC: SVC, rp: rp, numTxt: numTxt, quote: quote, validPhone: validPhone, waText: waText, waLink: waLink, validate: validate, normPhone: normPhone, fields: fields, nearestDriver: nearestDriver, BELI: BELI, CAT: CAT, mapLink: mapLink, straightKm: straightKm, billKm: billKm, inRegion: inRegion, isNight: isNight, soldOut: soldOut, cartOf: cartOf, menuTotal: menuTotal, checkCart: checkCart };
   if (typeof module !== "undefined") module.exports = api; else root.Pricing = api;
 })(this);

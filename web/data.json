@@ -96,5 +96,15 @@
     "whatsapp": "62895395094858",
     "email": "kurnianhxvnandha@gmail.com",
     "downloadUrl": "https://solusiagimas.netlify.app/unduh/"
-  }
+  },
+  "mitra": [
+    {
+      "id": "lingkar",
+      "name": "Lingkar Kopi",
+      "tagline": "Kopi kafe harga gerobak",
+      "place": "Jl. Sri Rejeki, Sukosari, Madiun",
+      "active": false,
+      "menu": []
+    }
+  ]
 }

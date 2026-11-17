@@ -4,7 +4,7 @@
   var BAND = { loMin: 8000, hiMin: 10000, loKm: 2000, hiKm: 2500 };
   var TITLES = { ulasan: "Ulasan", bantuan: "Bantuan", kirim: "Kirim ke admin" };
   var VIEWS = ["home", "pesan", "kirim", "ulasan", "bantuan"];
-  var o = { night: false, rain: false, svc: "orang", beliType: "makan", beliCat: "", km: null, w: 0, name: "", item: "", from: "", to: "", note: "", nearest: null, fromPt: null, toPt: null };
+  var o = { night: false, rain: false, svc: "orang", beliType: "makan", beliCat: "", km: null, w: 0, name: "", item: "", from: "", to: "", note: "", nearest: null, fromPt: null, toPt: null, mitra: "", picks: {}, cart: [], mitraName: "" };
   var routeSeq = 0, routing = false;
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -21,22 +21,65 @@
 
   function press(box, val) { Array.prototype.forEach.call($(box).children, function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === val)); }); }
 
+  /* ---------- Mitra (misal Lingkar Kopi): menu dari panel admin ---------- */
+  function mitraById(id) { return id ? ((D.mitra || []).filter(function (m) { return m.id === id && m.active; })[0] || null) : null; }
+  function shownMitra() { return (D.mitra || []).filter(function (m) { return m.active && m.menu && m.menu.length; }); }
+  function syncCart() {
+    var mt = mitraById(o.mitra);
+    o.cart = mt ? P.cartOf(mt, o.picks) : []; o.mitraName = mt ? mt.name : "";
+    return mt;
+  }
+  /* Ganti mitra (dari link Beranda #pesan/beli/makan/<id>): titik ambil terisi alamat mitra, pilihan menu dikosongkan. */
+  function setMitra(id) {
+    var had = !!o.mitra, mt = mitraById(id);
+    o.mitra = mt ? id : ""; o.picks = {}; $("menuMsg").textContent = "";
+    if (mt) {
+      $("from").value = mt.name + (mt.place ? " — " + mt.place : "");
+      o.fromPt = mt.lat != null ? { lat: mt.lat, lng: mt.lng } : null;
+    } else if (had) { $("from").value = ""; o.fromPt = null; }
+    if (mt || had) { o.km = null; readForm(); renderPts(); updateRoute(); }
+  }
+  function renderMenu(mt) {
+    var cats = [], by = {};
+    mt.menu.forEach(function (m) {
+      if (P.soldOut(m)) delete o.picks[m.id];                             // habis: keluarkan dari pilihan
+      else if (m.stock != null && o.picks[m.id] > m.stock) o.picks[m.id] = m.stock;
+      var c = m.cat || "Menu"; if (!by[c]) { by[c] = []; cats.push(c); } by[c].push(m);
+    });
+    var cart = P.cartOf(mt, o.picks), n = cart.reduce(function (a, c) { return a + c.qty; }, 0);
+    $("menuList").innerHTML = '<div class="mhd"><span class="ti"><svg class="i"><use href="#i-coffee"/></svg></span><div><b>Menu ' + esc(mt.name) + "</b><small>" + esc(mt.tagline || "Pilih menu dan jumlahnya") + "</small></div></div>" +
+      cats.map(function (c) {
+        return (cats.length > 1 || c !== "Menu" ? '<p class="mcat">' + esc(c) + "</p>" : "") + by[c].map(function (m) {
+          var off = P.soldOut(m), q = o.picks[m.id] || 0, max = m.stock != null ? m.stock : 99;
+          var tag = off ? '<span class="mstk">Habis</span>' : (m.stock != null && m.stock <= 5 ? '<span class="mstk">Sisa ' + m.stock + "</span>" : "");
+          return '<div class="mitem' + (off ? " off" : "") + '"><div class="grow"><b>' + esc(m.name) + "</b>" + (m.desc ? "<small>" + esc(m.desc) + "</small>" : "") +
+            '<span class="mprice">' + esc(P.rp(m.price)) + "</span>" + tag + "</div>" +
+            '<div class="qty' + (q ? " has" : "") + '"><button type="button" data-q="-1" data-id="' + esc(m.id) + '" aria-label="Kurangi ' + esc(m.name) + '"' + (q ? "" : " disabled") + ">−</button>" +
+            "<output>" + q + '</output><button type="button" data-q="1" data-id="' + esc(m.id) + '" aria-label="Tambah ' + esc(m.name) + '"' + (off || q >= max ? " disabled" : "") + ">+</button></div></div>";
+        }).join("");
+      }).join("") +
+      (n ? '<div class="menusum"><span>' + n + " item dipilih</span><span>" + esc(P.rp(P.menuTotal(cart))) + "</span></div>" : "");
+  }
+
   function renderForm() {
-    var f = P.fields(o), lain = f.noKm;
-    $("beliBox").hidden = o.svc !== "beli";
+    var f = P.fields(o), lain = f.noKm, mt = syncCart();
+    $("menuBox").hidden = !mt;
+    if (mt) renderMenu(mt), syncCart();
+    $("beliBox").hidden = o.svc !== "beli" || !!mt;
     if (o.svc === "beli") { press("beliType", o.beliType); $("catBox").hidden = o.beliType !== "harian"; press("beliCat", o.beliCat); }
     $("kmField").hidden = lain;
     $("toStop").hidden = !f.to;
     $("wField").hidden = !(o.svc === "barang" || o.svc === "beli");
     $("itemField").hidden = !f.item;
-    $("itemLab").textContent = f.item || ""; $("item").placeholder = f.itemPh || "";
+    $("itemLab").textContent = mt ? "Pesanan tambahan (opsional)" : f.item || ""; $("item").placeholder = mt ? "Contoh: es dipisah, gula sedikit" : f.itemPh || "";
     $("fromLab").textContent = f.from; $("from").placeholder = f.fromPh;
     $("toLab").textContent = f.to || ""; $("to").placeholder = f.toPh || "";
     var calc = !lain && routing; // rute sedang dihitung: tampilkan kerangka
     if (calc) $("kmOut").innerHTML = '<span class="sk skt" style="width:64px;height:1.1em"></span>';
     else $("kmOut").textContent = o.km == null ? "–" : P.numTxt(o.km) + " km";
     var waiting = !lain && o.km == null; // harga baru ada setelah jarak rute dihitung
-    $("next").setAttribute("aria-disabled", String(waiting));
+    var noMenu = !!mt && !o.cart.length && !o.item;                    // mitra: pilih menu dulu
+    $("next").setAttribute("aria-disabled", String(waiting || noMenu));
     $("lines").hidden = (waiting && !calc) || lain;
     if (lain) { $("price").textContent = "Harga dari admin"; $("priceNote").textContent = "Admin memberi harga dari keterangan Anda"; }
     else if (waiting) {
@@ -44,16 +87,21 @@
         $("price").innerHTML = '<span class="sk skt" style="width:130px;height:1.1em"></span><span class="sr">Menghitung harga</span>';
         $("priceNote").textContent = "Menghitung jarak & harga…";
         $("lines").innerHTML = [62, 48, 70].map(function (w) { return '<li class="sk-row" aria-hidden="true"><span class="sk skt" style="width:' + w + '%"></span><span class="sk skt" style="width:22%"></span></li>'; }).join("");
-      } else { $("price").textContent = "Rp –"; $("priceNote").textContent = "Pilih titik jemput dan tujuan di peta"; }
+      } else {
+        $("price").textContent = "Rp –";
+        $("priceNote").textContent = o.fromPt && !o.toPt ? "Pilih titik tujuan di peta" : !o.fromPt && o.toPt ? "Pilih titik jemput di peta" : "Pilih titik jemput dan tujuan di peta";
+      }
       $("band").hidden = true;
     } else {
       o.night = P.isNight(new Date()); // tambahan malam otomatis dari jam HP
       var q = P.quote(T, o.svc, o.km, o.w, { night: o.night }), total = q.total;
       // Rincian harga seperti di website: tarif jarak, biaya berat, jasa belanja, pembulatan.
-      $("lines").innerHTML = q.lines.map(function (l) { return "<li><span>" + esc(l.t) + "</span><span>" + esc(P.rp(l.v)) + "</span></li>"; }).join("") +
-        '<li class="tot"><span>Perkiraan total</span><span>' + esc(P.rp(total)) + "</span></li>";
+      var mtot = P.menuTotal(o.cart), lines = q.lines.slice();
+      if (o.cart.length) { lines = [{ t: "Menu " + o.mitraName, v: mtot }].concat(lines.map(function (l) { return { t: "Ongkir: " + l.t.charAt(0).toLowerCase() + l.t.slice(1), v: l.v }; })); total += mtot; }
+      $("lines").innerHTML = lines.map(function (l) { return "<li><span>" + esc(l.t) + "</span><span>" + esc(P.rp(l.v)) + "</span></li>"; }).join("") +
+        '<li class="tot"><span>Perkiraan total' + (o.cart.length ? " (menu + ongkir)" : "") + "</span><span>" + esc(P.rp(total)) + "</span></li>";
       $("price").textContent = P.rp(total);
-      $("priceNote").textContent = o.night ? "Perkiraan, sudah termasuk tambahan malam" : "Perkiraan, belum termasuk tambahan hujan";
+      $("priceNote").textContent = noMenu ? "Pilih menu dulu" : o.night ? "Perkiraan, sudah termasuk tambahan malam" : "Perkiraan, belum termasuk tambahan hujan";
     }
     if (!waiting) $("band").hidden = o.svc !== "orang";
     if (o.svc === "orang" && !waiting) {
@@ -119,6 +167,7 @@
 
   function renderSend() {
     o.nearest = P.nearestDriver(D.drivers, o.fromPt); // driver aktif terdekat, otomatis (untuk admin)
+    syncCart();
     var text = P.waText(T, D.admin.name, o);
     // Pratinjau seperti tampilan WhatsApp: *tebal*, _miring_
     $("preview").innerHTML = esc(text).replace(/\*([^*\n]+)\*/g, "<b>$1</b>").replace(/(^|\s)_([^_\n]+)_(?=\s|$)/g, "$1<i>$2</i>");
@@ -131,7 +180,9 @@
     $("sumFrom").textContent = o.from || f.from + " belum diisi";
     $("sumToRow").hidden = !f.to;
     $("sumTo").textContent = o.to || (f.to || "") + " belum diisi";
-    $("sumMeta").textContent = [f.noKm ? "" : P.numTxt(o.km) + " km", o.item].filter(Boolean).join(" · ");
+    var nItem = o.cart.reduce(function (a, c) { return a + c.qty; }, 0);
+    $("sumMeta").textContent = [f.noKm ? "" : P.numTxt(o.km) + " km", nItem ? nItem + " menu " + o.mitraName + " (" + P.rp(P.menuTotal(o.cart)) + ")" : "", o.item].filter(Boolean).join(" · ");
+    if (o.mitraName) $("sumSvc").textContent = f.name + " · " + o.mitraName;
   }
 
   function route() {
@@ -143,6 +194,8 @@
       if (o.svc === "beli" && P.BELI[parts[2]]) o.beliType = parts[2];
       // isian barang/daftar belanja berbeda arti tiap layanan: jangan terbawa
       if (o.svc + o.beliType !== prev) { o.item = ""; $("item").value = ""; }
+      var mid = o.svc === "beli" ? parts[3] || "" : "";
+      if (mid !== o.mitra) { if (mid && !mitraById(mid)) { location.replace("#pesan/beli/makan"); return; } o.item = ""; $("item").value = ""; setMitra(mid); }
     }
     if (view === "kirim" && !P.fields(o).noKm && o.km == null) { location.replace("#pesan/" + o.svc); return; }
     VIEWS.forEach(function (v) { $("v-" + v).hidden = v !== view; });
@@ -178,6 +231,13 @@
     $("hello").textContent = "Selamat " + (hr < 11 ? "pagi" : hr < 15 ? "siang" : hr < 18 ? "sore" : "malam") + "!";
     $("hlFare").textContent = P.rp(t.minFare).replace("Rp ", "Rp"); $("hlHours").textContent = hoursShort(D.admin.hours);
     $("lainBtn").href = adminWa("Halo " + D.admin.name + ", saya mau tanya layanan lainnya: ");
+    Array.prototype.slice.call(document.querySelectorAll("#hl .hlc.m")).forEach(function (x) { x.parentNode.removeChild(x); });
+    shownMitra().reverse().forEach(function (mt) {
+      var a = document.createElement("a");
+      a.className = "hlc m"; a.href = "#pesan/beli/makan/" + encodeURIComponent(mt.id);
+      a.innerHTML = '<div class="hlt"><span class="hlk">Mitra Agimas</span><span class="hli"><svg class="i"><use href="#i-coffee"/></svg></span></div><b>' + esc(mt.name) + "</b><small>" + esc(mt.tagline ? mt.tagline + " · " : "") + "<b>Lihat menu →</b></small>";
+      $("hl").insertBefore(a, $("hl").firstChild);
+    });
     $("hlDots").innerHTML = Array.prototype.map.call($("hl").children, function (x, i) { return i ? "<i></i>" : '<i class="on"></i>'; }).join("");
 
     // Bantuan: admin, tarif lengkap
@@ -414,6 +474,28 @@
       try { navigator.clipboard.writeText("+" + D.admin.phone).then(good, bad); } catch (e) { bad(); }
     });
     initReview(); initUpdate(); initHighlights();
+    $("menuList").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-q]"); if (!b || b.disabled) return;
+      var id = b.dataset.id, q = (o.picks[id] || 0) + Number(b.dataset.q);
+      if (q > 0) o.picks[id] = q; else delete o.picks[id];
+      $("menuMsg").textContent = ""; renderForm();
+    });
+    // Sebelum lanjut, cek stok terbaru di server: menu yang baru saja habis/berkurang disesuaikan dulu.
+    $("next").addEventListener("click", function (e) {
+      var mt = mitraById(o.mitra);
+      if (!mt || !o.cart.length || $("next").getAttribute("aria-disabled") === "true") return;
+      e.preventDefault();
+      $("menuMsg").textContent = ""; $("priceNote").textContent = "Mengecek stok terbaru…";
+      Store.load().then(function (res) {
+        if (res.source === "online" && res.data.mitra) D.mitra = res.data.mitra;
+        var fresh = mitraById(o.mitra), bad = fresh ? P.checkCart(fresh, o.picks) : [{ why: "tidak tersedia" }];
+        if (!fresh) { location.replace("#pesan/beli/makan"); return; }
+        if (!bad.length) { location.hash = "#kirim"; return; }
+        bad.forEach(function (x) { if (x.max) o.picks[x.id] = x.max; else delete o.picks[x.id]; });
+        $("menuMsg").textContent = "Stok berubah: " + bad.map(function (x) { return (x.name || "menu") + " " + x.why; }).join(", ") + ". Pesanan sudah disesuaikan, cek lagi lalu tekan Lanjut.";
+        renderForm();
+      }).catch(function () { location.hash = "#kirim"; });                // offline: admin tetap mengecek lewat WA
+    });
     function goBack() { history.length > 1 ? history.back() : (location.hash = ""); }
     $("back").addEventListener("click", goBack);
     // Tombol back HP (dipanggil MainActivity di APK). true = kembali ke layar sebelumnya; false = di Beranda, aplikasi ditutup.
