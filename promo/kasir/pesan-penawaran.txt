@@ -1,0 +1,30 @@
+Halo Kak, salam dari *Agi Mas* 🙏
+
+Kemarin kami sempat ngobrol soal aplikasi kasir. Kami ingin menawarkan *Aplikasi Kasir untuk Lingkar Kopi*, yang langsung tersambung dengan pemesanan lewat aplikasi Agi Mas.
+
+*Yang bisa dilakukan aplikasi kasir:*
+• Jual cepat dari tablet: cari menu, ketuk, pilih *varian & tambahan* (ukuran, es/panas, level gula, extra shot, dll.), harga terhitung otomatis
+• *Dine in / Take away*, nama pelanggan, dan *nomor antrean* otomatis
+• *Simpan pesanan (open bill)*: pelanggan pesan dulu, bayar belakangan, bisa tambah pesanan
+• Bayar *tunai* (kembalian otomatis), *QRIS*, atau *debit/transfer*, plus *diskon*
+• *Cetak struk* ke printer thermal Bluetooth 58 mm, atau kirim struk lewat WA
+• *Antrean barista*: setiap pesanan langsung jadi tiket barista (tanpa harga), alur Baru → Dibuat → Selesai
+• *Stok berkurang otomatis*, sama dengan stok di aplikasi Agi Mas, jadi pelanggan online tidak bisa memesan menu yang sudah habis di kedai
+• *Pesanan dari aplikasi Agi Mas langsung masuk antrean* dengan bunyi notifikasi, barista tandai "Siap diambil driver"
+• *Riwayat & pembatalan* transaksi dengan alasan (stok kembali otomatis), cetak ulang struk
+• *Laporan*: penjualan bersih, per metode bayar, per jenis pesanan, menu terlaris, kas masuk/keluar, buka & tutup kasir dengan selisih kas
+
+*Biaya:*
+• Aplikasi kasir: *gratis*
+• Yang perlu disiapkan dari Kakak: *1 tablet Android* dan *1 printer thermal Bluetooth 58 mm*
+
+*Demo:* kami sudah siapkan demo yang bisa dicoba langsung di tablet (menu masih contoh, belum menyimpan data sungguhan). Boleh kami tunjukkan saat mampir ke kedai?
+
+Kalau Kakak tertarik, kami perlu:
+1. Daftar menu lengkap, beserta varian/tambahan dan harganya
+2. Siapa saja yang boleh melihat laporan penjualan
+3. Apakah ingin menerima pembayaran QRIS di kasir (kalau ya, QRIS milik Lingkar Kopi)
+
+Setelah itu kami siapkan versi aslinya, lalu bisa dicoba dulu beberapa minggu sebelum dipakai penuh.
+
+Terima kasih Kak, ditunggu kabarnya 🙏
