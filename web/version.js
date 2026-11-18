@@ -1,9 +1,18 @@
 // Versi aplikasi: satu-satunya tempat. build.gradle membaca versionName dari sini.
-window.AGIMAS_VERSION = "3.5";
+window.AGIMAS_VERSION = "3.7";
 // Catatan pembaruan (terbaru di atas), ditampilkan di jendela "Yang baru" dan saat ada versi baru.
 // Tambahkan entri baru di atas setiap menaikkan AGIMAS_VERSION.
 // Format JSON murni (kunci dan teks pakai tanda kutip dua), karena APK membacanya dari server dengan JSON.parse.
 window.AGIMAS_CHANGES = [
+  { "v": "3.7", "items": [
+    "Beranda lebih ringkas: Makanan & Minuman dan Kebutuhan Harian digabung jadi satu, Agi Beli.",
+    "Pesan dari mitra: lokasi ambil otomatis di alamat mitra dan tanpa biaya berat barang."
+  ] },
+  { "v": "3.6", "items": [
+    "Menu mitra kini dilengkapi foto, dikelompokkan Makanan dan Minuman.",
+    "Kartu mitra di Beranda lebih jelas: foto menu, harga mulai, dan tombol Pesan.",
+    "Tampilan ringkasan pesanan lebih rapi."
+  ] },
   { "v": "3.5", "items": [
     "Siap untuk mitra Agimas: pesan menu mitra langsung dari aplikasi, cukup pilih menu dan jumlahnya.",
     "Total harga menu + ongkir dihitung otomatis, menu yang habis tidak bisa dipilih.",
