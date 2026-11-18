@@ -57,6 +57,7 @@
     <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
     <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></symbol>
     <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
     <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
@@ -97,7 +98,7 @@
     <div class="hero">
       <span class="pill">Antar · Beli · Bantu</span>
       <h2>Saget sembarang kalir.</h2>
-      <p>Antar, beli, dan bantu di Madiun dan sekitarnya. Bayar ke driver, tunai atau QRIS.</p>
+      <p>Antar, beli, dan bantu di Madiun dan sekitarnya. Bayar tunai ke driver, atau QRIS langsung dari aplikasi.</p>
       <a class="btn sm" href="#pesan/orang">Pesan sekarang <svg class="i"><use href="#i-arrow"/></svg></a>
       <div class="hero-side">
         <img class="hero-logo" src="logo.png" alt="Agimas, saget sembarang kalir" width="102" height="40">
@@ -111,21 +112,16 @@
         <button type="button" class="iconbtn sm" id="iosTipX" aria-label="Tutup petunjuk">✕</button></div>
     </div>
 
-    <div class="hl" id="hl" aria-label="Sorotan Agimas, geser untuk melihat lainnya">
-      <div class="hlc a"><div class="hlt"><span class="hlk">Agimas Murah</span><span class="hli"><svg class="i"><use href="#i-tag"/></svg></span></div><b>Tarif mulai <span id="hlFare">Rp5.500</span></b><small>Hemat, harga jelas sebelum pesan.</small></div>
-      <div class="hlc b"><div class="hlt"><span class="hlk">KDMP</span><span class="hli"><svg class="i"><use href="#i-box"/></svg></span></div><b>Kirim Dekat Murah Pol</b><small>Kirim barang jarak dekat, harga bersahabat.</small></div>
-      <div class="hlc c"><div class="hlt"><span class="hlk">Admin</span><span class="hli"><svg class="i"><use href="#i-clock"/></svg></span></div><b id="hlHours">24 jam</b><small>Siap melayani setiap hari.</small></div>
-      <div class="hlc d"><div class="hlt"><span class="hlk">Kata pelanggan</span><span class="hli"><svg class="i"><use href="#i-quote"/></svg></span></div><b>Psikolog mahal, makanya Tuhan ciptakan Agimas.</b></div>
+    <div class="hl" id="hl" aria-label="Mitra Agimas" hidden>
     </div>
-    <div class="hldots" id="hlDots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+    <div class="hldots" id="hlDots" aria-hidden="true"></div>
 
     <h2 class="sec">Mau pesan apa?</h2>
     <p class="muted sec-sub">Semua pesanan masuk lewat admin, lalu driver terdekat yang bertugas.</p>
-    <div class="feats six">
+    <div class="feats">
       <a href="#pesan/orang" class="feat blue"><span class="feat-top"><svg class="i"><use href="#i-bike"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Agi Antar</b><small>Antar penumpang ke kantor, stasiun, pasar, sekolah.</small></a>
       <a href="#pesan/barang" class="feat yellow"><span class="feat-top"><svg class="i"><use href="#i-box"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Agi Kirim</b><small>Paket, dokumen, oleh-oleh.</small></a>
-      <a href="#pesan/beli/makan" class="feat green"><span class="feat-top"><svg class="i"><use href="#i-food"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Makanan &amp; Minuman</b><small>Agi Beli dari warung &amp; resto.</small></a>
-      <a href="#pesan/beli/harian" class="feat teal"><span class="feat-top"><svg class="i"><use href="#i-basket"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Kebutuhan Harian</b><small>Agi Beli di supermarket atau pasar tradisional.</small></a>
+      <a href="#pesan/beli/makan" class="feat green"><span class="feat-top"><svg class="i"><use href="#i-bag"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Agi Beli</b><small>Makanan, minuman &amp; kebutuhan harian dari warung, resto, atau pasar.</small></a>
       <a href="#pesan/bersih" class="feat purple"><span class="feat-top"><svg class="i"><use href="#i-brush"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Agi Bersih</b><small>Bersih-bersih rumah, kamar mandi, halaman.</small></a>
       <a id="lainBtn" class="feat gray" target="_blank" rel="noopener"><span class="feat-top"><svg class="i"><use href="#i-chat"/></svg><svg class="i go" aria-hidden="true"><use href="#i-right"/></svg></span><b>Lainnya</b><small>Kebutuhan lain? Chat admin langsung.</small></a>
     </div>
@@ -193,14 +189,14 @@
         <li><b>Anda dikabari</b><span>Admin memberi tahu Anda driver yang bertugas.</span></li>
         <li><b>Driver menghubungi Anda</b><span>Admin memberikan nomor WhatsApp Anda ke driver, lalu driver menghubungi Anda.</span></li>
         <li><b>Pesanan dikerjakan</b><span>Driver menjemput, mengantar, atau membelikan sesuai pesanan.</span></li>
-        <li><b>Bayar ke driver</b><span>Bayar sesuai harga pesanan langsung ke driver, tunai atau QRIS.</span></li>
+        <li><b>Bayar tunai atau QRIS</b><span>Tunai langsung ke driver, atau scan QRIS di aplikasi dengan nominal yang sudah terisi.</span></li>
       </ol>
     </div>
 
     <div class="card">
       <div class="row"><span class="ti green"><svg class="i"><use href="#i-wallet"/></svg></span><b class="grow">Pembayaran</b></div>
       <ul class="rules">
-        <li>Ongkos dibayar langsung ke driver setelah pesanan selesai, tunai atau QRIS.</li>
+        <li>Ongkos dibayar tunai ke driver setelah pesanan selesai, atau lewat QRIS di aplikasi saat memesan.</li>
         <li>Beli barang: harga barang dibayar sesuai struk atau nota yang dikirim driver.</li>
         <li>Pesanan dengan nilai belanja besar dapat diminta transfer dulu.</li>
       </ul>
@@ -315,6 +311,12 @@
     </form>
   </section>
 
+  <!-- Keranjang menu mitra (tersimpan di HP) -->
+  <section id="v-keranjang" class="view" hidden>
+    <div class="card cartbox" id="cartBox"></div>
+    <p class="menumsg" id="cartMsg" aria-live="polite"></p>
+  </section>
+
   <!-- Kirim ke admin (driver terdekat dicarikan otomatis) -->
   <section id="v-kirim" class="view" hidden>
     <div class="card summary">
@@ -325,9 +327,24 @@
       </div>
       <p class="muted small" id="sumMeta"></p>
     </div>
-    <div class="card row nearcard">
-      <span class="ti green"><svg class="i"><use href="#i-bike"/></svg></span>
-      <div class="grow"><b>Driver terdekat dicarikan otomatis</b><p class="muted small">Admin menugaskan driver aktif terdekat dari titik jemput, lalu driver menghubungi Anda lewat WhatsApp.</p></div>
+    <div class="card nearcard">
+      <div class="row"><span class="ti green"><svg class="i"><use href="#i-bike"/></svg></span><b>Driver terdekat dicarikan otomatis</b></div>
+      <p class="muted small">Admin menugaskan driver aktif terdekat dari titik jemput, lalu driver menghubungi Anda lewat WhatsApp.</p>
+    </div>
+    <div class="card pay" id="payCard">
+      <b class="payh">Pembayaran</b>
+      <div class="paypick" role="radiogroup" aria-label="Cara bayar">
+        <label><input type="radio" name="pay" value="tunai" checked><span>Tunai ke driver</span></label>
+        <label><input type="radio" name="pay" value="qris" id="payQris"><span>QRIS</span></label>
+      </div>
+      <p class="muted small" id="payNote"></p>
+      <div id="qrisBox" hidden>
+        <div class="qrbox" id="qrisQr"></div>
+        <p class="payamt"><b id="qrisAmt"></b><span class="muted small" id="qrisTo"></span></p>
+        <p class="muted small">Kode pesanan ikut di QR sebagai nomor tagihan. Screenshot QR ini, lalu buka DANA, GoPay, OVO, atau m-banking → <b>Scan</b> → pilih gambar dari galeri. Nominal sudah terisi.</p>
+        <a class="btn ghost sm" id="qrisSave" download="QRIS-Agimas.png" hidden><svg class="i"><use href="#i-arrow"/></svg>Simpan gambar QR</a>
+        <label class="paid"><input type="checkbox" id="paid"><span>Saya sudah bayar</span></label>
+      </div>
     </div>
     <details class="card preview"><summary>Lihat pesan WhatsApp</summary><pre id="preview"></pre></details>
   </section>
@@ -340,10 +357,38 @@
   <a href="#bantuan" data-tab="bantuan"><svg class="i"><use href="#i-help"/></svg><span>Bantuan</span></a>
 </nav>
 
+<!-- Bilah keranjang melayang (ada menu mitra di keranjang) -->
+<a class="cartbar" id="cartBar" href="#keranjang" hidden>
+  <span class="cb-ic"><svg class="i"><use href="#i-bag"/></svg><b id="cartN"></b></span>
+  <span class="grow"><b id="cartTitle">Keranjang</b><small id="cartSub"></small></span>
+  <b id="cartTot"></b><svg class="i"><use href="#i-right"/></svg>
+</a>
+
+<!-- Detail menu mitra -->
+<dialog class="menudlg" id="menuDlg" aria-labelledby="mdName">
+  <button type="button" class="mdx" id="mdClose" aria-label="Tutup detail menu">✕</button>
+  <div class="mdpic" id="mdPic"></div>
+  <div class="mdbody">
+    <span class="mdcat" id="mdCat"></span>
+    <h2 id="mdName"></h2>
+    <p class="mdprice"><b id="mdPrice"></b><span class="mstk" id="mdStock" hidden></span></p>
+    <p class="mddesc" id="mdDesc"></p>
+    <div class="mdinfo" id="mdInfo"></div>
+    <label class="lbl" for="mdNote">Catatan untuk menu ini <span class="muted">(opsional)</span></label>
+    <input id="mdNote" maxlength="80" autocomplete="off" placeholder="Contoh: gula sedikit, es dipisah">
+    <p class="menumsg" id="mdMsg"></p>
+  </div>
+  <div class="mdbuy">
+    <div class="qty has" id="mdQty"><button type="button" data-d="-1" aria-label="Kurangi jumlah">−</button><output id="mdN">1</output><button type="button" data-d="1" aria-label="Tambah jumlah">+</button></div>
+    <button type="button" class="btn" id="mdAdd"></button>
+  </div>
+</dialog>
+
 <!-- Bilah harga (form dan kirim) -->
 <footer class="sheet" id="sheet" hidden>
   <div class="grow"><div class="price" id="price"></div><div class="muted small" id="priceNote"></div></div>
   <a class="btn" id="next" href="#kirim">Lanjut <svg class="i"><use href="#i-arrow"/></svg></a>
+  <a class="btn" id="cartGo" hidden>Isi alamat <svg class="i"><use href="#i-arrow"/></svg></a>
   <a class="btn wa" id="send" target="_blank" rel="noopener"><svg class="i"><use href="#i-chat"/></svg><span>Kirim ke admin</span></a>
 </footer>
 

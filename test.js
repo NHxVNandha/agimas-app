@@ -116,3 +116,31 @@ assert.ok(!P.inRegion({ lat: -7.4260, lng: 111.0220 }, R));   // Sragen (Jawa Te
 assert.ok(!P.inRegion({ lat: -7.1500, lng: 111.8800 }, R));   // Bojonegoro
 assert.ok(!P.inRegion({ lat: -8.1940, lng: 111.1050 }, R));   // Pacitan
 console.log("tes wilayah lulus");
+
+// QRIS bernominal dari QRIS statis DANA Bisnis Agi Mas
+const QRIS = "00020101021126570011ID.DANA.WWW011893600915303282052602090328205260303UMI51440014ID.CO.QRIS.WWW0215ID10265381720850303UMI5204899953033605802ID5916AGI.PAY, Service6011Kota Madiun6105631366304B7B6";
+assert.ok(P.qrisValid(QRIS));                                          // CRC asli cocok
+assert.ok(!P.qrisValid(QRIS.slice(0, -1) + "7"));                      // CRC salah ditolak
+assert.strictEqual(P.qrisName(QRIS), "AGI.PAY, Service");
+const dyn = P.qrisAmount(QRIS, 25017);
+assert.ok(dyn.startsWith("000201010212") && dyn.includes("53033605405250175802ID") && P.qrisValid(dyn));
+assert.strictEqual(P.qrisAmount(P.qrisAmount(QRIS, 1000), 25017), dyn); // nominal diganti, bukan ditambah dua kali
+assert.strictEqual(P.qrisAmount("bukan qris", 1000), "");
+console.log("QRIS bernominal:", dyn);
+const withBill = P.qrisAmount(QRIS, 1000, "AGTES22");
+assert.ok(withBill.endsWith("62110107AGTES22" + "6304" + withBill.slice(-4)) && P.qrisValid(withBill));
+
+// Jam buka mitra
+const at = (h, m) => new Date(2026, 10, 18, h, m || 0);
+assert.ok(P.mitraOpen({}, at(3)).open);                                                     // tanpa jam = 24 jam
+assert.ok(P.mitraOpen({ open: "08:00", close: "23:00" }, at(8)).open);
+assert.ok(!P.mitraOpen({ open: "08:00", close: "23:00" }, at(23)).open);
+assert.ok(!P.mitraOpen({ open: "08:00", close: "23:00" }, at(7, 59)).open);
+assert.strictEqual(P.mitraOpen({ open: "08:00", close: "23:00" }, at(7)).text, "Tutup · buka 08.00");
+assert.strictEqual(P.mitraOpen({ open: "08:00", close: "23:00" }, at(12)).text, "Buka 08.00–23.00");
+assert.ok(P.mitraOpen({ open: "08:00", close: "24:00" }, at(23, 59)).open && !P.mitraOpen({ open: "08:00", close: "24:00" }, at(0, 30)).open);
+assert.ok(P.mitraOpen({ open: "16:00", close: "02:00" }, at(1)).open && !P.mitraOpen({ open: "16:00", close: "02:00" }, at(3)).open);
+const vd = JSON.parse(JSON.stringify(require("./web/data.json"))); vd.mitra = [{ name: "X", menu: [], open: "08:00", close: "" }];
+assert.ok(/keduanya/.test(P.validate(vd)));
+vd.mitra[0].close = "8 malam"; assert.ok(/format/.test(P.validate(vd)));
+vd.mitra[0].close = "22:00"; assert.strictEqual(P.validate(vd), "");

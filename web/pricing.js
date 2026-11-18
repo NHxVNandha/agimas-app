@@ -41,11 +41,23 @@
   /* ---------- Menu mitra (misal Lingkar Kopi) ----------
      Menu: { id, name, price, cat, desc, available, stock, stockStart }. stock null = jumlah tidak dihitung.
      Habis bila ditandai habis oleh admin atau stok angka 0. */
+  /* Jam buka mitra (waktu HP, sama seperti tambahan malam). open/close "HH:MM"; kosong = buka 24 jam.
+     Tutup lewat tengah malam didukung (misal 16:00–02:00); "24:00" atau "00:00" = tengah malam.
+     Hasil: { open: bool, text: "Buka 08.00–23.00" | "Tutup · buka 08.00" | "" } */
+  var HM = /^([01]\d|2[0-4]):[0-5]\d$/;
+  function mins(t) { return Number(t.slice(0, 2)) * 60 + Number(t.slice(3)); }
+  function dot(t) { return t.replace(":", "."); }
+  function mitraOpen(mt, now) {
+    if (!mt || !mt.open || !mt.close || !HM.test(mt.open) || !HM.test(mt.close)) return { open: true, text: "" };
+    var d = now || new Date(), n = d.getHours() * 60 + d.getMinutes(), a = mins(mt.open), b = mins(mt.close) % 1440;
+    var on = a === b || (a < b ? n >= a && n < b : n >= a || n < b);
+    return { open: on, text: on ? "Buka " + dot(mt.open) + "–" + dot(mt.close) : "Tutup · buka " + dot(mt.open) };
+  }
   function soldOut(m) { return !m.available || (m.stock != null && m.stock <= 0); }
   /* Pilihan pelanggan { idMenu: jumlah } -> daftar pesanan [{ id, name, price, qty }] (urut sesuai menu). */
-  function cartOf(mitra, picks) {
+  function cartOf(mitra, picks, notes) {
     return ((mitra && mitra.menu) || []).filter(function (m) { return picks[m.id] > 0; })
-      .map(function (m) { return { id: m.id, name: m.name, price: m.price, qty: picks[m.id] }; });
+      .map(function (m) { return { id: m.id, name: m.name, price: m.price, qty: picks[m.id], note: String((notes || {})[m.id] || "").trim() }; });
   }
   function menuTotal(cart) { return (cart || []).reduce(function (a, c) { return a + c.price * c.qty; }, 0); }
   /* Cek pesanan terhadap menu terbaru (sebelum dikirim): menu dihapus, habis, atau stok kurang. */
@@ -93,6 +105,7 @@
     var s = fields(o), lain = s.noKm;
     function v(x) { return String(x || "-").replace(/[*_~]/g, ""); } // isian pelanggan: jangan merusak format tebal
     var L = ["Halo " + adminName + ",", "saya mau pesan *" + s.name + "* (" + s.desc + ") lewat aplikasi Agi Mas.", ""];
+    if (o.code) L.push("Kode pesanan: *" + o.code + "*", "");
     L.push("*PEMESAN*", "Nama: " + v(o.name), "");
     L.push("*RUTE*", s.from + ": " + v(o.from));
     if (o.fromPt) L.push(mapLink(o.fromPt));
@@ -103,7 +116,7 @@
     var cart = o.cart || [], mt = menuTotal(cart);
     if (cart.length) {
       L.push("*PESANAN MENU" + (o.mitraName ? " — " + v(o.mitraName).toUpperCase() : "") + "*");
-      cart.forEach(function (c) { L.push("- " + c.qty + "x " + v(c.name) + " @ " + rp(c.price) + " = " + rp(c.price * c.qty)); });
+      cart.forEach(function (c) { L.push("- " + c.qty + "x " + v(c.name) + " @ " + rp(c.price) + " = " + rp(c.price * c.qty)); if (c.note) L.push("  _Catatan: " + v(c.note) + "_"); });
       L.push("Subtotal menu: *" + rp(mt) + "*", "");
     }
     var det = [];
@@ -121,8 +134,49 @@
       if (cart.length) L.push("*TOTAL (menu + ongkir): " + rp(mt + q.total) + "*");
       L.push(o.night ? "_Sudah termasuk tambahan malam. Tambahan hujan (jika hujan) ditetapkan admin._" : "_Tambahan hujan (jika hujan) ditetapkan admin._");
     }
+    L.push("", "*PEMBAYARAN*");
+    if (o.pay === "qris" && o.payAmt) L.push("QRIS " + v(o.payTo) + ": *" + rp(o.payAmt) + "*", o.paid ? "*SUDAH DIBAYAR* (mohon dicek di DANA Bisnis)" : "Belum dibayar");
+    else L.push("Tunai ke driver");
     L.push("", "Nomor WhatsApp ini boleh dibagikan ke driver yang bertugas.", "Terima kasih.");
     return L.join("\n");
+  }
+
+  /* ---------- QRIS bernominal ----------
+     QRIS statis (dari DANA Bisnis) diubah menjadi QRIS dengan nominal terisi: tag 01 = "12" (dinamis), tambah tag 54 (nominal),
+     lalu hitung ulang CRC16-CCITT di tag 63 (standar EMVCo/QRIS). Semua di HP, tanpa server. */
+  function crc16(str) {
+    var c = 0xFFFF;
+    for (var i = 0; i < str.length; i++) {
+      c ^= str.charCodeAt(i) << 8;
+      for (var j = 0; j < 8; j++) c = c & 0x8000 ? ((c << 1) ^ 0x1021) & 0xFFFF : (c << 1) & 0xFFFF;
+    }
+    return ("000" + c.toString(16).toUpperCase()).slice(-4);
+  }
+  function tlv(str) {   // [{t, v}] tingkat atas; null bila format rusak
+    var out = [], i = 0;
+    while (i < str.length) {
+      var t = str.substr(i, 2), n = Number(str.substr(i + 2, 2)), v = str.substr(i + 4, n);
+      if (!/^\d\d$/.test(t) || isNaN(n) || v.length !== n) return null;
+      out.push({ t: t, v: v }); i += 4 + n;
+    }
+    return out;
+  }
+  function qrisValid(base) {
+    base = String(base || "");
+    return /^000201/.test(base) && base.slice(-8, -4) === "6304" && crc16(base.slice(0, -4)) === base.slice(-4) && !!tlv(base);
+  }
+  /* Nama penerima (tag 59), untuk ditampilkan ke pelanggan. */
+  function qrisName(base) { var f = qrisValid(base) && tlv(base).filter(function (x) { return x.t === "59"; })[0]; return f ? f.v : ""; }
+  /* bill (opsional): nomor tagihan di tag 62 sub 01, misal kode pesanan. */
+  function qrisAmount(base, amount, bill) {
+    if (!qrisValid(base)) return "";
+    var amt = String(Math.round(amount)), f = tlv(base).filter(function (x) { return x.t !== "54" && x.t !== "63" && !(bill && x.t === "62"); });
+    if (bill) f.push({ t: "62", v: "01" + ("0" + bill.length).slice(-2) + bill });   // 62 tepat sebelum 63
+    f.forEach(function (x) { if (x.t === "01") x.v = "12"; });
+    var at = 0; while (at < f.length && f[at].t < "54") at++;   // tag tersusun urut: 54 sebelum 58
+    f.splice(at, 0, { t: "54", v: amt });
+    var body = f.map(function (x) { return x.t + ("0" + x.v.length).slice(-2) + x.v; }).join("") + "6304";
+    return body + crc16(body);
   }
 
   function mapLink(pt) { return "https://maps.google.com/?q=" + pt.lat.toFixed(6) + "," + pt.lng.toFixed(6); }
@@ -176,6 +230,9 @@
       var mt = ms[a], mn = String(mt.name || "").trim() || "ke-" + (a + 1);
       if (!String(mt.name || "").trim()) return "Nama mitra ke-" + (a + 1) + " wajib diisi.";
       if (!Array.isArray(mt.menu)) return "Menu " + mn + " tidak valid.";
+      for (var c = 0; c < mt.menu.length; c++) if (String(mt.menu[c].info || "").length > 1000) return "Informasi lengkap " + (mt.menu[c].name || "menu") + " (" + mn + ") maksimal 1000 huruf.";
+      if (!!mt.open !== !!mt.close) return "Jam buka dan jam tutup " + mn + " diisi keduanya, atau kosongkan keduanya (buka 24 jam).";
+      if (mt.open && (!HM.test(mt.open) || !HM.test(mt.close))) return "Jam " + mn + " harus berformat 08:00.";
       for (var b = 0; b < mt.menu.length; b++) {
         var m = mt.menu[b], lab = "Menu " + mn + " ke-" + (b + 1);
         if (!String(m.name || "").trim()) return "Nama " + lab.toLowerCase() + " wajib diisi.";
@@ -199,6 +256,6 @@
     return d;
   }
 
-  var api = { SVC: SVC, rp: rp, numTxt: numTxt, quote: quote, validPhone: validPhone, waText: waText, waLink: waLink, validate: validate, normPhone: normPhone, fields: fields, nearestDriver: nearestDriver, BELI: BELI, CAT: CAT, mapLink: mapLink, straightKm: straightKm, billKm: billKm, inRegion: inRegion, isNight: isNight, soldOut: soldOut, cartOf: cartOf, menuTotal: menuTotal, checkCart: checkCart };
+  var api = { mitraOpen: mitraOpen, qrisValid: qrisValid, qrisName: qrisName, qrisAmount: qrisAmount, SVC: SVC, rp: rp, numTxt: numTxt, quote: quote, validPhone: validPhone, waText: waText, waLink: waLink, validate: validate, normPhone: normPhone, fields: fields, nearestDriver: nearestDriver, BELI: BELI, CAT: CAT, mapLink: mapLink, straightKm: straightKm, billKm: billKm, inRegion: inRegion, isNight: isNight, soldOut: soldOut, cartOf: cartOf, menuTotal: menuTotal, checkCart: checkCart };
   if (typeof module !== "undefined") module.exports = api; else root.Pricing = api;
 })(this);
