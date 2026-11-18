@@ -4,11 +4,21 @@
   "scripts": {
     "test": "node test.js",
     "apk": "npx cap sync android && cd android && gradlew.bat assembleRelease",
-    "site": "node tools/build-site.js"
+    "site": "node tools/build-site.js",
+    "admin": "vite build"
   },
   "dependencies": {
     "@capacitor/android": "7.6.10",
     "@capacitor/cli": "7.6.10",
-    "@capacitor/core": "7.6.10"
+    "@capacitor/core": "7.6.10",
+    "@primeuix/themes": "1.2.5",
+    "lucide-vue-next": "0.577.0",
+    "primeicons": "7.0.0",
+    "primevue": "4.5.5",
+    "vue": "3.5.45"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "5.2.4",
+    "vite": "6.4.6"
   }
 }

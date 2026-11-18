@@ -1,11 +1,15 @@
 // Rakit folder dist/ untuk deploy web (Netlify): aplikasi web + halaman /unduh + APK terbaru.
 // APK sengaja TIDAK ditaruh di web/, karena web/ ikut masuk ke dalam APK (Capacitor) dan ukurannya akan membengkak.
 // Pakai: npm run site
-const fs = require("fs"), path = require("path");
+const fs = require("fs"), path = require("path"), { execSync } = require("child_process");
 const root = path.join(__dirname, ".."), dist = path.join(root, "dist");
 
 fs.rmSync(dist, { recursive: true, force: true });
 fs.cpSync(path.join(root, "web"), dist, { recursive: true });
+// Panel admin (Vue + PrimeVue, folder admin/) dibangun terpisah dan tidak ikut masuk APK. /admin.html lama dialihkan ke /admin/.
+execSync("npx vite build", { cwd: root, stdio: "inherit" });
+fs.cpSync(path.join(root, "dist-admin"), path.join(dist, "admin"), { recursive: true });
+fs.writeFileSync(path.join(dist, "_redirects"), "/admin.html  /admin/  301\n");
 fs.mkdirSync(path.join(dist, "unduh"), { recursive: true });
 fs.copyFileSync(path.join(root, "site", "unduh.html"), path.join(dist, "unduh", "index.html"));
 
@@ -22,8 +26,10 @@ fs.writeFileSync(path.join(dist, "_headers"), [
   "  Content-Type: application/vnd.android.package-archive",
   "  Content-Disposition: attachment; filename=AgiMas.apk",
   "  Cache-Control: no-cache",
-  "/admin.html",
+  "/admin/*",
   "  X-Robots-Tag: noindex",
+  "/admin/",
+  "  Cache-Control: no-cache",
   "/sw.js",
   "  Cache-Control: no-cache",
   "/data.json",

@@ -2,7 +2,7 @@
 
 Pelanggan: pilih layanan → isi detail (harga langsung muncul) → pilih driver (opsional) → **Kirim ke admin** membuka WhatsApp admin dengan teks pesanan. Admin yang menugaskan driver.
 
-Admin: `admin.html` — ubah status driver (Aktif / Istirahat / Tidak narik), tambah/hapus driver, nomor admin, dan tarif. Tersimpan di Firebase dan langsung terlihat di aplikasi pelanggan, **tanpa build APK baru**.
+Admin: `/admin/` — panel Vue 3 + PrimeVue (folder `admin/`): ringkasan, status & area driver, mitra beserta menu & stok, tarif, nomor admin, dan ulasan. Tersimpan di Firebase dan langsung terlihat di aplikasi pelanggan, **tanpa build APK baru**.
 
 Semua gratis: Firebase paket Spark (tanpa kartu kredit, tidak dijeda), Netlify gratis, APK dibagikan langsung (tanpa Play Store).
 
@@ -20,7 +20,8 @@ Tema terang biru mengikuti gaya NgajiQuest (`D:\HU\TemanNgaji\desain-ngajiquest`
 ## Isi folder
 | Path | Isi |
 |---|---|
-| `web/` | Aplikasi (index.html, app.js, style.css), panel admin (admin.html), `pricing.js` (harga, teks WA, validasi, cek wilayah), `store.js` + `config.js` (Firebase), `map.js` + `region.js` (peta & wilayah), `splash.js`, `data.json` (data bawaan), `vendor/` (MapLibre), `fonts/` |
+| `admin/` | Panel admin: Vue 3 + Vite + PrimeVue (gratis, MIT). `npm run admin` membangunnya ke `dist-admin/`; `npm run site` sudah menjalankannya. Memakai `store.js`, `pricing.js`, `map.js` dari `web/` (tidak masuk APK). |
+| `web/` | Aplikasi pelanggan (index.html, app.js, style.css), `pricing.js` (harga, teks WA, validasi, cek wilayah), `store.js` + `config.js` (Firebase), `map.js` + `region.js` (peta & wilayah), `splash.js`, `data.json` (data bawaan), `vendor/` (MapLibre), `fonts/` |
 | `assets/` | Sumber gambar: `logo-agimas-fhd.png` (logo FHD 1920×1080 tanpa motor), `logo-crop-asli.png`, `preview.png` (pratinjau ikon) |
 | `firestore.rules` | Aturan keamanan Firebase |
 | `android/` | Project Android (Capacitor). Ikon & layar awal di `android/app/src/main/res/` |
@@ -33,7 +34,7 @@ Tema terang biru mengikuti gaya NgajiQuest (`D:\HU\TemanNgaji\desain-ngajiquest`
 3. **Firestore → Rules**: tempel isi `firestore.rules`, ganti `admin@contoh.com` dengan email admin → **Publish**.
 4. **Build → Authentication → Get started → Email/Password → Enable**. Tab **Users → Add user**: email admin yang sama + kata sandi.
 5. **Project settings (ikon gerigi) → General → Your apps → Web (`</>`)** → daftarkan. Salin `apiKey` dan `projectId` ke `web/config.js`.
-6. Buka `admin.html`, masuk, tekan **Simpan** sekali. Ini membuat data online pertama dari `data.json`.
+6. Buka `/admin/` (panel admin), masuk, tekan **Simpan** sekali. Ini membuat data online pertama dari `data.json`.
 
 ## 2. Situs web, panel admin, dan unduhan (Netlify, gratis)
 Situs: **https://solusiagimas.netlify.app** (akun Netlify tim `kurniahary-tz`, project ID `039a0056-e5b6-4e76-a75b-fba4a7e5803a`).
@@ -43,11 +44,11 @@ Situs: **https://solusiagimas.netlify.app** (akun Netlify tim `kurniahary-tz`, p
 | `/` | Aplikasi web. iPhone: Safari → Bagikan → "Tambah ke Layar Utama" |
 | `/unduh/` | Halaman unduh: Android → APK, iPhone → petunjuk, komputer → QR |
 | `/unduh/AgiMas.apk` | APK terbaru dari `release/` |
-| `/admin.html` | Panel admin (tidak diindeks mesin pencari) |
+| `/admin/` | Panel admin (tidak diindeks mesin pencari). Alamat lama `/admin.html` dialihkan ke sini |
 
 Deploy ulang (setelah ada perubahan atau APK baru):
 ```
-npm run site                                   # rakit dist/: web/ + site/unduh.html + APK terbaru + _headers
+npm run site                                   # rakit dist/: web/ + panel admin (Vue) + site/unduh.html + APK terbaru + _headers
 npx netlify-cli deploy --dir=dist --prod --site 039a0056-e5b6-4e76-a75b-fba4a7e5803a
 ```
 Login sekali dengan `npx netlify-cli login`. Catatan: tim Netlify ini mengaktifkan "Visitor access" (hanya anggota tim) untuk situs baru; untuk situs ini sudah dimatikan (`sso_login: false`) supaya publik. Situs baru lain perlu dimatikan juga.
