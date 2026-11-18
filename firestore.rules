@@ -6,6 +6,12 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null && request.auth.token.email in ['kurnianhxvnandha@gmail.com'];
     }
+    // Pegawai mitra: akun yang didaftarkan admin di staf/{uid} = { mitra: idMitra }.
+    function isStaffOf(mid) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/staf/$(request.auth.uid))
+        && get(/databases/$(database)/documents/staf/$(request.auth.uid)).data.mitra == mid;
+    }
 
     // Data aplikasi (driver, admin, tarif): semua boleh membaca, hanya admin yang mengubah.
     match /app/data {
@@ -14,6 +20,15 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['json'])
         && request.resource.data.json is string
         && request.resource.data.json.size() < 200000;
+    }
+
+    // Foto menu mitra (gambar kecil yang sudah dikecilkan panel admin): semua boleh membaca, hanya admin yang mengubah.
+    match /app/foto {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['json'])
+        && request.resource.data.json is string
+        && request.resource.data.json.size() < 1000000;
     }
 
     // Ulasan pelanggan (bintang 1–5, kritik & saran): siapa saja boleh mengirim dan membaca (tampil di aplikasi), hanya admin yang menghapus.
@@ -25,6 +40,42 @@ service cloud.firestore {
         && request.resource.data.name is string && request.resource.data.name.size() < 61;
       allow read: if true;
       allow delete: if isAdmin();
+    }
+
+    // Menu, stok, dan jam buka per mitra: semua boleh membaca; admin dan pegawai mitra itu sendiri yang mengubah.
+    match /mitra/{mid} {
+      allow read: if true;
+      allow create, update: if (isAdmin() || isStaffOf(mid))
+        && request.resource.data.keys().hasOnly(['json'])
+        && request.resource.data.json is string
+        && request.resource.data.json.size() < 200000;
+      allow delete: if isAdmin();
+    }
+
+    // Akun pegawai mitra: hanya admin yang membuat/menghapus; pegawai boleh membaca miliknya sendiri (untuk tahu mitranya).
+    match /staf/{uid} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == uid);
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['mitra', 'email'])
+        && request.resource.data.mitra is string && request.resource.data.email is string;
+      allow delete: if isAdmin();
+    }
+
+    // Catatan pesanan (+ mitra & jumlah per menu untuk pengurangan stok): isi pesan WA saat pelanggan menekan "Kirim ke admin", ID = kode pesanan (AG + 5 huruf/angka).
+    // Pelanggan hanya boleh membuat, tidak bisa mengubah; hanya admin yang membaca (berisi nama & alamat pelanggan).
+    match /pesanan/{kode} {
+      allow create: if kode.matches('AG[2-9A-Z]{5}')
+        && request.resource.data.keys().hasOnly(['text', 'total', 'at', 'mitra', 'items'])
+        && (!('mitra' in request.resource.data) || (request.resource.data.mitra is string && request.resource.data.mitra.size() < 40))
+        && (!('items' in request.resource.data) || (request.resource.data.items is map && request.resource.data.items.size() < 60))
+        && request.resource.data.text is string && request.resource.data.text.size() < 8000
+        && request.resource.data.total is int && request.resource.data.total >= 0
+        && request.resource.data.at is timestamp;
+      allow read, delete: if isAdmin();
+      // Admin hanya boleh menandai "dikonfirmasi" (stok mitra lalu dikurangi dari panel admin).
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status == 'ok';
     }
   }
 }
