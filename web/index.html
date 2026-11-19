@@ -309,12 +309,6 @@
     </form>
   </section>
 
-  <!-- Keranjang menu mitra (tersimpan di HP) -->
-  <section id="v-keranjang" class="view" hidden>
-    <div class="card cartbox" id="cartBox"></div>
-    <p class="menumsg" id="cartMsg" aria-live="polite"></p>
-  </section>
-
   <!-- Kirim ke admin (driver terdekat dicarikan otomatis) -->
   <section id="v-kirim" class="view" hidden>
     <div class="card summary">
@@ -355,12 +349,6 @@
   <a href="#bantuan" data-tab="bantuan"><svg class="i"><use href="#i-help"/></svg><span>Bantuan</span></a>
 </nav>
 
-<!-- Bilah keranjang melayang (ada menu mitra di keranjang) -->
-<a class="cartbar" id="cartBar" href="#keranjang" hidden>
-  <span class="cb-ic"><svg class="i"><use href="#i-bag"/></svg><b id="cartN"></b></span>
-  <span class="grow"><b id="cartTitle">Keranjang</b><small id="cartSub"></small></span>
-  <b id="cartTot"></b><svg class="i"><use href="#i-right"/></svg>
-</a>
 
 <!-- Detail menu mitra -->
 <dialog class="menudlg" id="menuDlg" aria-labelledby="mdName">
@@ -382,12 +370,22 @@
   </div>
 </dialog>
 
-<!-- Bilah harga (form dan kirim) -->
+<!-- Bilah harga (form dan kirim). Di menu mitra: geser ke atas / ketuk untuk membuka keranjang. -->
+<div class="sdim" id="sDim" hidden></div>
 <footer class="sheet" id="sheet" hidden>
+  <div class="scart" id="sCart" hidden>
+    <button type="button" class="sgrab" id="sGrab" aria-expanded="false" aria-controls="sList">
+      <span class="handle" aria-hidden="true"></span>
+      <span class="shead"><span class="sic"><svg class="i"><use href="#i-bag"/></svg><b id="sN"></b></span>
+        <span class="grow"><b>Keranjang</b><small id="sSub"></small></span><b class="stot" id="sTot"></b><svg class="i chev"><use href="#i-right"/></svg></span>
+    </button>
+    <div class="slist" id="sList"></div>
+  </div>
+  <div class="srow">
   <div class="grow"><div class="price" id="price"></div><div class="muted small" id="priceNote"></div></div>
   <a class="btn" id="next" href="#kirim">Lanjut <svg class="i"><use href="#i-arrow"/></svg></a>
-  <a class="btn" id="cartGo" hidden>Isi alamat <svg class="i"><use href="#i-arrow"/></svg></a>
   <a class="btn wa" id="send" target="_blank" rel="noopener"><svg class="i"><use href="#i-chat"/></svg><span>Kirim ke admin</span></a>
+  </div>
 </footer>
 
 <!-- Pemilih titik di peta -->

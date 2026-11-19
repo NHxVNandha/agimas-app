@@ -3,8 +3,8 @@
   var QRIS = (window.AGIMAS_CONFIG || {}).qris || "";   // QRIS statis DANA Bisnis (config.js)
   /* Pembanding: kisaran tarif ojek online Zona I (Kemenhub), hanya untuk antar penumpang (sama seperti website). */
   var BAND = { loMin: 8000, hiMin: 10000, loKm: 2000, hiKm: 2500 };
-  var TITLES = { ulasan: "Ulasan", bantuan: "Bantuan", kirim: "Kirim ke admin", keranjang: "Keranjang" };
-  var VIEWS = ["home", "pesan", "keranjang", "kirim", "ulasan", "bantuan"];
+  var TITLES = { ulasan: "Ulasan", bantuan: "Bantuan", kirim: "Kirim ke admin" };
+  var VIEWS = ["home", "pesan", "kirim", "ulasan", "bantuan"];
   var o = { night: false, rain: false, svc: "orang", beliType: "makan", beliCat: "", km: null, w: 0, name: "", item: "", from: "", to: "", note: "", nearest: null, fromPt: null, toPt: null, mitra: "", picks: {}, cart: [], mitraName: "", pay: "tunai", paid: false, payAmt: 0, payTo: "", notes: {} };
   var routeSeq = 0, routing = false;
   function $(id) { return document.getElementById(id); }
@@ -13,7 +13,7 @@
 
   /* ---------- Keranjang: menu mitra yang dipilih, tersimpan di HP (localStorage), satu mitra per keranjang ----------
      cart.picks { idMenu: jumlah }, cart.notes { idMenu: catatan }. Di halaman menu mitra, o.picks/o.notes = objek yang sama. */
-  var CART_KEY = "agimas.cart", view = "home", sentCart = false, goRoute = false;
+  var CART_KEY = "agimas.cart", view = "home", sentCart = false, goRoute = false, openCart = false;
   var cart = (function () {
     try { var c = JSON.parse(localStorage.getItem(CART_KEY)); if (c && c.mitra && c.picks) return { mitra: String(c.mitra), picks: c.picks, notes: c.notes || {} }; } catch (e) {}
     return { mitra: "", picks: {}, notes: {} };
@@ -21,7 +21,7 @@
   function cartCount() { var n = 0; for (var k in cart.picks) n += cart.picks[k]; return n; }
   function saveCart() {
     try { if (cart.mitra && cartCount()) localStorage.setItem(CART_KEY, JSON.stringify(cart)); else localStorage.removeItem(CART_KEY); } catch (e) {}
-    renderCartBar();
+    renderSheetCart();
   }
   function clearCart() {
     cart = { mitra: "", picks: {}, notes: {} };
@@ -104,7 +104,7 @@
         return (cats.length > 1 || c !== "Menu" ? '<p class="mcat">' + esc(c) + "</p>" : "") + by[c].map(function (m) {
           var off = P.soldOut(m), q = o.picks[m.id] || 0, max = m.stock != null ? m.stock : 99;
           var tag = off ? '<span class="mstk">Habis</span>' : (m.stock != null && m.stock <= 5 ? '<span class="mstk">Sisa ' + m.stock + "</span>" : "");
-          var img = fotoOf(m.id) ? '<img class="mimg" src="' + fotoOf(m.id) + '" alt="" loading="lazy">' : "";
+          var img = menuPic(m);   // selalu ada gambar: foto atau ilustrasi kategori
           var note = o.notes[m.id] ? '<small class="mnote">Catatan: ' + esc(o.notes[m.id]) + "</small>" : "";
           return '<div class="mitem' + (off ? " off" : "") + '"><button type="button" class="mopen" data-detail="' + esc(m.id) + '" aria-label="Detail ' + esc(m.name) + '">' + img + '<span class="grow"><b>' + esc(m.name) + "</b>" + (m.desc ? "<small>" + esc(m.desc) + "</small>" : "") +
             '<span class="mprice">' + esc(P.rp(m.price)) + "</span>" + tag + note + "</span></button>" +
@@ -290,6 +290,9 @@
   function route() {
     var parts = location.hash.replace("#", "").split("/");
     var prevView = view;
+    if (parts[0] === "keranjang") {   // tautan lama (sebelum keranjang pindah ke bilah harga): buka menu mitranya dengan keranjang terbuka
+      openCart = !!cart.mitra; location.replace(cart.mitra ? "#pesan/beli/makan/" + encodeURIComponent(cart.mitra) : "#"); return;
+    }
     view = VIEWS.indexOf(parts[0]) > 0 ? parts[0] : "home";
     if (view === "pesan" && P.SVC[parts[1]]) {
       var prev = o.svc + o.beliType;
@@ -308,9 +311,8 @@
     $("title").textContent = TITLES[view] || P.SVC[o.svc].name;
     $("tabs").hidden = !tab; $("sheet").hidden = tab;
     Array.prototype.forEach.call($("tabs").children, function (a) { if (a.dataset.tab === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    $("next").hidden = view !== "pesan"; $("send").hidden = view !== "kirim"; $("cartGo").hidden = view !== "keranjang";
+    $("next").hidden = view !== "pesan"; $("send").hidden = view !== "kirim";
     if (view === "pesan") renderForm();
-    if (view === "keranjang") renderCart();
     if (view === "kirim") {
       o.code = orderCode(); o.paid = false; $("paid").checked = false; readForm(); renderForm(); renderSend();
       refreshData().then(function (ok) { if (ok && view === "kirim") { renderForm(); renderSend(); } });   // driver terdekat dari status terbaru
@@ -318,54 +320,45 @@
     if (view === "ulasan") loadPublicReviews();
     scrollTo(0, 0);
     if (goRoute && view === "pesan") { goRoute = false; var rc = document.querySelector("#form .card.route"); if (rc) rc.scrollIntoView({ block: "start" }); }
-    renderCartBar();
+    renderSheetCart(); setSheet(openCart); openCart = false;
   }
 
-  /* Bilah keranjang melayang: di Beranda/Ulasan/Bantuan dan di halaman menu mitranya, tepat di atas navigasi/bilah harga. */
-  function renderCartBar() {
+  /* Gambar menu: foto dari admin, atau ilustrasi kategori (minuman / makanan) bila belum ada foto. */
+  function isFood(m) { return /makan|snack|camil|roti|nasi|mie|gorengan/i.test((m.cat || "") + " " + (m.name || "")) && !/minum|kopi|teh|jus|susu/i.test(m.cat || ""); }
+  function menuPic(m) {
+    var f = fotoOf(m.id), food = isFood(m);
+    return f ? '<img class="mimg" src="' + f + '" alt="" loading="lazy">'
+      : '<span class="mimg ph' + (food ? " food" : "") + '" aria-hidden="true"><svg class="i"><use href="#i-' + (food ? "food" : "coffee") + '"/></svg></span>';
+  }
+
+  /* Keranjang di bilah harga (bottom sheet): tampil di halaman menu mitranya; geser ke atas / ketuk untuk membuka daftar. */
+  function setSheet(open) {
+    open = !!open && !$("sCart").hidden;
+    $("sheet").classList.toggle("open", open); $("sGrab").setAttribute("aria-expanded", String(open));
+    $("sDim").hidden = !open; $("sList").style.maxHeight = "";
+    $("sSub").textContent = $("sSub").textContent.replace(/geser ke (atas untuk melihat|bawah untuk menutup)/, open ? "geser ke bawah untuk menutup" : "geser ke atas untuk melihat");
+  }
+  function renderSheetCart() {
     var n = cartCount(), mt = mitraById(cart.mitra);
-    var show = n > 0 && !!mt && (view === "home" || view === "ulasan" || view === "bantuan" || (view === "pesan" && o.mitra === cart.mitra));
-    $("cartBar").hidden = !show; document.body.classList.toggle("has-cart", show);
-    if (!show) return;
-    $("cartN").textContent = n; $("cartTitle").textContent = "Keranjang " + mt.name;
-    var hr = P.mitraOpen(mt);
-    $("cartSub").textContent = n + " item" + (hr.open ? "" : " · " + hr.text);
-    $("cartTot").textContent = P.rp(P.menuTotal(P.cartOf(mt, cart.picks, cart.notes)));
-    var ref = !$("tabs").hidden ? $("tabs") : $("sheet");
-    $("cartBar").style.bottom = Math.max(12, innerHeight - ref.getBoundingClientRect().top + 10) + "px";
-  }
-
-  /* Halaman keranjang: ubah jumlah & catatan, subtotal, lanjut isi alamat. */
-  function renderCart() {
-    var mt = mitraById(cart.mitra);
-    if (mt) needFoto();
-    var fixed = mt ? fixCart(mt) : [];
-    $("cartMsg").textContent = fixed.length ? "Keranjang disesuaikan: " + fixed.join(", ") + "." : "";
-    var items = mt ? P.cartOf(mt, cart.picks, cart.notes) : [], tot = P.menuTotal(items), hr = P.mitraOpen(mt);
-    if (!items.length) {
-      var first = shownMitra()[0];
-      $("cartBox").innerHTML = '<div class="cartempty"><span class="ti"><svg class="i"><use href="#i-bag"/></svg></span><b>Keranjang masih kosong</b><p class="muted small">Pilih menu dari mitra Agi Mas, lalu kembali ke sini.</p>' +
-        (first ? '<a class="btn sm" href="#pesan/beli/makan/' + encodeURIComponent(first.id) + '">Lihat menu ' + esc(first.name) + "</a>" : "") + "</div>";
-    } else {
-      $("cartBox").innerHTML = '<div class="mhd"><span class="ti"><svg class="i"><use href="#i-coffee"/></svg></span><div class="grow"><b>' + esc(mt.name) + "</b><small>" + esc(hr.text || mt.place || "") + "</small></div>" +
-        '<a class="link sm" href="#pesan/beli/makan/' + encodeURIComponent(mt.id) + '">+ Tambah menu</a></div>' +
-        (hr.open ? "" : '<p class="mclosed">' + esc(mt.name) + " sedang tutup. Keranjang tetap tersimpan; pesan setelah buka.</p>") +
-        items.map(function (c) {
-          var m = mt.menu.filter(function (x) { return x.id === c.id; })[0], max = m.stock != null ? m.stock : 99;
-          var img = fotoOf(c.id) ? '<img class="mimg" src="' + fotoOf(c.id) + '" alt="">' : '<span class="mimg ph"><svg class="i"><use href="#i-coffee"/></svg></span>';
-          return '<div class="citem"><button type="button" class="mopen" data-detail="' + esc(c.id) + '" aria-label="Detail ' + esc(c.name) + '">' + img + "</button>" +
-            '<div class="grow"><b>' + esc(c.name) + '</b><span class="mprice">' + esc(P.rp(c.price * c.qty)) + (c.qty > 1 ? ' <small>(' + esc(P.rp(c.price)) + " / item)</small>" : "") + "</span>" +
-            '<input class="cnote" data-note="' + esc(c.id) + '" maxlength="80" value="' + esc(c.note) + '" placeholder="Tambah catatan (opsional)" aria-label="Catatan ' + esc(c.name) + '"></div>' +
-            '<div class="qty has"><button type="button" data-cq="-1" data-id="' + esc(c.id) + '" aria-label="Kurangi ' + esc(c.name) + '">' + (c.qty > 1 ? "−" : '<svg class="i"><use href="#i-trash"/></svg>') + "</button><output>" + c.qty +
-            '</output><button type="button" data-cq="1" data-id="' + esc(c.id) + '" aria-label="Tambah ' + esc(c.name) + '"' + (c.qty >= max ? " disabled" : "") + ">+</button></div></div>";
-        }).join("") +
-        '<div class="menusum"><span>Subtotal ' + cartCount() + " item</span><span>" + esc(P.rp(tot)) + "</span></div>";
-    }
-    $("price").textContent = items.length ? P.rp(tot) : "Rp 0";
-    $("priceNote").textContent = !items.length ? "Keranjang kosong" : hr.open ? "Subtotal menu · ongkir dihitung setelah alamat diisi" : mt.name + " sedang tutup";
-    var ok = items.length && hr.open;
-    $("cartGo").setAttribute("aria-disabled", String(!ok));
-    $("cartGo").href = ok ? "#pesan/beli/makan/" + encodeURIComponent(mt.id) : "#keranjang";
+    var show = n > 0 && !!mt && view === "pesan" && o.mitra === cart.mitra;
+    $("sCart").hidden = !show; document.body.classList.toggle("has-cart", show);
+    if (!show) { setSheet(false); return; }
+    needFoto();
+    var fixed = fixCart(mt), items = P.cartOf(mt, cart.picks, cart.notes), hr = P.mitraOpen(mt);
+    if (!items.length) { $("sCart").hidden = true; document.body.classList.remove("has-cart"); setSheet(false); return; }
+    $("sN").textContent = cartCount();
+    $("sSub").textContent = cartCount() + " item · " + (hr.open ? "geser ke atas untuk melihat" : hr.text);
+    $("sTot").textContent = P.rp(P.menuTotal(items));
+    $("sList").innerHTML = (fixed.length ? '<p class="menumsg">Keranjang disesuaikan: ' + esc(fixed.join(", ")) + ".</p>" : "") +
+      (hr.open ? "" : '<p class="mclosed">' + esc(mt.name) + " sedang tutup. Keranjang tetap tersimpan; pesan setelah buka.</p>") +
+      items.map(function (c) {
+        var m = mt.menu.filter(function (x) { return x.id === c.id; })[0], max = m.stock != null ? m.stock : 99;
+        return '<div class="citem"><button type="button" class="mopen" data-detail="' + esc(c.id) + '" aria-label="Detail ' + esc(c.name) + '">' + menuPic(m) + "</button>" +
+          '<div class="grow"><b>' + esc(c.name) + '</b><span class="mprice">' + esc(P.rp(c.price * c.qty)) + (c.qty > 1 ? ' <small>(' + esc(P.rp(c.price)) + " / item)</small>" : "") + "</span>" +
+          '<input class="cnote" data-note="' + esc(c.id) + '" maxlength="80" value="' + esc(c.note) + '" placeholder="Tambah catatan (opsional)" aria-label="Catatan ' + esc(c.name) + '"></div>' +
+          '<div class="qty has"><button type="button" data-cq="-1" data-id="' + esc(c.id) + '" aria-label="Kurangi ' + esc(c.name) + '">' + (c.qty > 1 ? "−" : '<svg class="i"><use href="#i-trash"/></svg>') + "</button><output>" + c.qty +
+          '</output><button type="button" data-cq="1" data-id="' + esc(c.id) + '" aria-label="Tambah ' + esc(c.name) + '"' + (c.qty >= max || !hr.open ? " disabled" : "") + ">+</button></div></div>";
+      }).join("");
   }
 
   /* Detail menu: foto besar, informasi lengkap, jumlah & catatan, tambah ke keranjang. */
@@ -376,8 +369,8 @@
     var hr = P.mitraOpen(mt), have = cart.mitra === mt.id ? cart.picks[id] || 0 : 0;
     md = { mt: mt, m: m, have: have, n: have || 1, max: m.stock != null ? m.stock : 99, why: P.soldOut(m) ? "Menu sedang habis" : !hr.open ? mt.name + " sedang tutup" : "" };
     var pic = fotoOf(id);
-    $("mdPic").innerHTML = pic ? '<img src="' + pic + '" alt="Foto ' + esc(m.name) + '">' : '<svg class="i"><use href="#i-coffee"/></svg>';
-    $("mdPic").classList.toggle("ph", !pic);
+    $("mdPic").innerHTML = pic ? '<img src="' + pic + '" alt="Foto ' + esc(m.name) + '">' : '<svg class="i"><use href="#i-' + (isFood(m) ? "food" : "coffee") + '"/></svg>';
+    $("mdPic").classList.toggle("ph", !pic); $("mdPic").classList.toggle("food", !pic && isFood(m));
     $("mdCat").textContent = (m.cat || "Menu") + " · " + mt.name;
     $("mdName").textContent = m.name;
     $("mdPrice").textContent = P.rp(m.price);
@@ -409,7 +402,7 @@
     if (md.n > 0) { cart.picks[id] = md.n; if (note) cart.notes[id] = note; else delete cart.notes[id]; }
     else { delete cart.picks[id]; delete cart.notes[id]; }
     saveCart(); $("menuDlg").close();
-    if (view === "pesan") renderForm(); else if (view === "keranjang") renderCart();
+    if (view === "pesan") renderForm();
   }
 
   /* "Setiap hari, 05.00–23.00" → "05.00–23.00" (jam layanan admin) */
@@ -665,9 +658,8 @@
   function redraw() {
     if (view === "home") renderHome();
     else if (view === "pesan") renderForm();
-    else if (view === "keranjang") renderCart();
     else if (view === "kirim") { renderForm(); renderSend(); }
-    renderCartBar();
+    renderSheetCart();
   }
 
   function start(res) {
@@ -709,25 +701,47 @@
       if (q > 0) o.picks[id] = q; else { delete o.picks[id]; delete o.notes[id]; }
       $("menuMsg").textContent = ""; saveCart(); renderForm();
     });
-    // Keranjang: jumlah, hapus, catatan, detail
-    $("cartBox").addEventListener("click", function (e) {
+    // Keranjang di bilah harga: jumlah, hapus, catatan, detail
+    $("sList").addEventListener("click", function (e) {
       var d = e.target.closest("button[data-detail]"); if (d) { openDetail(d.dataset.detail); return; }
       var b = e.target.closest("button[data-cq]"); if (!b || b.disabled) return;
       var id = b.dataset.id, q = (cart.picks[id] || 0) + Number(b.dataset.cq);
       if (q > 0) cart.picks[id] = q; else { delete cart.picks[id]; delete cart.notes[id]; }
-      saveCart(); renderCart();
+      saveCart(); if (view === "pesan") renderForm();
     });
-    $("cartBox").addEventListener("input", function (e) {
+    $("sList").addEventListener("input", function (e) {
       var id = e.target.dataset.note; if (!id) return;
       var v = e.target.value.trim(); if (v) cart.notes[id] = v; else delete cart.notes[id];
-      saveCart();
+      try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (er) {}   // tanpa gambar ulang: kursor tetap di kolom catatan
     });
-    $("cartGo").addEventListener("click", function (e) { if ($("cartGo").getAttribute("aria-disabled") === "true") { e.preventDefault(); return; } goRoute = true; });
+    // Geser bilah keranjang: ke atas = buka, ke bawah = tutup, ketuk = buka/tutup. Daftar mengikuti jari selama digeser.
+    (function () {
+      var g = $("sGrab"), list = $("sList"), y0 = 0, h0 = 0, moved = false, down = false;
+      function full() { return Math.min(list.scrollHeight, innerHeight * 0.58); }
+      g.addEventListener("pointerdown", function (e) {
+        down = true; moved = false; y0 = e.clientY; h0 = $("sheet").classList.contains("open") ? full() : 0;
+        try { g.setPointerCapture(e.pointerId); } catch (er) {}
+      });
+      g.addEventListener("pointermove", function (e) {
+        if (!down) return;
+        var dy = e.clientY - y0;
+        if (!moved && Math.abs(dy) < 8) return;
+        moved = true; list.style.transition = "none"; list.style.maxHeight = Math.max(0, Math.min(full(), h0 - dy)) + "px";
+        $("sDim").hidden = false;
+      });
+      function end() {
+        if (!down) return;
+        down = false; list.style.transition = "";
+        if (moved) setSheet((parseFloat(list.style.maxHeight) || 0) > full() * (h0 ? 0.75 : 0.25));   // dari tertutup cukup sedikit; dari terbuka harus ditarik jauh untuk menutup
+      }
+      g.addEventListener("pointerup", end); g.addEventListener("pointercancel", end);
+      g.addEventListener("click", function () { if (!moved) setSheet(!$("sheet").classList.contains("open")); moved = false; });
+      $("sDim").addEventListener("click", function () { setSheet(false); });
+    })();
     $("mdQty").addEventListener("click", function (e) { var b = e.target.closest("button[data-d]"); if (!b || b.disabled) return; md.n = Math.max(0, md.n + Number(b.dataset.d)); renderMd(); });
     $("mdAdd").addEventListener("click", applyDetail);
     $("mdClose").addEventListener("click", function () { $("menuDlg").close(); });
     $("menuDlg").addEventListener("click", function (e) { if (e.target === $("menuDlg")) $("menuDlg").close(); });   // ketuk di luar kotak
-    window.addEventListener("resize", renderCartBar);
     // Sebelum lanjut, cek stok terbaru di server: menu yang baru saja habis/berkurang disesuaikan dulu.
     $("next").addEventListener("click", function (e) {
       var mt = mitraById(o.mitra);
