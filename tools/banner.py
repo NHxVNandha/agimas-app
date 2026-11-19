@@ -237,6 +237,12 @@ html, body {{ margin: 0; font-family: 'PJS', sans-serif; }}
 .hero .side .art {{ flex: 1; min-height: 0; width: 100%; object-fit: contain; object-position: right bottom; }}
 """
 
+# Pilihan akhir: gelembung chat, warna hijau Lingkar Kopi (sama dengan tema aplikasi kasir)
+HIJAU = [
+    ("gelembung-hijau-1-hutan", "Gelembung chat · Hijau hutan", bubble, dict(bg="#173f2e", ink="#f1fbf4", soft="#b5d6c1", acc="#8fe0b0", btn="#173f2e")),
+    ("gelembung-hijau-2-segar", "Gelembung chat · Hijau segar", bubble, dict(bg="#2f9e62", ink="#ffffff", soft="#dcf3e5", acc="#ffffff", btn="#1b6a40")),
+    ("gelembung-hijau-3-mint", "Gelembung chat · Mint", bubble, dict(bg="#e4f4ea", ink="#173f2e", soft="#3d6b52", acc="#173f2e", btn="#ffffff")),
+]
 HERO = f'''<div class="hero"><span class="pill">Antar · Beli · Bantu</span><h2>Saget sembarang kalir.</h2>
 <p>Antar, beli, dan bantu di Madiun dan sekitarnya.</p><span class="btn">Pesan sekarang {ARROW}</span>
 <div class="side"><img class="lg" src="{LOGO}" alt=""><img class="art" src="{MOTOR}" alt=""></div></div>'''
@@ -256,7 +262,7 @@ def main():
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path=r"C:\Program Files\Google\Chrome\Application\chrome.exe")
         pg = b.new_page(viewport={"width": W, "height": BH}, device_scale_factor=3)
-        for key, name, make, t in CHOICES + UNIK:
+        for key, name, make, t in CHOICES + UNIK + HIJAU:
             show(pg, make(t))
             bad = pg.evaluate("""(() => { const c = document.querySelector('.bn').getBoundingClientRect();
               return [...document.querySelectorAll('.bn h3, .bn p, .bn .btn, .bn ul, .bn .mini, .bn .tag')].filter(e => { const r = e.getBoundingClientRect();
@@ -266,7 +272,8 @@ def main():
             print("OK", key)
         pg.set_viewport_size({"width": 3 * 390 + 2 * 24 + 56, "height": 900})
         for file, title, items in [("pilihan-banner.png", "Banner Lingkar Kopi di bawah kartu Beranda: pilih satu", CHOICES),
-                                   ("pilihan-bentuk-unik.png", "Banner bentuk unik: pilih satu", UNIK)]:
+                                   ("pilihan-bentuk-unik.png", "Banner bentuk unik: pilih satu", UNIK),
+                                   ("pilihan-gelembung-hijau.png", "Gelembung chat warna hijau Lingkar Kopi: pilih satu", HIJAU)]:
             cells = "".join(f'<figure class="phone" style="margin:0">{HERO}{make(t)}<figcaption>{name}</figcaption></figure>' for key, name, make, t in items)
             show(pg, f"<div class='sheet'><h1>{title}</h1><small>Kartu biru atas = kartu Agi Mas yang sudah ada. Banner baru tampil tepat di bawahnya.</small><div class='grid'>{cells}</div></div>")
             pg.locator(".sheet").screenshot(path=str(OUT / file))
