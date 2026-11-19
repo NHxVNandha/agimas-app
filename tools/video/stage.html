@@ -3,163 +3,102 @@
 <link rel="stylesheet" href="/app/fonts.css">
 <style>
 @font-face{font-family:Inter;src:url(/tfonts/Inter-latin-var.woff2) format("woff2");font-weight:100 900}
-:root{--a:#1e7be6;--a2:#0b3d8c;--a3:#7fc3ff;--ink:#0b2545;--say:#34465c;--bg1:#eef6ff;--bg2:#cfe3fb;--grid:rgba(30,123,230,.22);--font:"Plus Jakarta Sans",system-ui,sans-serif}
-body.kasir{--a:#1f6b45;--a2:#173f2e;--a3:#8fe0b0;--ink:#13201a;--say:#34463c;--bg1:#f1faf4;--bg2:#cde9d7;--grid:rgba(31,107,69,.22);--font:Inter,system-ui,sans-serif}
-*{box-sizing:border-box}html,body{margin:0;width:1920px;height:1080px;overflow:clip}
-body{font-family:var(--font);color:var(--ink);background:var(--bg1)}
-#stage{position:fixed;inset:0;overflow:clip;perspective:1800px;background:radial-gradient(1400px 900px at 20% 0%,#fff 0,var(--bg1) 40%,var(--bg2) 100%)}
-/* ---- latar hidup: cahaya melayang + lantai grid 3D */
-.glow{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:drift 14s ease-in-out infinite alternate}
-.glow.g1{width:700px;height:700px;left:-200px;top:-150px;background:var(--a3)}
-.glow.g2{width:600px;height:600px;right:-150px;bottom:-200px;background:var(--a);opacity:.25;animation-duration:18s}
-.glow.g3{width:420px;height:420px;left:45%;top:30%;background:#fff;opacity:.7;animation-duration:11s}
-@keyframes drift{to{transform:translate(120px,80px) scale(1.15)}}
-.floor{position:absolute;left:-50%;right:-50%;bottom:-38%;height:90%;transform:rotateX(76deg);transform-origin:50% 0;
-  background-image:linear-gradient(var(--grid) 2px,transparent 2px),linear-gradient(90deg,var(--grid) 2px,transparent 2px);background-size:90px 90px;
-  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 35%,#000);mask-image:linear-gradient(to bottom,transparent,#000 35%,#000);animation:floor 6s linear infinite}
-@keyframes floor{to{background-position:0 90px}}
-/* ---- kubus 3D */
-.cube{position:absolute;left:0;top:0;transform-style:preserve-3d;animation:spin var(--d,16s) linear infinite}
-.cube i{position:absolute;inset:0;border-radius:18%;border:2px solid rgba(255,255,255,.55);box-shadow:inset 0 0 30px rgba(255,255,255,.35)}
-.cube i:nth-child(1){transform:translateZ(var(--h))}.cube i:nth-child(2){transform:rotateY(180deg) translateZ(var(--h))}
-.cube i:nth-child(3){transform:rotateY(90deg) translateZ(var(--h))}.cube i:nth-child(4){transform:rotateY(-90deg) translateZ(var(--h))}
-.cube i:nth-child(5){transform:rotateX(90deg) translateZ(var(--h))}.cube i:nth-child(6){transform:rotateX(-90deg) translateZ(var(--h))}
-@keyframes spin{from{transform:translate3d(var(--x),var(--y),0) rotateX(0) rotateY(0)}50%{transform:translate3d(var(--x),calc(var(--y) - 30px),60px) rotateX(180deg) rotateY(120deg)}to{transform:translate3d(var(--x),var(--y),0) rotateX(360deg) rotateY(360deg)}}
-.ring{position:absolute;border-radius:50%;border:14px solid var(--a3);opacity:.75;animation:ring 9s ease-in-out infinite alternate;box-shadow:0 0 0 2px rgba(255,255,255,.6) inset}
-@keyframes ring{from{transform:rotateX(65deg) rotateZ(0)}to{transform:rotateX(55deg) rotateY(20deg) rotateZ(180deg)}}
-/* ---- panel teks */
-.panel{position:absolute;display:flex;flex-direction:column;gap:20px;z-index:3}
+/* Agi Mas: latar PNG "Dua Warna" (promo/video-bg, dibuat tools/video_bg.py) sudah berisi logo; teks narasi di area putih. */
+:root{--a:#1e7be6;--a2:#0b3d8c;--ink:#0b2545;--say:#34465c;--font:"Plus Jakarta Sans",system-ui,sans-serif}
+body.kasir{--a:#1f6b45;--a2:#173f2e;--ink:#13201a;--say:#34463c;--font:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;overflow:clip}
+body{font-family:var(--font);color:var(--ink);background:#fff}
+#stage{position:fixed;left:0;top:0;overflow:clip;background-size:cover}
+body.kasir #stage{background:radial-gradient(1400px 900px at 20% 0%,#fff 0,#f1faf4 45%,#d5ecdd 100%)}
+.panel{position:absolute;display:flex;flex-direction:column;gap:18px;z-index:3;pointer-events:none}
 .brand{display:flex;align-items:center;gap:16px;font-weight:800;font-size:26px}
-.brand img{height:54px}.brand .tag{font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--a);padding:7px 14px;border-radius:99px}
-.stepbig{display:flex;align-items:flex-end;gap:16px;height:120px}
-.stepbig b{font-size:120px;line-height:.85;font-weight:800;color:var(--a);letter-spacing:-.04em;
-  text-shadow:1px 1px 0 var(--a2),2px 2px 0 var(--a2),3px 3px 0 var(--a2),4px 4px 0 var(--a2),5px 5px 0 var(--a2),6px 6px 0 var(--a2),8px 14px 24px rgba(0,0,0,.25)}
-.stepbig span{font-weight:700;color:var(--a2);font-size:22px;padding-bottom:8px;letter-spacing:.04em;opacity:.8}
-.dots{display:flex;gap:8px;flex-wrap:wrap}.dots i{width:28px;height:6px;border-radius:9px;background:rgba(0,0,0,.12);transition:background .4s}.dots i.on{background:var(--a)}.dots i.done{background:var(--a);opacity:.4}
-.title{font-weight:800;letter-spacing:-.02em;line-height:1.08}
+.stepn{display:inline-flex;align-self:flex-start;align-items:center;gap:10px;padding:8px 16px;border-radius:99px;background:var(--a);color:#fff;font-weight:700;font-size:20px;letter-spacing:.03em}
+.dots{display:flex;gap:7px;flex-wrap:wrap}.dots i{width:26px;height:6px;border-radius:9px;background:rgba(11,37,69,.12)}.dots i.on{background:var(--a)}.dots i.done{background:var(--a);opacity:.35}
+.title{font-weight:800;letter-spacing:-.02em;line-height:1.1}
 .say{color:var(--say);line-height:1.5;font-weight:500}
-.in{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}.in.d2{animation-delay:.12s}.in.d3{animation-delay:.24s}
-@keyframes rise{from{opacity:0;transform:translateY(34px) rotateX(-40deg);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
-/* ---- perangkat 3D */
-#rig{position:absolute;z-index:2;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
-#rig.swing{transition:none}
-.dev{position:relative;background:#0d1117;transform-style:preserve-3d;box-shadow:0 0 0 2px rgba(255,255,255,.35) inset}
-.dev::before{content:"";position:absolute;inset:0;border-radius:inherit;background:#05070a;transform:translateZ(-22px)}
-.dev::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,rgba(255,255,255,.18),transparent 30%);pointer-events:none}
-.dev iframe{border:0;display:block;background:#fff;transform-origin:0 0;position:relative}
-.shadow{position:absolute;z-index:1;border-radius:50%;background:radial-gradient(closest-side,rgba(10,30,50,.4),transparent);filter:blur(8px)}
-/* ---- kursor sentuh */
+.in{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}.in.d2{animation-delay:.1s}.in.d3{animation-delay:.2s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.dev{position:absolute;z-index:2;background:#0d1117;box-shadow:0 40px 90px -24px rgba(5,25,60,.55),0 0 0 2px rgba(255,255,255,.35) inset}
+.dev iframe{border:0;display:block;background:#fff;transform-origin:0 0}
 #cur{position:absolute;left:0;top:0;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:rgba(255,255,255,.4);border:3px solid rgba(20,20,20,.75);
-  box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none;z-index:50;transition:transform .55s cubic-bezier(.45,.05,.25,1);transform:translate(-200px,1200px)}
-#cur.tap::after,#cur.tap::before{content:"";position:absolute;inset:-3px;border-radius:50%;border:4px solid var(--a);animation:rip .6s ease-out}
-#cur.tap::before{border-color:#fff;animation-delay:.08s}
-@keyframes rip{from{transform:scale(.6);opacity:1}to{transform:scale(2.6);opacity:0}}
-/* ---- kartu pembuka/penutup 3D */
-#card{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center;
-  background:radial-gradient(1200px 800px at 50% 30%,var(--a) 0,var(--a2) 75%);color:#fff;transition:opacity .7s;perspective:1400px;overflow:hidden}
-body.kasir #card{background:radial-gradient(1200px 800px at 50% 30%,#f4fbf6 0,#c9e8d5 80%);color:var(--a2)}
-#card.off{opacity:0;pointer-events:none}
-#card .floor{--grid:rgba(255,255,255,.18)}body.kasir #card .floor{--grid:rgba(23,63,46,.16)}
-#card .logo3d{position:relative;z-index:2;animation:flip 1.4s cubic-bezier(.2,.8,.2,1) both;transform-style:preserve-3d}
-#card .logo3d img{height:130px;border-radius:18px;filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))}
-#card .ic{width:150px;height:150px;border-radius:40px;background:var(--a2);display:grid;place-items:center;box-shadow:0 24px 50px -10px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.25)}
+  box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none;z-index:50;transition:transform .55s cubic-bezier(.45,.05,.25,1);transform:translate(-200px,2200px)}
+#cur.tap::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:4px solid var(--a);animation:rip .6s ease-out}
+@keyframes rip{from{transform:scale(.6);opacity:1}to{transform:scale(2.4);opacity:0}}
+#card{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center;padding:0 60px;
+  background:linear-gradient(180deg,#ffffff,#eef5ff);color:var(--ink);transition:opacity .6s;pointer-events:none}
+body.kasir #card{background:linear-gradient(180deg,#ffffff,#e4f4ea)}
+#card.off{opacity:0}
+#card img{width:min(720px,80%);animation:rise .8s both}
+#card .ic{width:150px;height:150px;border-radius:40px;background:var(--a2);display:grid;place-items:center;animation:rise .8s both}
 #card .ic svg{width:84px;height:84px;stroke:#8fe0b0;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-@keyframes flip{from{transform:rotateY(-160deg) rotateX(20deg) translateZ(-300px) scale(.6);opacity:0}to{transform:none;opacity:1}}
-#card .k{position:relative;font-size:24px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;opacity:.85;animation:rise .8s .5s both}
-#card h1{position:relative;font-size:96px;margin:0;letter-spacing:-.03em;line-height:1.05;display:flex;gap:.25em;flex-wrap:wrap;justify-content:center;max-width:1500px;text-shadow:0 8px 30px rgba(0,0,0,.2)}
-#card h1 span{display:inline-block;animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
-#card p{position:relative;font-size:34px;margin:0;opacity:.92;max-width:1300px;line-height:1.4;animation:rise .9s 1.1s both}
-.panel,#deco,.shadow,.glow,.floor,.bar,#card{pointer-events:none}   /* hiasan tidak boleh menghalangi ketukan ke aplikasi */
+#card .k{font-size:22px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--a);animation:rise .8s .25s both}
+#card h1{font-size:84px;margin:0;letter-spacing:-.03em;line-height:1.05;animation:rise .8s .4s both}
+#card p{font-size:32px;margin:0;color:var(--say);max-width:1200px;line-height:1.4;animation:rise .8s .55s both}
+[hidden]{display:none!important}
+/* Kasir: teks di atas kartu putih agar tetap terbaca di atas bentuk-bentuk latar Geometris */
+body.kasir .panel{background:rgba(255,255,255,.95);padding:22px 26px;border-radius:22px;box-shadow:0 14px 34px -18px rgba(23,63,46,.45)}
+body.kasir.story .panel .say{background:rgba(255,255,255,.95);padding:22px 26px;border-radius:22px;box-shadow:0 14px 34px -18px rgba(23,63,46,.45);left:0;right:0}
+#sync{position:fixed;left:0;top:0;width:8px;height:8px;background:#000;z-index:100}
+.sen{transition:color .3s}.say.hl .sen{color:#9aa9bb}.say.hl .sen.on{color:var(--ink)}
 .bar{position:absolute;left:0;bottom:0;height:8px;background:var(--a);transition:width .6s;width:0;z-index:5}
 </style></head>
 <body>
 <div id="stage">
-  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
-  <div class="floor"></div>
-  <div id="deco"></div>
-  <div class="shadow" id="shadow"></div>
   <div class="panel" id="panel">
     <div class="brand" id="brand"></div>
+    <div class="stepn" id="stepn" hidden></div>
     <div class="dots" id="dots"></div>
-    <div class="stepbig" id="stepbig"></div>
     <div class="title" id="title"></div>
     <div class="say" id="say"></div>
   </div>
-  <div id="rig"><div class="dev" id="dev"><iframe id="app"></iframe></div></div>
+  <div class="dev" id="dev"><iframe id="app"></iframe></div>
   <div id="card" class="off"></div>
   <div class="bar" id="bar"></div>
 </div>
 <div id="cur"></div>
+<i id="sync"></i>
 <script>
 var q = new URLSearchParams(location.search), mode = q.get("mode"), story = q.get("fmt") === "story", $ = function (i) { return document.getElementById(i); };
 var STORE = '<svg viewBox="0 0 24 24"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg>';
-var VW = story ? 1080 : 1920, VH = story ? 1920 : 1080, s, W, H, pad = 14, X, Y, POSE, FROM;
+var VW = story ? 1080 : 1920, VH = story ? 1920 : 1080, s, W, H, pad = 14, X, Y, P = $("panel").style;
 [document.documentElement, document.body, $("stage")].forEach(function (e) { e.style.width = VW + "px"; e.style.height = VH + "px"; });
 if (mode === "kasir") {
-  document.body.className = "kasir"; W = 1280; H = 800;
+  document.body.className = "kasir" + (story ? " story" : ""); W = 1280; H = 800;
   $("brand").innerHTML = '<span style="display:grid;place-items:center;width:54px;height:54px;border-radius:16px;background:var(--a2);color:#8fe0b0">' + STORE.replace("<svg", '<svg width="30" height="30" style="stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"') + "</span><span>Saget Kasir</span>";
-  POSE = "rotateX(0deg) rotateY(0deg)"; FROM = "rotateX(26deg) rotateY(-40deg) translateZ(-300px)";
-  if (story) { s = 0.78; X = (1080 - W * s - 28) / 2; Y = 590; } else { s = 1.0; X = 60; Y = (1080 - H * s - 28) / 2; }
+  // latar PNG "Geometris datar" (promo/video-bg, dibuat tools/video_bg_kasir.py) sudah berisi logo Saget Kasir
+  $("brand").hidden = true; $("stage").style.background = "url(/bg/kasir-3-geometris-" + (story ? "story" : "landscape") + ".png) 0 0 / cover";
+  if (story) { s = 0.78; X = 27; Y = 590; Object.assign(P, { left: "70px", right: "70px", top: "300px", gap: "14px" }); $("title").style.fontSize = "48px"; $("say").style.cssText = "font-size:34px;position:absolute;left:0;right:0;top:" + (Y - 300 + H * s + 28 + 60) + "px"; }
+  else { s = 1.0; X = 60; Y = (1080 - H * s - 28) / 2; Object.assign(P, { left: "1438px", right: "50px", top: "210px", gap: "16px" }); $("title").style.fontSize = "40px"; $("say").style.fontSize = "24px"; }
 } else {
-  W = 400; H = 860;
-  $("brand").innerHTML = '<img src="/app/logo.png" alt=""><span class="tag">Tutorial</span>';
-  POSE = "rotateY(0deg) rotateX(0deg)"; FROM = "rotateY(-65deg) rotateX(14deg) translateZ(-300px)";
-  if (story) { s = 1.15; X = (1080 - W * s - 28) / 2; Y = 650; } else { s = 1.1; X = 1270; Y = (1080 - H * s - 28) / 2; }
+  W = 400; H = 860; $("brand").hidden = true;   // logo sudah ada di gambar latar
+  $("stage").style.backgroundImage = "url(/bg/3-dua-warna-" + (story ? "story" : "landscape") + ".png)";
+  if (story) { s = 1.15; X = 296; Y = 735; Object.assign(P, { left: "70px", right: "70px", top: "330px", gap: "14px" }); $("title").style.fontSize = "46px"; $("say").style.fontSize = "27px"; }
+  else { s = 1.1; X = 1270; Y = (1080 - H * s - 28) / 2; Object.assign(P, { left: "140px", width: "620px", top: "380px" }); $("title").style.fontSize = "52px"; $("say").style.fontSize = "28px"; }
 }
-// panel teks
-var P = $("panel").style;
-if (story) {
-  Object.assign(P, { left: "70px", right: "70px", top: "190px", gap: "14px" });
-  $("title").style.fontSize = "54px"; $("say").style.fontSize = mode === "kasir" ? "34px" : "27px";
-  if (mode === "kasir") $("say").style.cssText += ";position:absolute;left:0;right:0;top:" + (Y - 190 + H * s + 28 + 60) + "px";
-  $("stepbig").style.height = "96px"; var st = document.createElement("style"); st.textContent = ".stepbig b{font-size:96px}#card h1{font-size:84px;max-width:960px}#card p{max-width:900px}"; document.head.appendChild(st);
-} else if (mode === "kasir") {
-  Object.assign(P, { left: (60 + W * s + 28 + 70) + "px", right: "50px", top: "110px" });
-  $("title").style.fontSize = "44px"; $("say").style.fontSize = "25px";
-} else {
-  Object.assign(P, { left: "140px", width: "1000px", top: "120px" });
-  $("title").style.fontSize = "64px"; $("say").style.fontSize = "33px";
-}
-// perangkat: diam lurus saat dipakai (perspektif 3D menggeser titik ketukan di iframe), berayun 3D hanya saat pindah langkah
-var fr = $("app"); fr.width = W; fr.height = H; fr.style.transform = "scale(" + s + ")";
-fr.style.marginBottom = -(H * s - H) + "px"; fr.style.marginRight = -(W * s - W) + "px";
-var R = mode === "kasir" ? 34 : 56;
-fr.style.borderRadius = (R - 14) / s + "px";
-Object.assign($("dev").style, { padding: pad + "px", borderRadius: R + "px", width: W * s + pad * 2 + "px", height: H * s + pad * 2 + "px" });
-Object.assign($("rig").style, { left: X + "px", top: Y + "px", transform: POSE, transformOrigin: "50% 50%" });
-var dw = W * s + 28, dh = H * s + 28;
-Object.assign($("shadow").style, { left: X - dw * .05 + "px", top: Y + dh - 30 + "px", width: dw * 1.1 + "px", height: "90px" });
-// hiasan 3D di sekitar perangkat
-function cube(x, y, size, c1, c2, d) {
-  var f = ""; for (var k = 0; k < 6; k++) f += '<i style="background:linear-gradient(135deg,' + (k % 2 ? c1 : c2) + "," + (k % 2 ? c2 : c1) + ')"></i>';
-  return '<div class="cube" style="width:' + size + "px;height:" + size + "px;--h:" + size / 2 + "px;--x:" + x + "px;--y:" + y + "px;--d:" + d + 's">' + f + "</div>";
-}
-var A = getComputedStyle(document.body).getPropertyValue("--a").trim(), A3 = getComputedStyle(document.body).getPropertyValue("--a3").trim();
-var deco;
-if (story) deco = cube(820, 1540, 110, A, A3, 18) + cube(110, 1620, 70, A3, "#ffffff", 13) + '<div class="ring" style="left:850px;top:1080px;width:170px;height:170px"></div>';
-else if (mode === "kasir") deco = cube(1640, 860, 120, A, A3, 18) + cube(1450, 820, 64, A3, "#ffffff", 12) + '<div class="ring" style="left:1700px;top:20px;width:180px;height:180px"></div>';
-else deco = cube(1130, 760, 120, A, A3, 18) + cube(1760, 120, 80, A3, "#ffffff", 13) + cube(150, 860, 70, A, "#ffffff", 15) + '<div class="ring" style="left:1700px;top:780px;width:200px;height:200px"></div>';
-$("deco").innerHTML = deco;
-// API untuk perekam
+var fr = $("app"), R = mode === "kasir" ? 34 : 56; fr.width = W; fr.height = H; fr.style.transform = "scale(" + s + ")";
+fr.style.marginBottom = -(H * s - H) + "px"; fr.style.marginRight = -(W * s - W) + "px"; fr.style.borderRadius = (R - 14) / s + "px";
+Object.assign($("dev").style, { left: X + "px", top: Y + "px", padding: pad + "px", borderRadius: R + "px", width: W * s + pad * 2 + "px", height: H * s + pad * 2 + "px" });
 window.cur = function (x, y) { $("cur").style.transform = "translate(" + x + "px," + y + "px)"; };
 window.ripple = function () { var c = $("cur"); c.classList.remove("tap"); void c.offsetWidth; c.classList.add("tap"); };
-function swing() { var r = $("rig"); r.classList.add("swing"); r.style.transform = FROM; void r.offsetWidth; r.classList.remove("swing"); r.style.transform = POSE; }
-function words(t) { return t.split(" ").map(function (w, i) { return '<span style="animation-delay:' + (0.7 + i * 0.12) + 's">' + w + "</span>"; }).join(""); }
 window.step = function (a) {
   var c = $("card");
   if (a.card) {
-    c.innerHTML = '<div class="floor"></div><div class="logo3d">' + (a.card.logo ? '<img src="/app/logo.png" alt="">' : '<div class="ic">' + STORE + "</div>") + "</div>" +
-      '<div class="k">' + a.card.k + "</div><h1>" + words(a.card.h) + "</h1><p>" + a.card.p + "</p>";
+    c.innerHTML = (mode === "kasir" ? '<div class="ic">' + STORE + "</div>" : '<img src="/bg/logo-agimas-full.png" alt="">') + '<div class="k">' + a.card.k + "</div><h1>" + a.card.h + "</h1><p>" + a.card.p + "</p>";
     c.classList.remove("off");
   } else c.classList.add("off");
   var real = a.n - 2, n = a.i > 0 && a.i <= real;
-  $("stepbig").innerHTML = n ? '<b class="in">' + String(a.i).padStart(2, "0") + '</b><span class="in d2">dari ' + real + " langkah</span>" : "";
+  $("stepn").hidden = !n; $("stepn").innerHTML = n ? '<span class="in">Langkah ' + a.i + " dari " + real + "</span>" : "";
   $("dots").innerHTML = Array.from({ length: real }, function (_, k) { return '<i class="' + (k + 1 === a.i ? "on" : k + 1 < a.i ? "done" : "") + '"></i>'; }).join("");
   $("title").innerHTML = '<span class="in d2" style="display:block">' + a.title + "</span>";
-  $("say").innerHTML = '<span class="in d3" style="display:block">' + a.say + "</span>";
+  $("say").innerHTML = '<span class="in d3" style="display:block">' + a.says.map(function (t) { return '<span class="sen">' + t + "</span>"; }).join(" ") + "</span>";
+  $("say").classList.toggle("hl", a.says.length > 1);
   $("bar").style.width = (100 * (a.i + 1) / a.n) + "%";
-  if (!a.card) swing();
 };
 window.loadApp = function (u) { fr.src = u; };
+// penanda sinkron (berganti hitam/putih tiap kalimat) + sorot kalimat yang sedang dibacakan
+window.sync = function (k, j) {
+  $("sync").style.background = k % 2 ? "#000" : "#fff";
+  Array.prototype.forEach.call(document.querySelectorAll("#say .sen"), function (e, i) { e.classList.toggle("on", i === j); });
+};
 </script>
 </body></html>
