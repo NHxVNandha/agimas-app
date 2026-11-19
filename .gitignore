@@ -14,3 +14,9 @@ tools/video/appdata.json
 tools/video/audio-*/
 tools/video/raw-*/
 tools/video/__pycache__/
+
+# Remotion: dependensi, data hasil tools/video/remotion_data.py, dan video hasil render
+remotion/node_modules/
+remotion/public/gen/
+remotion/src/gen/
+promo/video-remotion/

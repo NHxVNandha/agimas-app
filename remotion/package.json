@@ -1,0 +1,16 @@
+{
+  "name": "agimas-video-remotion",
+  "private": true,
+  "description": "Video promosi, tutorial, dan deskripsi Agi Mas & Saget Kasir dengan Remotion (data dari tools/video/remotion_data.py)",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.541",
+    "@remotion/media": "4.0.541",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.541"
+  }
+}
