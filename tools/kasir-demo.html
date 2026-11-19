@@ -3,17 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f1612">
-<title>Kasir Lingkar Kopi · Demo</title>
+<meta name="theme-color" content="#e4f4ea">
+<title>Saget Kasir · Demo</title>
 <style>
 /* Huruf: Inter (SIL Open Font License 1.1). Ikon: Lucide (ISC). */
 @font-face { font-family: 'Inter'; font-weight: 100 900; font-display: block; src: url(data:font/woff2;base64,__FONT__) format('woff2'); }
 :root {
-  --bg: #f3f2ef; --panel: #ffffff; --sunk: #f7f6f3; --line: #e6e3de; --line2: #d9d5ce;
-  --ink: #1c1714; --ink2: #4a423c; --mute: #7a716a;
-  --brand: #2a1d16; --brand2: #3d2b21; --accent: #e8a24a; --accent-bg: #fdf1e1; --accent-ink: #8a4f12;
+  --bg: #f2f8f4; --panel: #ffffff; --sunk: #f4faf6; --line: #dcebe1; --line2: #c7dccf;
+  --ink: #14281f; --ink2: #3d5a4b; --mute: #64806f;
+  --brand: #173f2e; --brand2: #1f5039; --accent: #2f9e62; --accent-bg: #e4f4ea; --accent-ink: #1b6a40;
+  --mint: #e4f4ea; --mint-ink: #3d6b52;
   --ok: #16794a; --ok-bg: #e5f4ec; --bad: #c2362b; --bad-bg: #fbe9e7; --info: #1f6fd6; --info-bg: #e7f0fc; --warn: #a15c00; --warn-bg: #fff3dc;
-  --r: 14px; --r2: 10px; --shadow: 0 1px 2px rgba(28,23,20,.05), 0 1px 0 rgba(28,23,20,.04);
+  --r: 16px; --r2: 10px;
+  --shadow-sm: 0 1px 2px rgba(19,32,26,.06), 0 1px 3px rgba(19,32,26,.05);
+  --shadow: 0 4px 12px -2px rgba(19,32,26,.08), 0 2px 4px rgba(19,32,26,.05);
+  --shadow-lg: 0 24px 60px -12px rgba(19,32,26,.32), 0 8px 18px rgba(19,32,26,.08);
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 15px/1.45 'Inter', system-ui, sans-serif; font-feature-settings: "cv11", "ss01"; -webkit-tap-highlight-color: transparent; }
@@ -30,19 +34,20 @@ input { font: 500 .95rem 'Inter', sans-serif; color: var(--ink); }
 
 /* ---------- Kerangka: rel kiri + area kerja ---------- */
 .app { display: grid; grid-template-columns: 88px 1fr; height: 100vh; height: 100dvh; }
-.rail { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; background: var(--brand); color: #e9dccf; }
-.logo { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: rgba(232,162,74,.16); margin-bottom: 10px; }
-.logo svg { width: 28px; height: 28px; }
+.rail { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; background: var(--mint); color: var(--mint-ink); border-right: 1px solid var(--line); }
+.logo { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--brand); margin-bottom: 10px; box-shadow: var(--shadow-sm); }
+.logo svg { width: 26px; height: 26px; color: #8fe0b0; }
+.appname { margin: -4px 0 8px; font-size: .64rem; font-weight: 800; line-height: 1.15; text-align: center; color: var(--brand); letter-spacing: .02em; }
 .tabs { display: flex; flex-direction: column; gap: 6px; width: 100%; }
-.tabs button, .railbtn { position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; padding: 10px 4px; border: 0; border-radius: 12px; background: transparent; color: #c9b8a8; font-size: .7rem; font-weight: 600; letter-spacing: .01em; }
-.tabs button:hover, .railbtn:hover { background: rgba(255,255,255,.06); color: #fff; }
-.tabs button[aria-selected=true] { background: rgba(232,162,74,.18); color: #fff; }
-.tabs button[aria-selected=true] .i { color: var(--accent); }
+.tabs button, .railbtn { position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; padding: 10px 4px; border: 0; border-radius: 12px; background: transparent; color: var(--mint-ink); font-size: .7rem; font-weight: 600; letter-spacing: .01em; }
+.tabs button:hover, .railbtn:hover { background: rgba(23,63,46,.06); color: var(--brand); }
+.tabs button[aria-selected=true] { background: var(--panel); color: var(--brand); font-weight: 700; box-shadow: var(--shadow-sm); }
+.tabs button[aria-selected=true] .i { color: var(--brand); }
 .tabs .i, .railbtn .i { width: 22px; height: 22px; }
-.badge { position: absolute; top: 4px; right: 12px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: var(--bad); color: #fff; font-size: .66rem; font-weight: 700; display: grid; place-items: center; box-shadow: 0 0 0 2px var(--brand); }
+.badge { position: absolute; top: 4px; right: 12px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: var(--bad); color: #fff; font-size: .66rem; font-weight: 700; display: grid; place-items: center; box-shadow: 0 0 0 2px var(--mint); }
 .rail .spacer { flex: 1; }
 .work { display: grid; grid-template-rows: auto 1fr; min-width: 0; min-height: 0; }
-.top { display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
+.top { position: relative; z-index: 2; display: flex; align-items: center; gap: 14px; padding: 14px 24px; background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow-sm); }
 .top h1 { margin: 0; font-size: 1.12rem; font-weight: 700; letter-spacing: -.01em; }
 .top .shop { display: block; font-size: .76rem; color: var(--mute); font-weight: 500; }
 .demo { padding: 3px 8px; border-radius: 6px; background: var(--accent-bg); color: var(--accent-ink); font-size: .66rem; font-weight: 700; letter-spacing: .06em; }
@@ -52,18 +57,19 @@ input { font: 500 .95rem 'Inter', sans-serif; color: var(--ink); }
 .clock { font-size: 1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 main { min-height: 0; }
 .view { height: 100%; min-height: 0; }
-.pad { height: 100%; overflow: auto; padding: 18px 20px 28px; }
+.pad { height: 100%; overflow: auto; padding: 22px 24px 32px; }
 .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
 .head h2 { margin: 0; font-size: 1.1rem; font-weight: 700; }
-.hint { margin: 0 0 14px; color: var(--mute); font-size: .84rem; }
+.hint { margin: 2px 0 16px; color: var(--mute); font-size: .84rem; }
 
 /* tombol */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid transparent; border-radius: var(--r2); background: var(--brand); color: #fff; font-weight: 600; font-size: .92rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid transparent; border-radius: var(--r2); background: var(--brand); color: #fff; font-weight: 600; font-size: .92rem; box-shadow: 0 1px 2px rgba(19,32,26,.18); }
 .btn:hover:not(:disabled) { background: var(--brand2); }
+a.btn { text-decoration: none; }
 .btn.blue { background: var(--info); } .btn.green { background: var(--ok); } .btn.red { background: var(--bad); }
-.btn.out { background: var(--panel); color: var(--ink); border-color: var(--line2); }
+.btn.out { background: var(--panel); color: var(--ink); border-color: var(--line2); box-shadow: var(--shadow-sm); }
 .btn.out:hover:not(:disabled) { background: var(--sunk); }
-.btn.ghost { background: transparent; color: var(--ink2); }
+.btn.ghost { background: transparent; color: var(--ink2); box-shadow: none; }
 .btn:disabled { opacity: .38; }
 .iconbtn { width: 40px; height: 40px; display: inline-grid; place-items: center; border: 1px solid var(--line2); border-radius: var(--r2); background: var(--panel); color: var(--ink2); }
 .seg { display: inline-flex; padding: 3px; border-radius: 11px; background: var(--sunk); border: 1px solid var(--line); gap: 2px; }
@@ -72,36 +78,36 @@ main { min-height: 0; }
 
 /* ---------- JUAL ---------- */
 #v-jual { display: grid; grid-template-columns: 1fr 392px; }
-.menu { min-height: 0; overflow: auto; padding: 16px 18px 24px; }
-.tools { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.menu { min-height: 0; overflow: auto; padding: 20px 22px 28px; }
+.tools { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
 .search { flex: 1; min-width: 220px; position: relative; }
-.search input { width: 100%; height: 44px; padding: 0 14px 0 42px; border: 1px solid var(--line2); border-radius: var(--r2); background: var(--panel); }
+.search input { width: 100%; height: 44px; padding: 0 14px 0 42px; border: 1px solid var(--line2); border-radius: var(--r2); background: var(--panel); box-shadow: var(--shadow-sm); }
 .search .i { position: absolute; left: 14px; top: 12px; color: var(--mute); }
-.cats { display: flex; gap: 6px; flex-wrap: wrap; }
-.cats button { display: inline-flex; align-items: center; gap: 7px; height: 44px; padding: 0 14px; border: 1px solid var(--line2); border-radius: var(--r2); background: var(--panel); font-weight: 600; font-size: .88rem; color: var(--ink2); }
-.cats button[aria-pressed=true] { background: var(--ink); border-color: var(--ink); color: #fff; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 12px; }
-.item { position: relative; display: flex; flex-direction: column; padding: 0; border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); text-align: left; overflow: hidden; box-shadow: var(--shadow); transition: transform .08s, border-color .15s; }
-.item:hover:not(:disabled) { border-color: var(--line2); }
+.cats { display: flex; gap: 8px; flex-wrap: wrap; }
+.cats button { display: inline-flex; align-items: center; gap: 7px; height: 44px; padding: 0 14px; border: 1px solid var(--line2); border-radius: var(--r2); background: var(--panel); font-weight: 600; font-size: .88rem; color: var(--ink2); box-shadow: var(--shadow-sm); }
+.cats button[aria-pressed=true] { background: var(--brand); border-color: var(--brand); color: #fff; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 16px; }
+.item { position: relative; display: flex; flex-direction: column; padding: 0; border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); text-align: left; overflow: hidden; box-shadow: var(--shadow-sm); transition: transform .08s, border-color .15s, box-shadow .15s; }
+.item:hover:not(:disabled) { border-color: var(--line2); box-shadow: var(--shadow); }
 .item:active:not(:disabled) { transform: scale(.98); }
 .item.flash { border-color: var(--ok); box-shadow: 0 0 0 3px var(--ok-bg); }
 .item .pic { height: 78px; display: grid; place-items: center; }
 .item .pic .i { width: 34px; height: 34px; stroke-width: 1.6; }
-.item .body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 2px; }
+.item .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 3px; }
 .item b { font-size: .92rem; font-weight: 600; line-height: 1.3; }
 .item .pr { font-weight: 700; font-size: .92rem; }
 .item .mod { display: inline-flex; align-items: center; gap: 4px; font-size: .7rem; color: var(--mute); font-weight: 500; }
 .item .stk { position: absolute; top: 8px; right: 8px; padding: 2px 7px; border-radius: 6px; background: rgba(255,255,255,.88); font-size: .68rem; font-weight: 600; color: var(--ink2); font-variant-numeric: tabular-nums; }
 .item .stk.low { background: var(--warn-bg); color: var(--warn); }
-.item .inq { position: absolute; top: 8px; left: 8px; min-width: 24px; height: 24px; padding: 0 7px; border-radius: 99px; background: var(--ink); color: #fff; font-size: .74rem; font-weight: 700; display: grid; place-items: center; }
+.item .inq { box-shadow: 0 0 0 2px #fff; position: absolute; top: 8px; left: 8px; min-width: 24px; height: 24px; padding: 0 7px; border-radius: 99px; background: var(--ink); color: #fff; font-size: .74rem; font-weight: 700; display: grid; place-items: center; }
 .item.off { opacity: .45; }
 .item.off .stk { background: var(--bad-bg); color: var(--bad); }
 .noresult { padding: 36px; text-align: center; color: var(--mute); }
 .sample { margin: 18px 2px 0; color: var(--mute); font-size: .78rem; display: flex; gap: 6px; align-items: flex-start; }
 
 /* keranjang */
-.cart { display: flex; flex-direction: column; min-height: 0; background: var(--panel); border-left: 1px solid var(--line); }
-.ch { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; }
+.cart { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 0; background: var(--panel); border-left: 1px solid var(--line); box-shadow: -8px 0 24px -16px rgba(19,32,26,.25); }
+.ch { padding: 18px 20px 16px; border-bottom: 1px solid var(--line); display: grid; gap: 12px; }
 .ch .r1 { display: flex; align-items: center; gap: 8px; }
 .qno { margin-left: auto; padding: 6px 10px; border-radius: 8px; background: var(--accent-bg); color: var(--accent-ink); font-weight: 700; font-size: .84rem; white-space: nowrap; }
 .field-ic { position: relative; }
@@ -110,10 +116,10 @@ main { min-height: 0; }
 .held { display: flex; gap: 8px; }
 .held .btn { min-height: 38px; padding: 0 12px; font-size: .82rem; }
 .held .btn .cnt { padding: 1px 7px; border-radius: 99px; background: var(--bad); color: #fff; font-size: .7rem; }
-.lines { flex: 1; min-height: 0; overflow: auto; padding: 0 16px; }
+.lines { flex: 1; min-height: 0; overflow: auto; padding: 4px 20px; }
 .empty { padding: 34px 12px; text-align: center; color: var(--mute); font-size: .88rem; display: grid; justify-items: center; gap: 8px; }
 .empty .i { width: 32px; height: 32px; color: var(--line2); stroke-width: 1.6; }
-.line { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.line { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
 .line .ed { grid-column: 1; grid-row: 1 / span 2; padding: 0; border: 0; background: none; text-align: left; }
 .line .ed b { display: flex; align-items: center; gap: 6px; font-size: .92rem; font-weight: 600; }
 .line .ed b .i { width: 14px; height: 14px; color: var(--mute); }
@@ -125,21 +131,21 @@ main { min-height: 0; }
 .qty button .i { width: 16px; height: 16px; }
 .qty button:disabled { opacity: .3; }
 .qty output { min-width: 22px; text-align: center; font-weight: 700; font-size: .9rem; }
-.sum { padding: 12px 16px 14px; border-top: 1px solid var(--line); background: var(--sunk); }
+.sum { padding: 16px 20px 18px; border-top: 1px solid var(--line); background: var(--sunk); }
 .sum .row { display: flex; justify-content: space-between; align-items: center; font-size: .86rem; color: var(--ink2); min-height: 28px; }
 .sum .row .link { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--accent-ink); font-weight: 600; padding: 0; }
 .sum .row .link:disabled { color: var(--mute); }
 .sum .tot { font-size: 1.35rem; font-weight: 800; color: var(--ink); margin-top: 4px; letter-spacing: -.01em; }
-.acts { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 10px; }
+.acts { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-top: 14px; }
 .acts .btn { min-height: 56px; font-size: 1rem; }
 
 /* ---------- ANTREAN ---------- */
-.board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: start; }
-.col { background: var(--sunk); border: 1px solid var(--line); border-radius: var(--r); padding: 10px; min-height: 220px; }
+.board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+.col { background: var(--sunk); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; min-height: 220px; }
 .col h3 { margin: 4px 6px 12px; font-size: .86rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 .col h3 .dot { width: 9px; height: 9px; border-radius: 50%; }
 .col h3 .n { margin-left: auto; padding: 1px 8px; border-radius: 99px; background: var(--panel); border: 1px solid var(--line); font-size: .74rem; }
-.tk { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: var(--shadow); }
+.tk { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
 .tk .k { display: flex; align-items: center; gap: 8px; }
 .tk .no { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; }
 .tk .type { display: inline-flex; align-items: center; gap: 5px; font-size: .76rem; font-weight: 600; color: var(--ink2); }
@@ -161,24 +167,24 @@ main { min-height: 0; }
 
 /* ---------- RIWAYAT ---------- */
 #v-riwayat { display: flex; flex-direction: column; }
-.hist { display: grid; grid-template-columns: 1fr 380px; gap: 14px; flex: 1; min-height: 0; padding: 12px 20px 18px; }
-.histl { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
-.list { overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); flex: 1; }
+.hist { display: grid; grid-template-columns: 1fr 380px; gap: 16px; flex: 1; min-height: 0; padding: 16px 24px 22px; }
+.histl { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+.list { overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); flex: 1; box-shadow: var(--shadow-sm); }
 .list button { width: 100%; display: grid; grid-template-columns: 92px 54px 1fr auto; gap: 10px; align-items: center; padding: 12px 16px; border: 0; border-bottom: 1px solid var(--line); background: var(--panel); text-align: left; font-size: .88rem; }
 .list button:hover { background: var(--sunk); }
 .list button[aria-current=true] { background: var(--accent-bg); box-shadow: inset 3px 0 0 var(--accent); }
 .list .void { text-decoration: line-through; color: var(--mute); }
-.detail { overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
+.detail { overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; box-shadow: var(--shadow-sm); }
 
 /* ---------- LAPORAN ---------- */
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 10px 0 14px; }
-.stat { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-radius: var(--r); background: var(--panel); border: 1px solid var(--line); }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 14px 0 16px; }
+.stat { display: flex; gap: 14px; align-items: center; padding: 16px 18px; border-radius: var(--r); background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
 .stat .ico { width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; background: var(--accent-bg); color: var(--accent-ink); }
 .stat small { display: block; color: var(--mute); font-weight: 600; font-size: .74rem; }
 .stat b { display: block; font-size: 1.25rem; font-weight: 800; letter-spacing: -.01em; }
-.cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.card { padding: 16px; border-radius: var(--r); background: var(--panel); border: 1px solid var(--line); }
-.card h3 { margin: 0 0 10px; font-size: .92rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.card { padding: 18px 20px; border-radius: var(--r); background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+.card h3 { margin: 0 0 12px; font-size: .92rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .card h3 .i { color: var(--mute); }
 table { width: 100%; border-collapse: collapse; font-size: .86rem; }
 td, th { padding: 8px 4px; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
@@ -190,21 +196,21 @@ th { font-size: .7rem; color: var(--mute); text-transform: uppercase; letter-spa
 .rangebar .dt { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 600; color: var(--mute); }
 .rangebar input[type=date] { height: 38px; padding: 0 8px; border: 1px solid var(--line2); border-radius: var(--r2); background: var(--panel); font: 500 .85rem 'Inter', sans-serif; color: var(--ink); }
 .rlabel { font-size: .8rem; color: var(--mute); font-weight: 600; }
-.toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 20px 0; }
+.toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 18px 24px 0; }
 .daily td .bar { margin-top: 4px; }
-.unpaidbox { margin-bottom: 12px; border-color: #f2c4bf; background: #fffaf9; }
+.unpaidbox { margin-bottom: 16px; border-color: #f2c4bf; background: #fffaf9; }
 .unpaidbox h3 { color: var(--bad); }
 
 /* ---------- DIALOG ---------- */
-dialog { border: 0; border-radius: 18px; padding: 0; width: min(540px, 94vw); max-height: 94vh; color: var(--ink); background: var(--panel); box-shadow: 0 24px 64px rgba(28,23,20,.28); overflow: hidden; }
+dialog { border: 0; border-radius: 18px; padding: 0; width: min(540px, 94vw); max-height: 94vh; color: var(--ink); background: var(--panel); box-shadow: var(--shadow-lg); overflow: hidden; }
 dialog[open] { display: flex; flex-direction: column; }
 dialog.wide { width: min(880px, 96vw); }
-dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
-.dh { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+dialog::backdrop { background: rgba(13,30,22,.45); backdrop-filter: blur(3px); }
+.dh { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
 .dh h3 { margin: 0; font-size: 1.05rem; font-weight: 700; }
 .x { margin-left: auto; width: 38px; height: 38px; border: 0; border-radius: 10px; background: var(--sunk); color: var(--ink2); display: grid; place-items: center; }
-.db { padding: 16px 18px; overflow: auto; flex: 1; }
-.df { display: flex; gap: 10px; align-items: center; padding: 12px 18px; border-top: 1px solid var(--line); background: var(--sunk); }
+.db { padding: 18px 20px; overflow: auto; flex: 1; }
+.df { display: flex; gap: 10px; align-items: center; padding: 14px 20px; border-top: 1px solid var(--line); background: var(--sunk); }
 .grp { margin-bottom: 16px; }
 .grp p { margin: 0 0 8px; font-weight: 700; font-size: .84rem; }
 .grp p small { color: var(--mute); font-weight: 500; margin-left: 4px; }
@@ -217,7 +223,7 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
 .paygrid { display: grid; grid-template-columns: 210px 1fr 270px; min-height: 0; flex: 1; }
 .methods { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-right: 1px solid var(--line); background: var(--sunk); }
 .methods button { display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 0 14px; border: 1px solid var(--line2); border-radius: 12px; background: var(--panel); font-weight: 600; text-align: left; }
-.methods button[aria-pressed=true] { border-color: var(--brand); background: var(--brand); color: #fff; }
+.methods button[aria-pressed=true] { border-color: var(--brand); background: var(--brand); color: #fff; box-shadow: var(--shadow); }
 .payc { padding: 18px 20px; overflow: auto; }
 .payc .lbl { margin: 0; color: var(--mute); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
 .payc .big { font-size: 2.1rem; font-weight: 800; line-height: 1.15; letter-spacing: -.02em; }
@@ -242,7 +248,33 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
 /* struk & tiket */
 .paper { width: 58mm; margin: 0 auto; padding: 10px 4px; background: #fff; color: #000; font: 9.8px/1.45 ui-monospace, 'Courier New', monospace; box-shadow: 0 2px 12px rgba(0,0,0,.12); white-space: pre; overflow: hidden; }
 .paper.kitchen { font-size: 11px; }
-.toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 12px; background: var(--ink); color: #fff; font-weight: 600; font-size: .9rem; box-shadow: 0 12px 32px rgba(0,0,0,.25); z-index: 50; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 12px; background: var(--ink); color: #fff; font-weight: 600; font-size: .9rem; box-shadow: var(--shadow-lg); z-index: 50; }
+/* ---------- BANTUAN ---------- */
+.helpgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; max-width: 1180px; }
+.hcol { display: grid; gap: 16px; }
+.hh { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.hh b { font-size: 1rem; font-weight: 700; } .hh small { display: block; color: var(--mute); font-size: .8rem; font-weight: 500; margin-top: 1px; }
+.ti { width: 42px; height: 42px; flex: none; border-radius: 12px; display: grid; place-items: center; background: var(--accent-bg); color: var(--accent-ink); }
+.ti.blue { background: var(--info-bg); color: var(--info); } .ti.warn { background: var(--warn-bg); color: var(--warn); }
+.helpgrid p { margin: 0 0 12px; color: var(--ink2); font-size: .88rem; }
+.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 12px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 2px 12px; font-size: .88rem; color: var(--ink2); }
+.steps li::before { content: counter(s); grid-row: span 2; width: 30px; height: 30px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: .82rem; }
+.steps li b { color: var(--ink); font-weight: 650; }
+.steps kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(--line2); background: var(--sunk); font: 600 .78rem 'Inter', sans-serif; white-space: nowrap; }
+.tipbox { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--accent-bg); color: var(--accent-ink); font-size: .84rem; display: flex; gap: 10px; }
+.tipbox .i { margin-top: 1px; }
+.hacts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.trouble td:first-child { font-weight: 650; width: 42%; color: var(--ink); }
+.trouble td { color: var(--ink2); }
+.faq details { border-top: 1px solid var(--line); padding: 12px 0; }
+.faq details:first-of-type { border-top: 0; padding-top: 0; }
+.faq summary { cursor: pointer; font-weight: 650; font-size: .9rem; list-style: none; display: flex; justify-content: space-between; gap: 10px; }
+.faq summary::after { content: "+"; color: var(--mute); font-weight: 700; }
+.faq details[open] summary::after { content: "−"; }
+.faq details p { margin: 8px 0 0; }
+.paperlink { border: 0; background: none; padding: 0; color: var(--accent-ink); font-weight: 600; font-size: .78rem; text-decoration: underline; }
+@media (max-width: 1100px) { .helpgrid { grid-template-columns: 1fr; } }
 @media (max-width: 1100px) { #v-jual { grid-template-columns: 1fr 340px; } .cols { grid-template-columns: 1fr 1fr; } .stats { grid-template-columns: 1fr 1fr; } .paygrid { grid-template-columns: 170px 1fr 230px; } }
 @media print {
   body * { visibility: hidden; }
@@ -256,12 +288,14 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
 __ICONS__
 <div class="app">
   <nav class="rail" aria-label="Menu kasir">
-    <span class="logo" title="Lingkar Kopi"><svg viewBox="0 0 54 54" fill="none" aria-hidden="true"><circle cx="27" cy="27" r="20" stroke="#e8a24a" stroke-width="7"/><circle cx="27" cy="27" r="7" fill="#e8a24a"/></svg></span>
+    <span class="logo" title="Saget Kasir"><svg class="i" aria-hidden="true"><use href="#i-store"/></svg></span>
+    <span class="appname">Saget<br>Kasir</span>
     <div class="tabs" role="tablist">
       <button role="tab" data-v="jual" aria-selected="true"><svg class="i"><use href="#i-shopping-cart"/></svg>Jual</button>
       <button role="tab" data-v="antrean" aria-selected="false"><svg class="i"><use href="#i-chef-hat"/></svg>Antrean<span class="badge" id="qBadge" hidden></span></button>
       <button role="tab" data-v="riwayat" aria-selected="false"><svg class="i"><use href="#i-receipt"/></svg>Riwayat</button>
       <button role="tab" data-v="laporan" aria-selected="false"><svg class="i"><use href="#i-chart-column"/></svg>Laporan</button>
+      <button role="tab" data-v="bantuan" aria-selected="false"><svg class="i"><use href="#i-circle-question-mark"/></svg>Bantuan</button>
     </div>
     <span class="spacer"></span>
     <button class="railbtn" id="resetDemo" title="Hapus semua data demo"><svg class="i"><use href="#i-rotate-ccw"/></svg>Reset</button>
@@ -347,6 +381,65 @@ __ICONS__
           </div>
         </div>
       </section>
+      <!-- BANTUAN -->
+      <section class="view" id="v-bantuan" hidden>
+        <div class="pad"><div class="helpgrid">
+          <div class="hcol">
+            <div class="card">
+              <div class="hh"><span class="ti"><svg class="i"><use href="#i-message-circle"/></svg></span><div class="grow"><b>Butuh bantuan?</b><small>Pengembang Saget Kasir</small></div></div>
+              <p>Hubungi pengembang untuk kendala aplikasi, printer, atau pengaturan menu dan stok.</p>
+              <div class="hacts"><a class="btn" href="https://wa.me/62895395094858?text=Halo%2C%20saya%20butuh%20bantuan%20aplikasi%20Saget%20Kasir." target="_blank" rel="noopener"><svg class="i sm"><use href="#i-message-circle"/></svg>Hubungi pengembang</a></div>
+            </div>
+            <div class="card">
+              <div class="hh"><span class="ti"><svg class="i"><use href="#i-book-open"/></svg></span><div class="grow"><b>Cara pakai</b><small>Alur kerja satu shift</small></div></div>
+              <ol class="steps">
+                <li><b>Buka kasir</b><span>Di Laporan, ketuk <kbd>Buka kasir</kbd> dan isi modal awal di laci.</span></li>
+                <li><b>Catat pesanan</b><span>Di Jual, ketuk menu. Menu bervarian membuka pilihan ukuran, suhu, gula, dan tambahan.</span></li>
+                <li><b>Bayar atau simpan</b><span><kbd>Bayar</kbd> untuk tunai, QRIS, atau debit. <kbd>Simpan</kbd> untuk open bill yang dibayar belakangan.</span></li>
+                <li><b>Barista membuat</b><span>Pesanan masuk ke Antrean: <kbd>Mulai buat</kbd> lalu <kbd>Selesai, panggil</kbd>.</span></li>
+                <li><b>Pesanan Agi Mas</b><span>Masuk ke Antrean dengan bunyi. Setelah dibuat, ketuk <kbd>Siap diambil driver</kbd>.</span></li>
+                <li><b>Tutup kasir</b><span>Di Laporan, ketuk <kbd>Tutup kasir</kbd> dan hitung uang di laci. Selisih tampil otomatis.</span></li>
+              </ol>
+            </div>
+            <div class="card faq">
+              <div class="hh"><span class="ti blue"><svg class="i"><use href="#i-lightbulb"/></svg></span><div class="grow"><b>Pertanyaan umum</b></div></div>
+              <details><summary>Bagaimana membatalkan transaksi?</summary><p>Buka Riwayat, pilih transaksinya, ketuk Batalkan transaksi dan isi alasannya. Stok menu kembali otomatis.</p></details>
+              <details><summary>Open bill belum dibayar, apakah masuk laporan?</summary><p>Belum. Penjualan baru dihitung setelah dibayar. Daftarnya tampil di Laporan bagian Belum dibayar.</p></details>
+              <details><summary>Bagaimana mengambil laporan bulanan?</summary><p>Di Laporan, pilih Bulan ini atau isi tanggal sendiri, lalu ketuk Ekspor laporan. File CSV bisa langsung dibuka di Excel.</p></details>
+              <details><summary>Stok habis, bagaimana?</summary><p>Menu dengan stok 0 tidak bisa dipilih di kasir maupun di aplikasi Agi Mas. Tambah stok lewat panel admin.</p></details>
+              <details><summary>Data demo ini tersimpan di mana?</summary><p>Di browser tablet ini saja. Tombol Reset menghapusnya. Versi asli menyimpan data secara online agar aman.</p></details>
+            </div>
+          </div>
+          <div class="hcol">
+            <div class="card" id="printerHelp">
+              <div class="hh"><span class="ti"><svg class="i"><use href="#i-printer"/></svg></span><div class="grow"><b>Sambungkan printer thermal</b><small>Printer Bluetooth 58 mm (ESC/POS)</small></div></div>
+              <ol class="steps">
+                <li><b>Siapkan printer</b><span>Isi baterai, lalu pasang kertas thermal 58 mm. Sisi cetak adalah sisi yang menghitam bila digores kuku; arahkan ke kepala cetak.</span></li>
+                <li><b>Cetak halaman tes printer</b><span>Pada kebanyakan printer: matikan, tahan tombol <kbd>FEED</kbd>, lalu nyalakan. Halaman tes berisi nama Bluetooth dan PIN printer.</span></li>
+                <li><b>Pasangkan di tablet</b><span><kbd>Pengaturan</kbd> → <kbd>Bluetooth</kbd> → nyalakan → <kbd>Pasangkan perangkat baru</kbd> → pilih nama printer. PIN biasanya <kbd>0000</kbd> atau <kbd>1234</kbd>.</span></li>
+                <li><b>Pilih printer di kasir</b><span>Versi asli: <kbd>Bantuan</kbd> → <kbd>Pilih printer</kbd> → pilih nama printer. Kasir mengingatnya dan menyambung otomatis setiap dibuka.</span></li>
+                <li><b>Tes cetak</b><span>Ketuk tombol di bawah. Printer siap bila baris angka 1–32 tercetak utuh dalam satu baris.</span></li>
+              </ol>
+              <div class="hacts"><button class="btn" id="testPrint"><svg class="i sm"><use href="#i-printer"/></svg>Tes cetak</button></div>
+              <div class="tipbox"><svg class="i sm"><use href="#i-bluetooth"/></svg><span><b>Mencoba demo ini dengan printer sekarang?</b> Di tablet Android, pasang aplikasi gratis RawBT dari Play Store dan sambungkan printer di sana. Lalu ketuk Cetak pada struk dan pilih RawBT di jendela cetak.</span></div>
+            </div>
+            <div class="card">
+              <div class="hh"><span class="ti warn"><svg class="i"><use href="#i-wrench"/></svg></span><div class="grow"><b>Jika printer bermasalah</b></div></div>
+              <table class="trouble">
+                <tr><td>Kertas keluar, tapi kosong</td><td>Kertas terbalik. Balik gulungannya.</td></tr>
+                <tr><td>Printer tidak ditemukan</td><td>Pastikan printer menyala dan tidak sedang tersambung ke HP lain. Dekatkan (kurang dari 5 m), lalu matikan-nyalakan Bluetooth tablet.</td></tr>
+                <tr><td>Tulisan pudar atau putus-putus</td><td>Isi baterai printer. Bersihkan kepala cetak dengan tisu beralkohol.</td></tr>
+                <tr><td>Tulisan terpotong atau berantakan</td><td>Pastikan kertas dan printer 58 mm, bukan 80 mm.</td></tr>
+                <tr><td>Struk tercetak dua kali</td><td>Tunggu struk selesai keluar sebelum mengetuk Cetak lagi.</td></tr>
+              </table>
+            </div>
+            <div class="card">
+              <div class="hh"><span class="ti"><svg class="i"><use href="#i-info"/></svg></span><div class="grow"><b>Tentang aplikasi</b><small>Saget Kasir · versi demo</small></div></div>
+              <p style="margin:0">Aplikasi kasir untuk kedai, kafe, dan warung. Bisa terhubung dengan aplikasi Agi Mas, sehingga menu, stok, dan jam buka sama dengan yang tampil ke pelanggan.</p>
+            </div>
+          </div>
+        </div></div>
+      </section>
     </main>
   </div>
 </div>
@@ -409,7 +502,7 @@ __ICONS__
 <dialog id="dPaper" aria-labelledby="ppT">
   <div class="dh"><h3 id="ppT">Struk</h3><button class="x" data-close aria-label="Tutup"><svg class="i"><use href="#i-x"/></svg></button></div>
   <div class="db" style="background:var(--sunk)"><div class="paper" id="paper"></div></div>
-  <div class="df"><button class="btn" id="ppPrint"><svg class="i sm"><use href="#i-printer"/></svg>Cetak</button><span class="grow" style="font-size:.76rem;color:var(--mute)">Versi asli: langsung ke printer thermal Bluetooth 58 mm.</span></div>
+  <div class="df"><button class="btn" id="ppPrint"><svg class="i sm"><use href="#i-printer"/></svg>Cetak</button><span class="grow" style="font-size:.76rem;color:var(--mute)">Versi asli: langsung ke printer thermal Bluetooth 58 mm. <button class="paperlink" id="ppHelp">Cara sambung printer</button></span></div>
 </dialog>
 
 <!-- Form umum: buka/tutup kasir, kas, batal -->
@@ -480,11 +573,11 @@ __ICONS__
   // ---------- Tab ----------
   var tab = "jual";
   document.querySelector(".tabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) go(b.dataset.v); });
-  var TITLE = { jual: "Jual", antrean: "Antrean barista", riwayat: "Riwayat transaksi", laporan: "Laporan" };
+  var TITLE = { jual: "Jual", antrean: "Antrean barista", riwayat: "Riwayat transaksi", laporan: "Laporan", bantuan: "Bantuan" };
   function go(v) {
     tab = v; $("pageTitle").textContent = TITLE[v];
     document.querySelectorAll(".tabs button").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.v === v)); });
-    ["jual", "antrean", "riwayat", "laporan"].forEach(function (x) { $("v-" + x).hidden = x !== v; });
+    ["jual", "antrean", "riwayat", "laporan", "bantuan"].forEach(function (x) { $("v-" + x).hidden = x !== v; });
     render();
   }
 
@@ -761,6 +854,11 @@ __ICONS__
   }
   function showPaper(text, title, kitchen) { $("paper").textContent = text; $("paper").className = "paper" + (kitchen ? " kitchen" : ""); $("ppT").textContent = title; open("dPaper"); }
   $("ppPrint").onclick = function () { window.print(); };
+  $("ppHelp").onclick = function () { $("dPaper").close(); document.querySelectorAll("dialog[open]").forEach(function (d) { d.close(); }); go("bantuan"); $("printerHelp").scrollIntoView({ block: "start" }); };
+  $("testPrint").onclick = function () {
+    showPaper([center("TES PRINTER"), center("LINGKAR KOPI"), HR, "Lebar kertas 58 mm, 32 karakter:", "12345678901234567890123456789012", pad("Kiri", "Kanan"), HR,
+      "Bila baris angka di atas utuh", "dalam satu baris, printer siap.", HR, center(new Date().toLocaleString("id-ID"))].join("\n"), "Tes cetak", false);
+  };
   function sendWa(tx) { window.open("https://wa.me/?text=" + encodeURIComponent("*Struk Lingkar Kopi*\n```\n" + receiptText(tx) + "\n```"), "_blank"); }
 
   // ---------- ANTREAN BARISTA ----------

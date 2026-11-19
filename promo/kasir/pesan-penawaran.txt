@@ -1,6 +1,6 @@
 Halo Kak, salam dari *Agi Mas* 🙏
 
-Kemarin kami sempat ngobrol soal aplikasi kasir. Kami ingin menawarkan *Aplikasi Kasir untuk Lingkar Kopi*, yang langsung tersambung dengan pemesanan lewat aplikasi Agi Mas.
+Kemarin kami sempat ngobrol soal aplikasi kasir. Kami ingin menawarkan *Saget Kasir*, aplikasi kasir untuk Lingkar Kopi yang langsung tersambung dengan pemesanan lewat aplikasi Agi Mas.
 
 *Yang bisa dilakukan aplikasi kasir:*
 • Jual cepat dari tablet: cari menu, ketuk, pilih *varian & tambahan* (ukuran, es/panas, level gula, extra shot, dll.), harga terhitung otomatis

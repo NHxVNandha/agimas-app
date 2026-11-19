@@ -1,4 +1,4 @@
-"""Rakit demo kasir Lingkar Kopi menjadi satu file HTML tanpa internet: promo/kasir/kasir-lingkar-demo.html
+"""Rakit demo Saget Kasir (contoh toko: Lingkar Kopi) menjadi satu file HTML tanpa internet: promo/kasir/kasir-lingkar-demo.html
 - Huruf: Inter (SIL Open Font License 1.1), tools/fonts/Inter-latin-var.woff2, ditanam base64.
 - Ikon: Lucide (ISC), diambil dari node_modules/lucide-vue-next lalu dijadikan sprite <symbol id="i-nama">.
 Jalankan: python tools/kasir_build.py"""
@@ -8,7 +8,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 ICONS = ["shopping-cart", "chef-hat", "receipt", "chart-column", "rotate-ccw", "coffee", "cup-soda", "sandwich", "cookie", "croissant", "popcorn",
          "utensils", "shopping-bag", "user", "bookmark", "trash-2", "tag", "banknote", "qr-code", "credit-card", "printer", "message-circle", "ban",
          "check", "circle-check", "x", "plus", "minus", "search", "delete", "clock", "wallet", "arrow-down-left", "arrow-up-right", "store", "bike",
-         "circle-alert", "pencil", "hand-coins", "list-ordered", "timer", "leaf", "glass-water", "download"]
+         "circle-alert", "pencil", "hand-coins", "list-ordered", "timer", "leaf", "glass-water", "download",
+         "circle-question-mark", "book-open", "lightbulb", "bluetooth", "wrench", "info"]
 
 
 def symbol(name):
