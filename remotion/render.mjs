@@ -20,6 +20,11 @@ const JOBS = [
   ["SagetKasir-Deskripsi-Vertikal", "saget-kasir/vertikal", "saget-kasir-deskripsi-vertikal.mp4"],
   ["SagetKasir-Tutorial-Vertikal", "saget-kasir/vertikal", "saget-kasir-tutorial-vertikal.mp4"],
 ];
+// Animasi ilustrasi 2D -> promo/video-animasi-2d/<app>/ (vertikal di subfolder vertikal/)
+for (const [app, dir] of [["Agimas", "agimas"], ["SagetKasir", "saget-kasir"]])
+  for (const kind of ["Promosi", "Deskripsi", "Tutorial"])
+    for (const v of [false, true])
+      JOBS.push([`${app}-Animasi-${kind}${v ? "-Vertikal" : ""}`, `../video-animasi-2d/${dir}${v ? "/vertikal" : ""}`, `${dir}-animasi-${kind.toLowerCase()}${v ? "-vertikal" : ""}.mp4`]);
 const only = process.argv.slice(2);
 for (const [id, dir, file] of JOBS) {
   if (only.length && !only.includes(id)) continue;

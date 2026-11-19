@@ -12,7 +12,9 @@ from vidlib import Rec, VOICE, duration
 RM = pathlib.Path("D:/HU/AgiMasApp/remotion")
 FPS, GAP = 30, 0.35          # jeda sesudah tiap kalimat (detik)
 UNDUH = "https://solusiagimas.netlify.app/unduh/"
+SITUS = "https://solusiagimas.netlify.app/"
 QR_HOLD = 3.0                # detik tambahan di slide QR agar sempat dipindai
+SNAP_FRAMES = 30 * FPS       # video Snapgram tepat 30 detik
 
 
 class Capture(Rec):
@@ -116,13 +118,15 @@ def assets():
     for src, dst in [("promo/video-bg/3-dua-warna-landscape.png", "bg-agimas.png"), ("promo/video-bg/kasir-3-geometris-landscape.png", "bg-kasir.png"),
                      ("promo/video-bg/3-dua-warna-story.png", "bg-agimas-v.png"), ("promo/video-bg/kasir-3-geometris-story.png", "bg-kasir-v.png"),
                      ("promo/video-bg/logo-agimas-full.png", "logo-agimas.png"), ("promo/video-bg/logo-saget-kasir-full.png", "logo-kasir.png"),
-                     ("web/fonts/PlusJakartaSans-1.woff2", "PlusJakartaSans.woff2"), ("tools/fonts/Inter-latin-var.woff2", "Inter.woff2")]:
+                     ("web/fonts/PlusJakartaSans-1.woff2", "PlusJakartaSans.woff2"), ("web/splash-motor.png", "motor.png"), ("tools/fonts/Inter-latin-var.woff2", "Inter.woff2")]:
         shutil.copy(R / src, A / dst)
     # QR unduh aplikasi Agi Mas (halaman /unduh selalu menyajikan APK terbaru), dibuat dengan qrcode-generator milik aplikasi
     js = ("const q=require(process.argv[1]);const c=q(0,'M');c.addData(process.argv[2]);c.make();"
           "process.stdout.write(c.createSvgTag({cellSize:10,margin:2,scalable:true}))")
     svg = subprocess.run(["node", "-e", js, str(R / "web/vendor/qrcode.js"), UNDUH], capture_output=True, text=True, check=True).stdout
     (A / "qr-unduh-agimas.svg").write_text(svg, encoding="utf8")
+    svg = subprocess.run(["node", "-e", js, str(R / "web/vendor/qrcode.js"), SITUS], capture_output=True, text=True, check=True).stdout
+    (A / "qr-web-agimas.svg").write_text(svg, encoding="utf8")   # QR ke versi website (Snapgram)
 
 
 def build(app):
@@ -170,12 +174,32 @@ def build(app):
             {"kind": "list", "head": "Status saat ini", "items": ["Demo di browser tablet", "Siap jadi aplikasi Android", "Data terhubung dengan Agi Mas"], "say": "Saat ini Saget Kasir berupa demo yang bisa dicoba di browser tablet, dan siap dikembangkan menjadi aplikasi Android."},
             {"kind": "cta", "head": "Saget Kasir", "sub": "Kasir untuk kedai & kafe", "say": "Saget Kasir. Kasir untuk kedai dan kafe."},
         ]
-    tts_lines(promo, adir); tts_lines(desc, adir)
-    out = {"app": app, "fps": FPS, "tutorial": scenes, "promo": promo, "desc": desc}
+    # Snapgram / Instagram Story: promosi tepat 30 detik (1080x1920), latar & screenshot seperti tutorial
+    if app == "agimas":
+        snap = [   # versi website: pesan dari browser HP tanpa install
+            {"head": "Pesan dari browser", "say": "Pesan ojek, kirim paket, atau beli kopi di Madiun, langsung dari browser HP. Tanpa install.", "shot": S("Kenali Beranda", 0)},
+            {"head": "Harga langsung keluar", "say": "Pilih lokasi di peta, harga langsung keluar otomatis.", "shot": S("Harga keluar otomatis", 0)},
+            {"head": "Tunai atau QRIS", "say": "Bayar tunai ke driver, atau QRIS dengan nominal yang sudah terisi.", "shot": S("Bayar pakai QRIS", 1)},
+            {"head": "Langsung ke admin", "say": "Pesanan langsung terkirim ke admin lewat WhatsApp.", "shot": S("Kirim ke admin", 1)},
+            {"head": "Buka sekarang", "say": "Buka situs Agi Mas sekarang. Pindai kode QR ini!", "qr": "gen/assets/qr-web-agimas.svg", "sub": "solusiagimas.netlify.app"},
+        ]
+    else:
+        snap = [
+            {"head": "Kasir untuk kedai & kafe", "say": "Kedai Anda butuh kasir yang rapi? Pakai Saget Kasir.", "shot": S("Layar Jual", 3)},
+            {"head": "Varian & catatan", "say": "Catat pesanan lengkap dengan varian dan catatan barista.", "shot": S("Pilih menu dan varian", 1)},
+            {"head": "Bayar & cetak struk", "say": "Bayar tunai, QRIS, atau debit, lalu cetak struk.", "shot": S("Struk dan nomor antrean", 1, 1)},
+            {"head": "Laporan otomatis", "say": "Laporan penjualan dan ekspor Excel, semuanya otomatis.", "shot": S("Laporan dan rentang waktu", 2)},
+            {"head": "Coba demonya", "say": "Saget Kasir. Hubungi kami untuk mencoba demonya.", "sub": "Kasir untuk kedai & kafe"},
+        ]
+    tts_lines(promo, adir); tts_lines(desc, adir); tts_lines(snap, adir)
+    over = sum(l["frames"] for l in snap) - SNAP_FRAMES
+    assert over <= 0, f"naskah Snapgram {app} {over / FPS:.1f} detik terlalu panjang"
+    snap[-1]["frames"] -= over            # sisa waktu untuk slide terakhir (QR / ajakan) -> total tepat 30 detik
+    out = {"app": app, "fps": FPS, "tutorial": scenes, "promo": promo, "desc": desc, "snap": snap}
     (RM / "src/gen").mkdir(parents=True, exist_ok=True)
     (RM / "src/gen" / f"{app}.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf8")
     tot = lambda ls: sum(l["frames"] for l in ls) / FPS
-    print(app, "tutorial", round(sum(b["frames"] for s in scenes for b in s["beats"]) / FPS), "s | promo", round(tot(promo)), "s | deskripsi", round(tot(desc)), "s")
+    print(app, "tutorial", round(sum(b["frames"] for s in scenes for b in s["beats"]) / FPS), "s | promo", round(tot(promo)), "s | deskripsi", round(tot(desc)), "s | snapgram", tot(snap), "s, slide terakhir", round(snap[-1]["frames"] / FPS, 1), "s")
 
 
 if __name__ == "__main__":

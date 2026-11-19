@@ -5,6 +5,7 @@ import kasir from "./gen/kasir.json";
 import { Tutorial, tutorialFrames } from "./Tutorial";
 import { Slides, slidesFrames } from "./Slides";
 import { THEMES, Data } from "./theme";
+import { AnimTutorial, AnimSlides, animTutorialFrames, animSlidesFrames } from "./anim/Animasi";
 
 // Panjang tiap video = jumlah frame semua kalimat (frame kalimat = durasi suaranya + jeda), jadi narasi & gambar selalu pas.
 export const RemotionRoot: React.FC = () => {
@@ -28,6 +29,17 @@ export const RemotionRoot: React.FC = () => {
               defaultProps={{ data: d, lines: d.desc, theme, mode: "desc" as const }} />
             <Composition id={`${name}-Tutorial-Vertikal`} component={Tutorial} durationInFrames={tutorialFrames(d)} fps={d.fps} width={1080} height={1920}
               defaultProps={{ data: d, theme, vertical: true }} />
+            {/* animasi ilustrasi 2D (landscape & vertikal) */}
+            {([false, true] as const).map((v) => (
+              <React.Fragment key={String(v)}>
+                <Composition id={`${name}-Animasi-Promosi${v ? "-Vertikal" : ""}`} component={AnimSlides} durationInFrames={animSlidesFrames(d.promo)} fps={d.fps} width={v ? 1080 : 1920} height={v ? 1920 : 1080}
+                  defaultProps={{ data: d, lines: d.promo, theme, vertical: v }} />
+                <Composition id={`${name}-Animasi-Deskripsi${v ? "-Vertikal" : ""}`} component={AnimSlides} durationInFrames={animSlidesFrames(d.desc)} fps={d.fps} width={v ? 1080 : 1920} height={v ? 1920 : 1080}
+                  defaultProps={{ data: d, lines: d.desc, theme, vertical: v }} />
+                <Composition id={`${name}-Animasi-Tutorial${v ? "-Vertikal" : ""}`} component={AnimTutorial} durationInFrames={animTutorialFrames(d)} fps={d.fps} width={v ? 1080 : 1920} height={v ? 1920 : 1080}
+                  defaultProps={{ data: d, theme, vertical: v }} />
+              </React.Fragment>
+            ))}
           </React.Fragment>
         );
       })}
