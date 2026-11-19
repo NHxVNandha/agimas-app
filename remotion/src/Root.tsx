@@ -21,6 +21,13 @@ export const RemotionRoot: React.FC = () => {
               defaultProps={{ data: d, lines: d.desc, theme, mode: "desc" as const }} />
             <Composition id={`${name}-Tutorial`} component={Tutorial} durationInFrames={tutorialFrames(d)} fps={d.fps} width={1920} height={1080}
               defaultProps={{ data: d, theme }} />
+            {/* versi vertikal 1080x1920 (Story/Reels/TikTok): data & narasi sama, tata letak atas-bawah */}
+            <Composition id={`${name}-Promosi-Vertikal`} component={Slides} durationInFrames={slidesFrames(d.promo)} fps={d.fps} width={1080} height={1920}
+              defaultProps={{ data: d, lines: d.promo, theme, mode: "promo" as const }} />
+            <Composition id={`${name}-Deskripsi-Vertikal`} component={Slides} durationInFrames={slidesFrames(d.desc)} fps={d.fps} width={1080} height={1920}
+              defaultProps={{ data: d, lines: d.desc, theme, mode: "desc" as const }} />
+            <Composition id={`${name}-Tutorial-Vertikal`} component={Tutorial} durationInFrames={tutorialFrames(d)} fps={d.fps} width={1080} height={1920}
+              defaultProps={{ data: d, theme, vertical: true }} />
           </React.Fragment>
         );
       })}

@@ -4,13 +4,15 @@
 - Promosi & deskripsi: naskah di bawah; tiap kalimat punya mp3 sendiri dan gambar dari tangkapan tutorial.
 Hasil: remotion/public/gen/<app>/... dan remotion/src/gen/<app>.json (durasi tiap kalimat -> jumlah frame, jadi suara & gambar sinkron).
 Jalankan: python tools/video/remotion_data.py [agimas|kasir] [ulang]   (ulang = potret ulang meski sudah ada)"""
-import asyncio, hashlib, json, math, pathlib, shutil, sys
+import asyncio, hashlib, json, math, pathlib, shutil, subprocess, sys
 import edge_tts
 from playwright.sync_api import sync_playwright
 from vidlib import Rec, VOICE, duration
 
 RM = pathlib.Path("D:/HU/AgiMasApp/remotion")
 FPS, GAP = 30, 0.35          # jeda sesudah tiap kalimat (detik)
+UNDUH = "https://solusiagimas.netlify.app/unduh/"
+QR_HOLD = 3.0                # detik tambahan di slide QR agar sempat dipindai
 
 
 class Capture(Rec):
@@ -68,7 +70,7 @@ def tts_lines(lines, adir):
             if not mp3.exists() or mp3.stat().st_size < 1000: await say_to(l["say"], mp3); await asyncio.sleep(1.5)
             l["audio"] = mp3.name
     asyncio.run(run())
-    for l in lines: l["frames"] = math.ceil((duration(adir / l["audio"]) + GAP) * FPS)
+    for l in lines: l["frames"] = math.ceil((duration(adir / l["audio"]) + GAP + l.get("hold", 0)) * FPS)
 
 
 def capture(app):
@@ -112,9 +114,15 @@ def assets():
     """Latar, logo, dan huruf yang sama dengan video sebelumnya, disalin ke public/gen/assets."""
     A = RM / "public/gen/assets"; A.mkdir(parents=True, exist_ok=True); R = RM.parent
     for src, dst in [("promo/video-bg/3-dua-warna-landscape.png", "bg-agimas.png"), ("promo/video-bg/kasir-3-geometris-landscape.png", "bg-kasir.png"),
+                     ("promo/video-bg/3-dua-warna-story.png", "bg-agimas-v.png"), ("promo/video-bg/kasir-3-geometris-story.png", "bg-kasir-v.png"),
                      ("promo/video-bg/logo-agimas-full.png", "logo-agimas.png"), ("promo/video-bg/logo-saget-kasir-full.png", "logo-kasir.png"),
                      ("web/fonts/PlusJakartaSans-1.woff2", "PlusJakartaSans.woff2"), ("tools/fonts/Inter-latin-var.woff2", "Inter.woff2")]:
         shutil.copy(R / src, A / dst)
+    # QR unduh aplikasi Agi Mas (halaman /unduh selalu menyajikan APK terbaru), dibuat dengan qrcode-generator milik aplikasi
+    js = ("const q=require(process.argv[1]);const c=q(0,'M');c.addData(process.argv[2]);c.make();"
+          "process.stdout.write(c.createSvgTag({cellSize:10,margin:2,scalable:true}))")
+    svg = subprocess.run(["node", "-e", js, str(R / "web/vendor/qrcode.js"), UNDUH], capture_output=True, text=True, check=True).stdout
+    (A / "qr-unduh-agimas.svg").write_text(svg, encoding="utf8")
 
 
 def build(app):
@@ -129,7 +137,8 @@ def build(app):
             {"kind": "shot", "head": "Pesan dari mitra", "say": "Pesan kopi dan makanan dari mitra seperti Lingkar Kopi, lengkap dengan keranjang.", "shot": S("Keranjang", 2)},
             {"kind": "shot", "head": "Tunai atau QRIS", "say": "Bayar tunai ke driver, atau QRIS dengan nominal yang sudah terisi.", "shot": S("Bayar pakai QRIS", 1)},
             {"kind": "shot", "head": "Langsung ke admin", "say": "Pesanan terkirim ke admin lewat WhatsApp, lalu driver terdekat segera berangkat.", "shot": S("Kirim ke admin", 1)},
-            {"kind": "cta", "head": "Unduh gratis", "sub": "solusiagimas.netlify.app/unduh", "say": "Unduh aplikasinya gratis sekarang. Agi Mas, saget sembarang kalir!"},
+            {"kind": "cta", "head": "Unduh gratis", "sub": "solusiagimas.netlify.app/unduh", "qr": "gen/assets/qr-unduh-agimas.svg", "hold": QR_HOLD,
+             "say": "Unduh aplikasinya gratis sekarang. Pindai kode QR di layar. Agi Mas, saget sembarang kalir!"},
         ]
         desc = [
             {"kind": "logo", "head": "Tentang Agi Mas", "say": "Agi Mas adalah aplikasi layanan antar, beli, dan bantu untuk warga Madiun dan sekitarnya."},

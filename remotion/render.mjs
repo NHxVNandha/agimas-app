@@ -1,4 +1,4 @@
-// Render semua video Remotion ke promo/video-remotion/<agimas|saget-kasir>/.
+// Render semua video Remotion ke promo/video-remotion/<agimas|saget-kasir>/ (versi vertikal di subfolder vertikal/).
 // Pakai Chrome yang sudah terpasang (tidak mengunduh Chrome Headless Shell). Jalankan: npm run render [-- Agimas-Promosi ...]
 import { execSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
@@ -13,6 +13,12 @@ const JOBS = [
   ["SagetKasir-Promosi", "saget-kasir", "saget-kasir-promosi.mp4"],
   ["SagetKasir-Deskripsi", "saget-kasir", "saget-kasir-deskripsi.mp4"],
   ["SagetKasir-Tutorial", "saget-kasir", "saget-kasir-tutorial.mp4"],
+  ["Agimas-Promosi-Vertikal", "agimas/vertikal", "agimas-promosi-vertikal.mp4"],
+  ["Agimas-Deskripsi-Vertikal", "agimas/vertikal", "agimas-deskripsi-vertikal.mp4"],
+  ["Agimas-Tutorial-Vertikal", "agimas/vertikal", "agimas-tutorial-vertikal.mp4"],
+  ["SagetKasir-Promosi-Vertikal", "saget-kasir/vertikal", "saget-kasir-promosi-vertikal.mp4"],
+  ["SagetKasir-Deskripsi-Vertikal", "saget-kasir/vertikal", "saget-kasir-deskripsi-vertikal.mp4"],
+  ["SagetKasir-Tutorial-Vertikal", "saget-kasir/vertikal", "saget-kasir-tutorial-vertikal.mp4"],
 ];
 const only = process.argv.slice(2);
 for (const [id, dir, file] of JOBS) {
