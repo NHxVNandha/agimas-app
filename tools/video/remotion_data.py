@@ -177,11 +177,12 @@ def build(app):
     # Snapgram / Instagram Story: promosi tepat 30 detik (1080x1920), latar & screenshot seperti tutorial
     if app == "agimas":
         snap = [   # versi website: pesan dari browser HP tanpa install
-            {"head": "Pesan dari browser", "say": "Pesan ojek, kirim paket, atau beli kopi di Madiun, langsung dari browser HP. Tanpa install.", "shot": S("Kenali Beranda", 0)},
+            {"kind": "intro", "head": "Butuh ojek atau titip belanja di Madiun?", "say": "Butuh ojek atau titip belanja di Madiun?"},
+            {"head": "Pesan dari browser", "say": "Pakai Agi Mas, langsung dari browser HP. Tanpa install.", "shot": S("Kenali Beranda", 0)},
             {"head": "Harga langsung keluar", "say": "Pilih lokasi di peta, harga langsung keluar otomatis.", "shot": S("Harga keluar otomatis", 0)},
             {"head": "Tunai atau QRIS", "say": "Bayar tunai ke driver, atau QRIS dengan nominal yang sudah terisi.", "shot": S("Bayar pakai QRIS", 1)},
             {"head": "Langsung ke admin", "say": "Pesanan langsung terkirim ke admin lewat WhatsApp.", "shot": S("Kirim ke admin", 1)},
-            {"head": "Buka sekarang", "say": "Buka situs Agi Mas sekarang. Pindai kode QR ini!", "qr": "gen/assets/qr-web-agimas.svg", "sub": "solusiagimas.netlify.app"},
+            {"kind": "outro", "head": "Buka sekarang", "say": "Buka situs Agi Mas sekarang. Pindai kode QR ini!", "qr": "gen/assets/qr-web-agimas.svg", "sub": "solusiagimas.netlify.app"},
         ]
     else:
         snap = [

@@ -6,7 +6,7 @@ import { Audio } from "@remotion/media";
 import { Fonts, Theme, src, audio } from "../theme";
 import { Device } from "../Device";
 
-export type SnapLine = { head: string; say: string; shot?: string; qr?: string; sub?: string; audio: string; frames: number };
+export type SnapLine = { kind?: "intro" | "outro"; head: string; say: string; shot?: string; qr?: string; sub?: string; audio: string; frames: number };
 export const snapFrames = (lines: SnapLine[]) => lines.reduce((a, l) => a + l.frames, 0);
 
 const CARD: React.CSSProperties = { background: "rgba(255,255,255,.96)", borderRadius: 26, padding: "24px 30px", boxShadow: "0 16px 40px -20px rgba(11,37,69,.45)" };
@@ -71,11 +71,66 @@ export const Snap: React.FC<{ app: string; lines: SnapLine[]; theme: Theme; url?
       {seq.map(({ l, from }, k) => (
         <Sequence key={k} from={from} durationInFrames={l.frames}>
           <Audio src={audio(app, l.audio)} />
-          <Text l={l} theme={theme} />
-          {!l.shot && <Closing l={l} theme={theme} web={!!url} />}
+          {l.kind === "intro" ? <Intro l={l} theme={theme} /> : l.kind === "outro" ? <Outro l={l} theme={theme} web={!!url} /> : <>
+            <Text l={l} theme={theme} />
+            {!l.shot && <Closing l={l} theme={theme} web={!!url} />}
+          </>}
         </Sequence>
       ))}
       <Bar total={t} color={theme.brand} />
+    </AbsoluteFill>
+  );
+};
+
+/** Latar biru penuh dengan lingkaran yang bergerak pelan (intro & outro). */
+const BlueBg: React.FC<{ theme: Theme }> = ({ theme }) => {
+  const f = useCurrentFrame(), d = interpolate(f, [0, 300], [0, 80]);
+  return (
+    <AbsoluteFill style={{ background: `radial-gradient(1200px 1400px at 30% 20%, #3d9bff 0%, ${theme.brand} 45%, ${theme.dark} 100%)` }}>
+      <div style={{ position: "absolute", width: 900, height: 900, borderRadius: "50%", right: -320 + d, top: -260, background: "rgba(255,255,255,.08)" }} />
+      <div style={{ position: "absolute", width: 700, height: 700, borderRadius: "50%", left: -260, bottom: -200 - d, background: "rgba(255,255,255,.06)" }} />
+      <div style={{ position: "absolute", width: 46, height: 46, borderRadius: "50%", left: 120, top: 1500 - d, background: theme.accent }} />
+    </AbsoluteFill>
+  );
+};
+
+/** Intro: logo besar muncul di tengah, lalu kalimat pancingan kata demi kata. */
+const Intro: React.FC<{ l: SnapLine; theme: Theme }> = ({ l, theme }) => {
+  const f = useCurrentFrame(), { fps } = useVideoConfig();
+  const p = spring({ frame: f, fps, config: { damping: 12, stiffness: 120 } });
+  return (
+    <AbsoluteFill>
+      <BlueBg theme={theme} />
+      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", gap: 70, padding: "0 70px", paddingBottom: 160 }}>
+        <div style={{ background: "#fff", borderRadius: 48, padding: "48px 60px", boxShadow: "0 40px 90px -30px rgba(0,0,0,.5)", transform: `scale(${0.6 + 0.4 * p}) rotate(${(1 - p) * -6}deg)`, opacity: p }}>
+          <Img src={staticFile(theme.logo)} style={{ width: 760, display: "block" }} />
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0 22px", fontSize: 84, fontWeight: 800, lineHeight: 1.08, letterSpacing: "-.03em", color: "#fff", textAlign: "center" }}>
+          {l.head.split(" ").map((w, i) => { const q = spring({ frame: f - 10 - i * 4, fps, config: { damping: 14, stiffness: 150 } }); return <span key={i} style={{ display: "inline-block", opacity: q, transform: `translateY(${(1 - q) * 50}px)` }}>{w}</span>; })}
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+/** Outro: layar biru penuh, logo, QR besar, alamat situs, dan ajakan. */
+const Outro: React.FC<{ l: SnapLine; theme: Theme; web?: boolean }> = ({ l, theme, web }) => {
+  const f = useCurrentFrame(), { fps } = useVideoConfig();
+  const pop = (d: number) => spring({ frame: f - d, fps, config: { damping: 14, stiffness: 130 } });
+  const pulse = 1 + 0.03 * Math.sin(f / 6);
+  return (
+    <AbsoluteFill>
+      <BlueBg theme={theme} />
+      <AbsoluteFill style={{ alignItems: "center", paddingTop: 210, gap: 46 }}>
+        <div style={{ background: "#fff", borderRadius: 36, padding: "28px 44px", opacity: pop(0), transform: `scale(${0.8 + 0.2 * pop(0)})` }}><Img src={staticFile(theme.logo)} style={{ width: 520, display: "block" }} /></div>
+        <div style={{ fontSize: 76, fontWeight: 800, color: "#fff", letterSpacing: "-.03em", opacity: pop(6) }}>{l.head}</div>
+        {l.qr && <div style={{ background: "#fff", borderRadius: 40, padding: 34, boxShadow: "0 40px 90px -30px rgba(0,0,0,.55)", opacity: pop(12), transform: `scale(${(0.8 + 0.2 * pop(12)) * pulse})` }}>
+          <Img src={staticFile(l.qr)} style={{ width: 520, height: 520, display: "block" }} />
+          <div style={{ marginTop: 16, textAlign: "center", fontSize: 38, fontWeight: 800, color: theme.ink }}>{web ? "Pindai untuk membuka" : "Pindai untuk unduh"}</div>
+        </div>}
+        {l.sub && <div style={{ fontSize: 46, fontWeight: 800, color: "#fff", opacity: pop(20) }}>{l.sub}</div>}
+        <div style={{ padding: "14px 34px", borderRadius: 99, background: theme.accent, color: theme.ink, fontSize: 36, fontWeight: 800, opacity: pop(26), transform: `scale(${0.7 + 0.3 * pop(26)})` }}>Gratis · tanpa install</div>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
