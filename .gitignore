@@ -7,3 +7,10 @@ release/
 dist/
 .netlify/
 dist-admin/
+
+# Video tutorial hasil render (ratusan MB) dan data app/data untuk perekam (berisi kontak pengembang)
+promo/video/
+tools/video/appdata.json
+tools/video/audio-*/
+tools/video/raw-*/
+tools/video/__pycache__/
