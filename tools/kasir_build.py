@@ -8,7 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 ICONS = ["shopping-cart", "chef-hat", "receipt", "chart-column", "rotate-ccw", "coffee", "cup-soda", "sandwich", "cookie", "croissant", "popcorn",
          "utensils", "shopping-bag", "user", "bookmark", "trash-2", "tag", "banknote", "qr-code", "credit-card", "printer", "message-circle", "ban",
          "check", "circle-check", "x", "plus", "minus", "search", "delete", "clock", "wallet", "arrow-down-left", "arrow-up-right", "store", "bike",
-         "circle-alert", "pencil", "hand-coins", "list-ordered", "timer", "leaf", "glass-water"]
+         "circle-alert", "pencil", "hand-coins", "list-ordered", "timer", "leaf", "glass-water", "download"]
 
 
 def symbol(name):

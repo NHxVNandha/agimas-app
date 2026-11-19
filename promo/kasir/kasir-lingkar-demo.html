@@ -160,7 +160,8 @@ main { min-height: 0; }
 .pill .i { width: 12px; height: 12px; }
 
 /* ---------- RIWAYAT ---------- */
-.hist { display: grid; grid-template-columns: 1fr 380px; gap: 14px; height: 100%; min-height: 0; padding: 18px 20px; }
+#v-riwayat { display: flex; flex-direction: column; }
+.hist { display: grid; grid-template-columns: 1fr 380px; gap: 14px; flex: 1; min-height: 0; padding: 12px 20px 18px; }
 .histl { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
 .list { overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); flex: 1; }
 .list button { width: 100%; display: grid; grid-template-columns: 92px 54px 1fr auto; gap: 10px; align-items: center; padding: 12px 16px; border: 0; border-bottom: 1px solid var(--line); background: var(--panel); text-align: left; font-size: .88rem; }
@@ -184,6 +185,13 @@ td, th { padding: 8px 4px; border-top: 1px solid var(--line); text-align: left; 
 th { font-size: .7rem; color: var(--mute); text-transform: uppercase; letter-spacing: .05em; border-top: 0; font-weight: 600; }
 .n { text-align: right; white-space: nowrap; }
 .bar { height: 6px; border-radius: 99px; background: var(--accent); margin-top: 5px; }
+.rangebar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rangebar .seg button { padding: 7px 10px; }
+.rangebar .dt { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 600; color: var(--mute); }
+.rangebar input[type=date] { height: 38px; padding: 0 8px; border: 1px solid var(--line2); border-radius: var(--r2); background: var(--panel); font: 500 .85rem 'Inter', sans-serif; color: var(--ink); }
+.rlabel { font-size: .8rem; color: var(--mute); font-weight: 600; }
+.toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 20px 0; }
+.daily td .bar { margin-top: 4px; }
 .unpaidbox { margin-bottom: 12px; border-color: #f2c4bf; background: #fffaf9; }
 .unpaidbox h3 { color: var(--bad); }
 
@@ -245,7 +253,7 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-shopping-cart" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol><symbol id="i-chef-hat" viewBox="0 0 24 24"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path d="M12 17V7"/><path d="M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8"/><path d="M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z"/></symbol><symbol id="i-chart-column" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol><symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol><symbol id="i-coffee" viewBox="0 0 24 24"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></symbol><symbol id="i-cup-soda" viewBox="0 0 24 24"><path d="m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8"/><path d="M5 8h14"/><path d="M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/><path d="m12 8 1-6h2"/></symbol><symbol id="i-sandwich" viewBox="0 0 24 24"><path d="m2.37 11.223 8.372-6.777a2 2 0 0 1 2.516 0l8.371 6.777"/><path d="M21 15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-5.25"/><path d="M3 15a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h9"/><path d="m6.67 15 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2"/><rect width="20" height="4" x="2" y="11" rx="1"/></symbol><symbol id="i-cookie" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></symbol><symbol id="i-croissant" viewBox="0 0 24 24"><path d="M10.2 18H4.774a1.5 1.5 0 0 1-1.352-.97 11 11 0 0 1 .132-6.487"/><path d="M18 10.2V4.774a1.5 1.5 0 0 0-.97-1.352 11 11 0 0 0-6.486.132"/><path d="M18 5a4 3 0 0 1 4 3 2 2 0 0 1-2 2 10 10 0 0 0-5.139 1.42"/><path d="M5 18a3 4 0 0 0 3 4 2 2 0 0 0 2-2 10 10 0 0 1 1.42-5.14"/><path d="M8.709 2.554a10 10 0 0 0-6.155 6.155 1.5 1.5 0 0 0 .676 1.626l9.807 5.42a2 2 0 0 0 2.718-2.718l-5.42-9.807a1.5 1.5 0 0 0-1.626-.676"/></symbol><symbol id="i-popcorn" viewBox="0 0 24 24"><path d="M18 8a2 2 0 0 0 0-4 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0 0 4"/><path d="M10 22 9 8"/><path d="m14 22 1-14"/><path d="M20 8c.5 0 .9.4.8 1l-2.6 12c-.1.5-.7 1-1.2 1H7c-.6 0-1.1-.4-1.2-1L3.2 9c-.1-.6.3-1 .8-1Z"/></symbol><symbol id="i-utensils" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></symbol><symbol id="i-shopping-bag" viewBox="0 0 24 24"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol><symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"/></symbol><symbol id="i-trash-2" viewBox="0 0 24 24"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol><symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol><symbol id="i-banknote" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol><symbol id="i-qr-code" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></symbol><symbol id="i-credit-card" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></symbol><symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></symbol><symbol id="i-message-circle" viewBox="0 0 24 24"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></symbol><symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.929 4.929 19.07 19.071"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></symbol><symbol id="i-delete" viewBox="0 0 24 24"><path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/><path d="m12 9 6 6"/><path d="m18 9-6 6"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol><symbol id="i-arrow-down-left" viewBox="0 0 24 24"><path d="M17 7 7 17"/><path d="M17 17H7V7"/></symbol><symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol><symbol id="i-store" viewBox="0 0 24 24"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></symbol><symbol id="i-bike" viewBox="0 0 24 24"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></symbol><symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol><symbol id="i-hand-coins" viewBox="0 0 24 24"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></symbol><symbol id="i-list-ordered" viewBox="0 0 24 24"><path d="M11 5h10"/><path d="M11 12h10"/><path d="M11 19h10"/><path d="M4 4h1v5"/><path d="M4 9h2"/><path d="M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02"/></symbol><symbol id="i-timer" viewBox="0 0 24 24"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol><symbol id="i-glass-water" viewBox="0 0 24 24"><path d="M5.116 4.104A1 1 0 0 1 6.11 3h11.78a1 1 0 0 1 .994 1.105L17.19 20.21A2 2 0 0 1 15.2 22H8.8a2 2 0 0 1-2-1.79z"/><path d="M6 12a5 5 0 0 1 6 0 5 5 0 0 0 6 0"/></symbol></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-shopping-cart" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol><symbol id="i-chef-hat" viewBox="0 0 24 24"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path d="M12 17V7"/><path d="M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8"/><path d="M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z"/></symbol><symbol id="i-chart-column" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol><symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol><symbol id="i-coffee" viewBox="0 0 24 24"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></symbol><symbol id="i-cup-soda" viewBox="0 0 24 24"><path d="m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8"/><path d="M5 8h14"/><path d="M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/><path d="m12 8 1-6h2"/></symbol><symbol id="i-sandwich" viewBox="0 0 24 24"><path d="m2.37 11.223 8.372-6.777a2 2 0 0 1 2.516 0l8.371 6.777"/><path d="M21 15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-5.25"/><path d="M3 15a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h9"/><path d="m6.67 15 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2"/><rect width="20" height="4" x="2" y="11" rx="1"/></symbol><symbol id="i-cookie" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></symbol><symbol id="i-croissant" viewBox="0 0 24 24"><path d="M10.2 18H4.774a1.5 1.5 0 0 1-1.352-.97 11 11 0 0 1 .132-6.487"/><path d="M18 10.2V4.774a1.5 1.5 0 0 0-.97-1.352 11 11 0 0 0-6.486.132"/><path d="M18 5a4 3 0 0 1 4 3 2 2 0 0 1-2 2 10 10 0 0 0-5.139 1.42"/><path d="M5 18a3 4 0 0 0 3 4 2 2 0 0 0 2-2 10 10 0 0 1 1.42-5.14"/><path d="M8.709 2.554a10 10 0 0 0-6.155 6.155 1.5 1.5 0 0 0 .676 1.626l9.807 5.42a2 2 0 0 0 2.718-2.718l-5.42-9.807a1.5 1.5 0 0 0-1.626-.676"/></symbol><symbol id="i-popcorn" viewBox="0 0 24 24"><path d="M18 8a2 2 0 0 0 0-4 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0 0 4"/><path d="M10 22 9 8"/><path d="m14 22 1-14"/><path d="M20 8c.5 0 .9.4.8 1l-2.6 12c-.1.5-.7 1-1.2 1H7c-.6 0-1.1-.4-1.2-1L3.2 9c-.1-.6.3-1 .8-1Z"/></symbol><symbol id="i-utensils" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></symbol><symbol id="i-shopping-bag" viewBox="0 0 24 24"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol><symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"/></symbol><symbol id="i-trash-2" viewBox="0 0 24 24"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol><symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol><symbol id="i-banknote" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol><symbol id="i-qr-code" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></symbol><symbol id="i-credit-card" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></symbol><symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></symbol><symbol id="i-message-circle" viewBox="0 0 24 24"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></symbol><symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.929 4.929 19.07 19.071"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></symbol><symbol id="i-delete" viewBox="0 0 24 24"><path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/><path d="m12 9 6 6"/><path d="m18 9-6 6"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol><symbol id="i-arrow-down-left" viewBox="0 0 24 24"><path d="M17 7 7 17"/><path d="M17 17H7V7"/></symbol><symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol><symbol id="i-store" viewBox="0 0 24 24"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></symbol><symbol id="i-bike" viewBox="0 0 24 24"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></symbol><symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol><symbol id="i-hand-coins" viewBox="0 0 24 24"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></symbol><symbol id="i-list-ordered" viewBox="0 0 24 24"><path d="M11 5h10"/><path d="M11 12h10"/><path d="M11 19h10"/><path d="M4 4h1v5"/><path d="M4 9h2"/><path d="M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02"/></symbol><symbol id="i-timer" viewBox="0 0 24 24"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol><symbol id="i-glass-water" viewBox="0 0 24 24"><path d="M5.116 4.104A1 1 0 0 1 6.11 3h11.78a1 1 0 0 1 .994 1.105L17.19 20.21A2 2 0 0 1 15.2 22H8.8a2 2 0 0 1-2-1.79z"/><path d="M6 12a5 5 0 0 1 6 0 5 5 0 0 0 6 0"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></symbol></svg>
 <div class="app">
   <nav class="rail" aria-label="Menu kasir">
     <span class="logo" title="Lingkar Kopi"><svg viewBox="0 0 54 54" fill="none" aria-hidden="true"><circle cx="27" cy="27" r="20" stroke="#e8a24a" stroke-width="7"/><circle cx="27" cy="27" r="7" fill="#e8a24a"/></svg></span>
@@ -310,6 +318,9 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
 
       <!-- RIWAYAT -->
       <section class="view" id="v-riwayat" hidden>
+        <div class="toolbar"><div class="rangebar" data-rb></div><span class="grow"></span>
+          <button class="btn out" id="expTx"><svg class="i sm"><use href="#i-download"/></svg>Ekspor transaksi</button>
+          <button class="btn out" id="expItems"><svg class="i sm"><use href="#i-download"/></svg>Ekspor rincian item</button></div>
         <div class="hist"><div class="histl">
           <div class="card unpaidbox" id="unpaidHist" hidden style="margin:0"><h3><span style="display:flex;gap:8px;align-items:center"><svg class="i"><use href="#i-circle-alert"/></svg>Belum dibayar (open bill)</span></h3><table id="unpaidT2"></table></div>
           <div class="list" id="txList"></div></div><div class="detail" id="txDetail"></div></div>
@@ -318,17 +329,21 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
       <!-- LAPORAN -->
       <section class="view" id="v-laporan" hidden>
         <div class="pad">
-          <div class="head"><span class="grow"></span>
+          <div class="head"><div class="rangebar" data-rb></div><span class="grow"></span>
+            <button class="btn out" id="expRep"><svg class="i sm"><use href="#i-download"/></svg>Ekspor laporan</button>
+            <button class="btn ghost" id="seedDemo" hidden><svg class="i sm"><use href="#i-plus"/></svg>Isi contoh data 14 hari</button></div>
+          <div class="head" style="margin-top:10px"><span class="rlabel grow" id="repLabel"></span>
             <button class="btn out" id="moveBtn"><svg class="i"><use href="#i-wallet"/></svg>Kas masuk / keluar</button>
             <button class="btn out" id="openShift"><svg class="i"><use href="#i-store"/></svg>Buka kasir</button>
             <button class="btn" id="closeShift"><svg class="i"><use href="#i-hand-coins"/></svg>Tutup kasir</button></div>
           <div class="stats" id="stats"></div>
           <div class="card unpaidbox" id="unpaidRep" hidden><h3><span style="display:flex;gap:8px;align-items:center"><svg class="i"><use href="#i-circle-alert"/></svg>Belum dibayar (open bill)</span><span id="unpaidTot"></span></h3><table id="unpaidT"></table>
             <p class="hint" style="margin:8px 0 0">Tidak dihitung di penjualan sampai dibayar. Saat tutup kasir, pastikan semua sudah dibayar.</p></div>
+          <div class="card" id="dailyCard" hidden style="margin-bottom:12px"><h3>Per hari<svg class="i"><use href="#i-chart-column"/></svg></h3><table class="daily" id="daily"></table></div>
           <div class="cols">
             <div class="card"><h3>Menu terlaris<svg class="i"><use href="#i-coffee"/></svg></h3><table id="best"></table></div>
             <div class="card"><h3>Per metode bayar<svg class="i"><use href="#i-credit-card"/></svg></h3><table id="byPay"></table><h3 style="margin-top:16px">Per jenis pesanan<svg class="i"><use href="#i-utensils"/></svg></h3><table id="byType"></table></div>
-            <div class="card"><h3>Kas di laci<svg class="i"><use href="#i-wallet"/></svg></h3><table id="cashT"></table></div>
+            <div class="card"><h3>Kas shift ini<svg class="i"><use href="#i-wallet"/></svg></h3><table id="cashT"></table></div>
           </div>
         </div>
       </section>
@@ -465,7 +480,7 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
   // ---------- Tab ----------
   var tab = "jual";
   document.querySelector(".tabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) go(b.dataset.v); });
-  var TITLE = { jual: "Jual", antrean: "Antrean barista", riwayat: "Riwayat transaksi", laporan: "Laporan hari ini" };
+  var TITLE = { jual: "Jual", antrean: "Antrean barista", riwayat: "Riwayat transaksi", laporan: "Laporan" };
   function go(v) {
     tab = v; $("pageTitle").textContent = TITLE[v];
     document.querySelectorAll(".tabs button").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.v === v)); });
@@ -793,15 +808,85 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
     save(); render();
   });
 
+  // ---------- RENTANG WAKTU (dipakai Riwayat & Laporan) ----------
+  function dkey(t) { var d = new Date(t); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function addDays(k, n) { var d = new Date(k + "T12:00:00"); d.setDate(d.getDate() + n); return dkey(d); }
+  function fmtD(k, y) { return new Date(k + "T12:00:00").toLocaleDateString("id-ID", y ? { day: "numeric", month: "short", year: "numeric" } : { weekday: "short", day: "numeric", month: "short" }); }
+  var PRESETS = [["today", "Hari ini"], ["yday", "Kemarin"], ["7d", "7 hari"], ["30d", "30 hari"], ["month", "Bulan ini"]];
+  var range = { p: "today" };
+  function setPreset(p) {
+    var t = dkey(Date.now());
+    range = { p: p, from: { today: t, yday: addDays(t, -1), "7d": addDays(t, -6), "30d": addDays(t, -29), month: t.slice(0, 8) + "01" }[p], to: p === "yday" ? addDays(t, -1) : t };
+  }
+  setPreset("today");
+  function inRange(t) { var k = dkey(t.at); return k >= range.from && k <= range.to; }
+  function rangeText() { var x = PRESETS.filter(function (q) { return q[0] === range.p; })[0]; return (x ? x[1] + " · " : "") + (range.from === range.to ? fmtD(range.from, true) : fmtD(range.from, true) + " – " + fmtD(range.to, true)); }
+  function renderRange() {
+    document.querySelectorAll("[data-rb]").forEach(function (el) {
+      el.innerHTML = '<div class="seg">' + PRESETS.map(function (q) { return '<button data-rp="' + q[0] + '" aria-pressed="' + (range.p === q[0]) + '">' + q[1] + "</button>"; }).join("") + "</div>" +
+        '<label class="dt">Dari <input type="date" data-rd="from" value="' + range.from + '" max="' + dkey(Date.now()) + '"></label><label class="dt">s/d <input type="date" data-rd="to" value="' + range.to + '" max="' + dkey(Date.now()) + '"></label>';
+    });
+  }
+  document.addEventListener("click", function (e) { var b = e.target.closest("button[data-rp]"); if (b) { setPreset(b.dataset.rp); sel = -1; render(); } });
+  document.addEventListener("change", function (e) {
+    var i = e.target.closest("input[data-rd]"); if (!i || !i.value) return;
+    range[i.dataset.rd] = i.value; range.p = "custom";
+    if (range.from > range.to) { var x = range.from; range.from = range.to; range.to = x; }
+    sel = -1; render();
+  });
+
+  // ---------- EKSPOR CSV (Excel Indonesia: pemisah titik koma, UTF-8 dengan BOM) ----------
+  function csv(rows) { return rows.map(function (r) { return r.map(function (v) { v = v == null ? "" : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(";"); }).join("\r\n"); }
+  function download(name, rows) {
+    var a = document.createElement("a"), blob = new Blob(["\ufeff" + csv(rows)], { type: "text/csv;charset=utf-8" });
+    a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast("File " + name + " diunduh");
+  }
+  function fname(kind) { return "lingkar-kopi_" + kind + "_" + range.from + (range.to !== range.from ? "_sd_" + range.to : "") + ".csv"; }
+  function txIn() { return st.tx.filter(inRange).sort(function (a, b) { return a.at - b.at; }); }
+  function tgl(t) { return dkey(t.at); }
+  $("expTx").onclick = function () {
+    var rows = [["No", "Tanggal", "Jam", "Antrean", "Jenis", "Pelanggan", "Metode bayar", "Subtotal", "Diskon", "Total", "Dibayar", "Kembalian", "Status", "Alasan batal", "Item"]];
+    txIn().forEach(function (t) {
+      rows.push([t.no, tgl(t), hm(t.at), t.q, TYPES[t.type], t.name || "", t.method, t.sub, t.disc, t.total, t.paid, t.change, t.status === "void" ? "Dibatalkan" : "Lunas", t.voidWhy || "",
+        t.lines.map(function (l) { return l.qty + "x " + l.name + (l.desc ? " (" + l.desc + ")" : ""); }).join(", ")]);
+    });
+    if (rows.length === 1) { toast("Tidak ada transaksi di rentang ini"); return; }
+    download(fname("transaksi"), rows);
+  };
+  $("expItems").onclick = function () {
+    var rows = [["No transaksi", "Tanggal", "Jam", "Jenis", "Metode bayar", "Menu", "Varian & tambahan", "Catatan", "Jumlah", "Harga satuan", "Total item", "Status"]];
+    txIn().forEach(function (t) { t.lines.forEach(function (l) { rows.push([t.no, tgl(t), hm(t.at), TYPES[t.type], t.method, l.name, l.desc || "", l.note || "", l.qty, l.unit, l.unit * l.qty, t.status === "void" ? "Dibatalkan" : "Lunas"]); }); });
+    if (rows.length === 1) { toast("Tidak ada transaksi di rentang ini"); return; }
+    download(fname("rincian-item"), rows);
+  };
+  $("expRep").onclick = function () {
+    var R = report(), rows = [["Laporan Lingkar Kopi", rangeText()], [], ["RINGKASAN"], ["Penjualan bersih (lunas)", R.tot], ["Transaksi lunas", R.ok.length], ["Rata-rata per transaksi", Math.round(R.ok.length ? R.tot / R.ok.length : 0)],
+      ["Total diskon", R.ok.reduce(function (a, t) { return a + t.disc; }, 0)], ["Transaksi dibatalkan", R.voids], [], ["PER HARI"], ["Tanggal", "Transaksi", "Penjualan"]];
+    R.days.forEach(function (d) { rows.push([d.k, d.n, d.v]); });
+    rows.push([], ["PER METODE BAYAR"], ["Metode", "Transaksi", "Penjualan"]);
+    R.pay.forEach(function (x) { rows.push(x); });
+    rows.push([], ["PER JENIS PESANAN"], ["Jenis", "Transaksi", "Penjualan"]);
+    R.type.forEach(function (x) { rows.push(x); });
+    rows.push([], ["MENU TERJUAL"], ["Menu", "Jumlah", "Penjualan"]);
+    R.menu.forEach(function (x) { rows.push(x); });
+    download(fname("laporan"), rows);
+  };
+
   // ---------- RIWAYAT ----------
   var sel = 0;
   function renderHist() {
     $("unpaidHist").hidden = !st.held.length; $("unpaidT2").innerHTML = unpaidRows("Bayar");
-    $("txList").innerHTML = st.tx.length ? st.tx.map(function (t, i) {
-      return '<button data-t="' + i + '" aria-current="' + (i === sel) + '"><b class="' + (t.status === "void" ? "void" : "") + '">' + t.no + "</b><span>" + hm(t.at) + "</span><span>" +
+    renderRange();
+    var shown = st.tx.map(function (t, i) { return [t, i]; }).filter(function (x) { return inRange(x[0]); });
+    if (sel < 0 || !st.tx[sel] || !inRange(st.tx[sel])) sel = shown.length ? shown[0][1] : -1;
+    $("txList").innerHTML = shown.length ? shown.map(function (x) {
+      var t = x[0], i = x[1];
+      return '<button data-t="' + i + '" aria-current="' + (i === sel) + '"><b class="' + (t.status === "void" ? "void" : "") + '">' + t.no + "</b><span>" + (range.from === range.to ? hm(t.at) : fmtD(dkey(t.at)).replace(/^\w+, /, "") + "<br>" + hm(t.at)) + "</span><span>" +
         esc(t.q + " · " + TYPES[t.type] + (t.name ? " · " + t.name : "")) + "<br><small style='color:var(--soft)'>" + t.method + (t.status === "void" ? " · DIBATALKAN" : "") +
         '</small></span><b class="n ' + (t.status === "void" ? "void" : "") + '">' + rp(t.total) + "</b></button>";
-    }).join("") : '<div class="empty">Belum ada transaksi.</div>';
+    }).join("") : '<div class="empty">' + ic("receipt") + "Tidak ada transaksi di rentang " + esc(rangeText()) + ".</div>";
     var t = st.tx[sel];
     $("txDetail").innerHTML = t ? '<div class="paper" style="box-shadow:none;margin:0 auto 12px">' + esc(receiptText(t)) + "</div>" +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn out" data-r="print">' + ic("printer", "sm") + 'Cetak ulang</button><button class="btn out" data-r="wa">' + ic("message-circle", "sm") + "Kirim WA</button>" +
@@ -829,14 +914,33 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
     var mv = st.moves.filter(function (m) { return m.at >= st.shift.at; }).reduce(function (a, m) { return a + (m.k === "in" ? m.v : -m.v); }, 0);
     return st.shift.modal + sales + mv;
   }
+  function report() {
+    var all = st.tx.filter(inRange), ok = all.filter(function (t) { return t.status === "ok"; }), tot = ok.reduce(function (a, t) { return a + t.total; }, 0);
+    var byDay = {}, k = range.from;
+    while (k <= range.to) { byDay[k] = { k: k, n: 0, v: 0 }; k = addDays(k, 1); }
+    ok.forEach(function (t) { var d = byDay[dkey(t.at)]; if (d) { d.n++; d.v += t.total; } });
+    function grp(f, keys, lab) { return keys.map(function (x) { var a = ok.filter(function (t) { return f(t) === x; }); return [lab ? lab[x] : x, a.length, a.reduce(function (s, t) { return s + t.total; }, 0)]; }); }
+    var cnt = {}, val = {};
+    ok.forEach(function (t) { t.lines.forEach(function (l) { cnt[l.name] = (cnt[l.name] || 0) + l.qty; val[l.name] = (val[l.name] || 0) + l.qty * l.unit; }); });
+    return { ok: ok, tot: tot, voids: all.length - ok.length, days: Object.keys(byDay).sort().map(function (x) { return byDay[x]; }),
+      pay: grp(function (t) { return t.method; }, ["Tunai", "QRIS", "Debit", "Agi Mas"]), type: grp(function (t) { return t.type; }, ["dine", "take", "agimas"], TYPES),
+      menu: Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; }).map(function (x) { return [x, cnt[x], val[x]]; }) };
+  }
   function renderReport() {
-    var ok = st.tx.filter(function (t) { return t.status === "ok"; }), tot = ok.reduce(function (a, t) { return a + t.total; }, 0), voids = st.tx.length - ok.length;
+    renderRange();
+    var R = report(), ok = R.ok, tot = R.tot, voids = R.voids;
+    $("repLabel").textContent = "Menampilkan: " + rangeText();
+    $("seedDemo").hidden = st.tx.some(function (t) { return dkey(t.at) < dkey(Date.now()); });
+    $("dailyCard").hidden = R.days.length < 2;
+    var mxd = Math.max.apply(null, R.days.map(function (d) { return d.v; }).concat([1]));
+    $("daily").innerHTML = "<tr><th>Tanggal</th><th class='n'>Transaksi</th><th class='n'>Penjualan</th></tr>" + R.days.slice().reverse().map(function (d) {
+      return "<tr><td>" + fmtD(d.k) + '<div class="bar" style="width:' + Math.max(d.v ? 2 : 0, d.v / mxd * 100) + '%"></div></td><td class="n">' + d.n + '</td><td class="n">' + rp(d.v) + "</td></tr>";
+    }).join("");
     var un = st.held.reduce(function (a, h) { return a + totalOf(h); }, 0);
     $("unpaidRep").hidden = !st.held.length; $("unpaidTot").textContent = st.held.length ? rp(un) + " · " + st.held.length + " tagihan" : ""; $("unpaidT").innerHTML = unpaidRows("Bayar");
     $("stats").innerHTML = [["Penjualan bersih (lunas)", rp(tot), "banknote"], ["Transaksi", ok.length, "receipt"], ["Rata-rata / transaksi", rp(ok.length ? tot / ok.length : 0), "chart-column"], ["Dibatalkan", voids, "ban"]]
       .map(function (s) { return '<div class="stat"><span class="ico">' + ic(s[2]) + "</span><div><small>" + s[0] + "</small><b>" + s[1] + "</b></div></div>"; }).join("");
-    var cnt = {};
-    ok.forEach(function (t) { t.lines.forEach(function (l) { cnt[l.name] = (cnt[l.name] || 0) + l.qty; }); });
+    var cnt = {}; R.menu.forEach(function (x) { cnt[x[0]] = x[1]; });
     var best = Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; }).slice(0, 6), mx = best.length ? cnt[best[0]] : 1;
     $("best").innerHTML = best.length ? best.map(function (k) { return "<tr><td>" + esc(k) + '<div class="bar" style="width:' + (cnt[k] / mx * 100) + '%"></div></td><td class="n">' + cnt[k] + "</td></tr>"; }).join("") : "<tr><td class='empty'>Belum ada penjualan.</td></tr>";
     function group(f, keys, label) {
@@ -878,6 +982,33 @@ dialog::backdrop { background: rgba(28,23,20,.45); backdrop-filter: blur(2px); }
       });
     var f = function () { var d = (Number($("fCash").value) || 0) - exp; $("fDiff").className = "change" + (d < 0 ? " bad" : ""); $("fDiff").innerHTML = "<span>Selisih</span><span>" + (d > 0 ? "+" : "") + rp(d) + "</span>"; };
     $("fCash").addEventListener("input", f); f();
+  };
+
+  // ---------- Data contoh beberapa hari ke belakang (khusus demo, agar filter & ekspor bisa dicoba) ----------
+  $("seedDemo").onclick = function () {
+    var today = dkey(Date.now()), NM = ["", "", "", "Bu Sari", "Mas Dimas", "Meja 2", "Meja 5", "Rina", "Pak Joko"], seq = 0;
+    for (var d = 14; d >= 1; d--) {
+      var day = addDays(today, -d), n = 14 + Math.floor(Math.random() * 18), times = [];
+      for (var t0 = 0; t0 < n; t0++) times.push(new Date(day + "T08:00:00").getTime() + Math.floor(Math.random() * 14 * 3600e3));
+      times.sort(function (a, b) { return a - b; });   // nomor transaksi & antrean urut menurut jam
+      for (var j = 0; j < n; j++) {
+        var at = times[j];
+        var r = Math.random(), type = r < .45 ? "dine" : r < .8 ? "take" : "agimas";
+        var lines = MENU.slice().sort(function () { return Math.random() - .5; }).slice(0, 1 + Math.floor(Math.random() * 3)).map(function (m) {
+          var pick = {}; m.v.forEach(function (g) { pick[g] = VAR[g].one ? [Math.floor(Math.random() * VAR[g].opts.length)] : Math.random() < .25 ? [0] : []; });
+          return { id: m.id, name: m.n, pick: pick, desc: descOf(m, pick), note: "", unit: unitOf(m, pick), qty: 1 + (Math.random() < .2 ? 1 : 0), sent: true };
+        });
+        var c = { lines: lines, disc: Math.random() < .08 ? { k: "pct", v: 10 } : null }, total = totalOf(c), m2 = Math.random();
+        var method = type === "agimas" ? "Agi Mas" : m2 < .6 ? "Tunai" : m2 < .9 ? "QRIS" : "Debit", paid = method === "Tunai" ? Math.ceil(total / 10000) * 10000 : total;
+        var vd = Math.random() < .04;
+        seq++;
+        st.tx.push({ no: "LK-" + day.slice(5).replace("-", "") + "-" + String(j + 1).padStart(3, "0"), at: at, q: type === "agimas" ? "AG" + Math.random().toString(36).slice(2, 7).toUpperCase() : "#" + (j + 1), type: type,
+          name: NM[Math.floor(Math.random() * NM.length)], lines: lines, sub: sub(c), disc: discOf(c), total: total, method: method, paid: paid, change: paid - total,
+          status: vd ? "void" : "ok", voidWhy: vd ? "Pelanggan batal" : "" });
+      }
+    }
+    st.tx.sort(function (a, b) { return b.at - a.at; });
+    save(); setPreset("7d"); sel = -1; render(); toast(seq + " transaksi contoh ditambahkan (14 hari terakhir)");
   };
 
   // ---------- Umum ----------
