@@ -59,8 +59,7 @@ b { color: var(--ink); font-weight: 700; }
 .sk-line { height: 18px; border-radius: 9px; margin: 24px 0 12px; }
 .w40 { width: 40%; } .w50 { width: 50%; } .w70 { width: 70%; }
 .sk-hero { height: 190px; border-radius: 24px; margin-top: -84px; position: relative; }
-.sk-row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
-.sk-stat { height: 92px; }
+.sk-promo { height: 124px; border-radius: 22px 22px 22px 6px; margin-top: 12px; }
 .sk-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .sk-feat { height: 118px; }
 @media (prefers-reduced-motion: reduce) { .sk, .maploading { animation: none; } }
@@ -85,6 +84,9 @@ b { color: var(--ink); font-weight: 700; }
 .band h1 { color: #fff; font-size: 1.55rem; font-weight: 800; letter-spacing: -.01em; }
 .band p { color: rgba(255, 255, 255, .85); margin-top: 2px; }
 .avatar { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; background: #dcebfd; color: var(--ink); flex: none; }
+.promo { display: block; margin-top: 12px; border-radius: 22px 22px 22px 6px; -webkit-tap-highlight-color: transparent; }
+.promo img { display: block; width: 100%; height: auto; }
+.promo:active { transform: scale(.99); }
 .hero { position: relative; margin-top: -84px; padding: 18px 18px 18px; border-radius: 24px; background: var(--t-blue); overflow: hidden; min-height: 190px; }
 .hero > *:not(.hero-side) { position: relative; z-index: 1; max-width: 58%; }
 .hero h2 { font-size: 1.45rem; line-height: 1.15; font-weight: 800; margin: 12px 0 6px; letter-spacing: -.01em; }
@@ -115,36 +117,6 @@ b { color: var(--ink); font-weight: 700; }
 .feat.blue { background: var(--t-blue); } .feat.yellow { background: var(--t-yellow); } .feat.green { background: var(--t-green); } .feat.purple { background: var(--t-purple); }
 .feat:active, .stat:active, .card.link:active { transform: scale(.98); }
 
-/* Sorotan: Agimas Murah, KDMP, Admin 24 jam, slogan — geser di HP */
-.hl { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 10px; margin: 16px -16px 0; padding: 0 16px 4px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; }
-.hl::-webkit-scrollbar { display: none; }
-.hlc { scroll-snap-align: start; display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 20px; color: var(--ink); min-height: 118px; }
-.hlc .hlk { align-self: flex-start; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.7); font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-.hlc b { font-size: 1.12rem; line-height: 1.25; margin-top: 4px; }
-.hlc small { color: #4b6280; font-size: .78rem; }
-/* Kartu mitra: gelap ala kedai kopi agar menonjol. Foto di kolom kanan, baris harga + Pesan di bawah (tidak bertumpuk). */
-.hl.one { grid-auto-columns: 100%; }
-.hlc.m { display: grid; grid-template-columns: 1fr 92px; grid-template-areas: "k pic" "n pic" "t pic" "f f"; align-items: start; column-gap: 12px;
-  color: #fff7ec; text-decoration: none; overflow: hidden;
-  background: radial-gradient(circle at 88% 18%, rgba(255,196,120,.35), transparent 42%), linear-gradient(140deg, #4a2c17, #2a1a10 70%);
-  box-shadow: 0 10px 24px -12px rgba(74,44,23,.8); }
-.hlc.m .hlk { grid-area: k; justify-self: start; background: #f5b86a; color: #3a210f; }
-.hlc.m > b { grid-area: n; font-size: 1.22rem; color: #fff; }
-.hlc.m > small { grid-area: t; color: #e8cfb2; }
-.hlc.m .mpic { grid-area: pic; width: 92px; height: 92px; border-radius: 50%; overflow: hidden; display: grid; place-items: center;
-  background: #6b4425; border: 3px solid rgba(255,247,236,.2); color: #f5d3a8; }
-.hlc.m .mpic img { width: 100%; height: 100%; object-fit: cover; }
-.hlc.m .mpic .i { width: 42px; height: 42px; }
-.hlc.m .mfoot { grid-area: f; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 12px;
-  border-top: 1px solid rgba(255,247,236,.14); font-size: .8rem; color: #e8cfb2; }
-.hlc.m .mfoot b { font-size: .95rem; color: #fff; margin: 0; }
-.hlc.m .mgo { display: inline-flex; align-items: center; gap: 4px; padding: 8px 14px 8px 16px; border-radius: 999px; background: #f5b86a; color: #3a210f; font-weight: 800; }
-.hlc.m .mgo .i { width: 15px; height: 15px; }
-/* Titik penanda: posisi kartu yang sedang tampil, tanda bahwa kartu bisa digeser (hanya saat kartu digeser, di HP). */
-.hldots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
-.hldots i { width: 7px; height: 7px; border-radius: 99px; background: #c9d6e6; transition: width .25s, background .25s; }
-.hldots i.on { width: 20px; background: var(--brand); }
-@media (min-width: 640px) { .hl { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); margin: 16px 0 0; padding: 0; overflow: visible; } .hldots { display: none; } }
 .feat.teal { background: #dff4f1; } .feat.gray { background: #eef2f7; }
 /* Jumlah kartu ganjil: kartu terakhir jadi strip selebar baris (ikon · judul & keterangan · panah) */
 .feats > .feat:last-child:nth-child(odd) { grid-column: 1 / -1; min-height: 0; display: grid; grid-template-columns: auto 1fr auto; column-gap: 14px; row-gap: 1px; align-items: center; padding: 14px 16px; }
@@ -432,8 +404,6 @@ input[type=range] { padding: 0; height: 28px; border: 0; background: none; accen
 .newsprog .track { height: 10px; border-radius: 99px; background: var(--t-blue); overflow: hidden; }
 .newsprog .track i { display: block; height: 100%; width: 0; background: var(--brand); border-radius: 99px; transition: width .2s; }
 .newsprog p { margin-top: 8px; font-size: .85rem; color: #33475e; }
-.hl.nudge .hlc { animation: hlnudge 1.6s ease-in-out; }
-@keyframes hlnudge { 0%, 100% { transform: none; } 30%, 55% { transform: translateX(-56px); } }
 
 /* Menu mitra di form Agi Beli: pilih jumlah, habis = abu-abu */
 .menubox { padding: 16px; }
@@ -483,9 +453,6 @@ input[type=range] { padding: 0; height: 28px; border: 0; background: none; accen
 .paid input { width: 20px; height: 20px; margin: 0; accent-color: var(--brand); }
 
 /* Jam buka mitra */
-.hlc.m.closed .mpic { filter: grayscale(.8); opacity: .75; }
-.hlc.m.closed .hlk { background: #e5e7eb; color: #374151; }
-.hlc.m.closed .mgo { background: rgba(255,255,255,.18); color: #fff; }
 .mhours { margin: 0 0 6px; font-size: .8rem; font-weight: 700; color: var(--wa); }
 .mclosed { margin: 0 0 10px; padding: 10px 12px; border-radius: 12px; background: var(--t-yellow); color: var(--ink); font-size: .85rem; font-weight: 600; }
 

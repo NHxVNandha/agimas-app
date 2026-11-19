@@ -85,30 +85,11 @@
   function needFoto() {
     if (FOTO) return;
     FOTO = {};
-    Store.loadFoto().then(function (f) { FOTO = f; mitraCards(); var mt = syncCart(); if (mt) renderMenu(mt); }).catch(function () { FOTO = null; });
+    Store.loadFoto().then(function (f) { FOTO = f; var mt = syncCart(); if (mt) renderMenu(mt); }).catch(function () { FOTO = null; });
   }
   function fotoOf(id) { var f = FOTO && FOTO[id]; return /^data:image\/(webp|jpeg);base64,[A-Za-z0-9+\/=]+$/.test(f || "") ? f : ""; }
-  /* Kartu mitra di Beranda (paling depan di Sorotan): foto menu pertama yang ada, harga termurah. */
-  function mitraCards() {
-    Array.prototype.slice.call(document.querySelectorAll("#hl .hlc.m")).forEach(function (x) { x.parentNode.removeChild(x); });
-    var list = shownMitra();
-    if (list.length) needFoto();
-    list.reverse().forEach(function (mt) {
-      var ok = mt.menu.filter(function (m) { return !P.soldOut(m); }), pic = "";
-      mt.menu.some(function (m) { return (pic = fotoOf(m.id)); });
-      var min = ok.length ? Math.min.apply(null, ok.map(function (m) { return m.price; })) : 0, hr = P.mitraOpen(mt);
-      var a = document.createElement("a");
-      a.className = "hlc m" + (hr.open ? "" : " closed"); a.href = "#pesan/beli/makan/" + encodeURIComponent(mt.id);
-      a.setAttribute("aria-label", "Pesan menu " + mt.name);
-      a.innerHTML = '<span class="mpic">' + (pic ? '<img src="' + pic + '" alt="">' : '<svg class="i"><use href="#i-coffee"/></svg>') + "</span>" +
-        '<span class="hlk">' + esc(hr.text || "Mitra Agimas") + '</span><b>' + esc(mt.name) + "</b><small>" + esc(mt.tagline || mt.menu.length + " menu") + "</small>" +
-        '<span class="mfoot"><span>' + (!hr.open ? "Sedang tutup" : min ? "Mulai <b>" + esc(P.rp(min)) + "</b>" : "Menu sedang habis") + '</span><span class="mgo">' + (hr.open ? "Pesan" : "Lihat menu") + ' <svg class="i"><use href="#i-right"/></svg></span></span>';
-      $("hl").insertBefore(a, $("hl").firstChild);
-    });
-    var n = $("hl").children.length;   // Sorotan Beranda kini hanya berisi kartu mitra
-    $("hl").hidden = !n; $("hl").classList.toggle("one", n === 1);
-    $("hlDots").innerHTML = n > 1 ? Array.prototype.map.call($("hl").children, function (x, i) { return i ? "<i></i>" : '<i class="on"></i>'; }).join("") : "";
-  }
+  /* Kartu mitra di Beranda = banner gelembung chat Lingkar Kopi di bawah kartu hero (tampil bila mitranya aktif & punya menu). */
+  function mitraCards() { $("promoLk").hidden = !shownMitra().some(function (m) { return m.id === "lingkar"; }); }
   function renderMenu(mt) {
     needFoto();
     var cats = [], by = {}, hr = P.mitraOpen(mt), fixed = fixCart(mt);   // habis / stok kurang: keranjang disesuaikan
@@ -667,23 +648,6 @@
     if (document.getElementById("splash")) window.addEventListener("agimas-splash-done", after); else after();
   }
 
-  /* Kartu sorotan Beranda: titik ikut posisi geser; sekali di HP baru, kartu "mengintip" ke kiri sebagai tanda bisa digeser. */
-  function initHighlights() {
-    var hl = $("hl"), dots = $("hlDots").children;
-    hl.addEventListener("scroll", function () {
-      if (hl.children.length < 2) return;
-      var step = hl.children[1].offsetLeft - hl.children[0].offsetLeft, i = Math.round(hl.scrollLeft / step);
-      if (hl.scrollLeft + hl.clientWidth >= hl.scrollWidth - 4) i = dots.length - 1; // kartu terakhir
-      Array.prototype.forEach.call(dots, function (d, k) { d.classList.toggle("on", k === i); });
-    }, { passive: true });
-    var seen = false;
-    try { seen = !!localStorage.getItem("agimas.hlhint"); localStorage.setItem("agimas.hlhint", "1"); } catch (e) {}
-    var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (seen || still) return;
-    function nudge() { setTimeout(function () { if (hl.scrollWidth <= hl.clientWidth) return; hl.classList.add("nudge"); setTimeout(function () { hl.classList.remove("nudge"); }, 1700); }, 400); }
-    if (document.getElementById("splash")) window.addEventListener("agimas-splash-done", nudge); else nudge();
-  }
-
   /* Data terbaru dari server (status driver, admin, mitra, tarif) tanpa memuat ulang halaman.
      Dipakai saat membuka layar kirim (driver terdekat harus dari status terbaru) dan saat aplikasi dibuka lagi setelah >5 menit. */
   var lastLoad = Date.now(), loading = null;
@@ -737,7 +701,7 @@
       function bad() { $("copyMsg").textContent = "Tekan lama nomor untuk menyalin."; }
       try { navigator.clipboard.writeText("+" + D.admin.phone).then(good, bad); } catch (e) { bad(); }
     });
-    initReview(); initUpdate(); initHighlights();
+    initReview(); initUpdate();
     $("menuList").addEventListener("click", function (e) {
       var d = e.target.closest("button[data-detail]"); if (d) { openDetail(d.dataset.detail); return; }
       var b = e.target.closest("button[data-q]"); if (!b || b.disabled) return;
