@@ -331,8 +331,14 @@
       </div>
       <p class="muted small" id="payNote"></p>
       <div id="qrisBox" hidden>
-        <div class="qrbox" id="qrisQr"></div>
-        <p class="payamt"><b id="qrisAmt"></b><span class="muted small" id="qrisTo"></span></p>
+        <div class="qcard">
+          <div class="qhead"><div class="qtop"><b>Bayar dengan QRIS</b><span class="qlogo"><img src="logo.png" alt="Agi Mas" width="61" height="24"></span></div>
+            <small>Total yang dibayar</small><div class="qamt" id="qrisAmt"></div></div>
+          <div class="qbody"><div class="qlogos"><img src="qris-logo.png" alt="QRIS" height="26"><img src="gpn-logo.png" alt="GPN" height="34"></div>
+            <div class="qrisqr" id="qrisQr"></div>
+            <div class="qmer"><b id="qrisTo"></b><small id="qrisNmid"></small></div></div>
+          <div class="qfoot"><span class="qcode" id="qrisCode"></span><small>Nominal sudah terisi</small></div>
+        </div>
         <p class="muted small">Kode pesanan ikut di QR sebagai nomor tagihan. Screenshot QR ini, lalu buka DANA, GoPay, OVO, atau m-banking → <b>Scan</b> → pilih gambar dari galeri. Nominal sudah terisi.</p>
         <a class="btn ghost sm" id="qrisSave" download="QRIS-Agimas.png" hidden><svg class="i"><use href="#i-arrow"/></svg>Simpan gambar QR</a>
         <label class="paid"><input type="checkbox" id="paid"><span>Saya sudah bayar</span></label>

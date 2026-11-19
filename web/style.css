@@ -445,6 +445,27 @@ input[type=range] { padding: 0; height: 28px; border: 0; background: none; accen
 .paypick label:has(input:checked) { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 7%, var(--surface)); }
 .paypick label:has(input:disabled) { opacity: .5; cursor: not-allowed; }
 .paypick input { accent-color: var(--brand); width: 18px; height: 18px; margin: 0; }
+/* QRIS "Kartu Agi Mas": kepala biru + nominal, kartu putih berlogo QRIS & GPN (dari stiker resmi), kode pesanan. qrisImage() menggambar ulang kartu yang sama untuk disimpan. */
+.qcard { width: min(340px, 100%); margin: 6px auto 14px; border-radius: 22px; overflow: hidden; background: #fff; box-shadow: 0 16px 40px -14px rgba(11, 37, 69, .35); border: 1px solid var(--line); }
+.qhead { padding: 18px 20px 46px; color: #fff; background: linear-gradient(135deg, #3d9bff, #1e7be6 55%, #0f5bb5); }
+.qtop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.qtop b { font-size: 1.06rem; }
+.qlogo { background: #fff; border-radius: 10px; padding: 4px 8px; line-height: 0; }
+.qlogo img { height: 24px; width: auto; }
+.qhead small { display: block; margin-top: 10px; font-size: .82rem; opacity: .9; }
+.qamt { font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.qbody { position: relative; margin: -30px 14px 0; padding: 16px 18px 18px; background: #fff; border-radius: 18px; box-shadow: 0 8px 24px -10px rgba(11, 37, 69, .3); }
+.qlogos { display: flex; align-items: center; justify-content: space-between; }
+.qlogos img { width: auto; }
+.qrisqr { position: relative; width: min(220px, 100%); aspect-ratio: 1; margin: 16px auto 12px; }
+.qrisqr svg { display: block; width: 100%; height: 100%; }
+.qrisqr .qrnone { position: absolute; inset: 0; margin: 0; display: grid; place-items: center; text-align: center; font-size: .8rem; }
+.qmer { text-align: center; }
+.qmer b { display: block; color: var(--ink); font-size: 1rem; }
+.qmer small { color: var(--muted); font-size: .76rem; font-weight: 600; }
+.qfoot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 18px 16px; }
+.qfoot small { color: var(--muted); font-size: .76rem; font-weight: 600; }
+.qcode { padding: 5px 12px; border-radius: 99px; background: var(--t-blue); color: var(--brand-dark); font-weight: 700; font-size: .82rem; }
 .payamt { display: grid; justify-items: center; gap: 2px; text-align: center; margin: 4px 0 10px; }
 .payamt b { font-size: 1.5rem; color: var(--ink); font-variant-numeric: tabular-nums; }
 #qrisSave { margin: 10px auto 0; display: flex; width: max-content; }

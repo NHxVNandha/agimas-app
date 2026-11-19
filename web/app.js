@@ -258,13 +258,43 @@
     o.payAmt = orderTotalBase(); o.payTo = P.qrisName(QRIS);
     $("qrisAmt").textContent = P.rp(o.payAmt);
     $("priceNote").textContent = "Bayar lewat QRIS";
-    $("qrisTo").textContent = "ke " + o.payTo + " · kode pesanan " + o.code;
+    $("qrisTo").textContent = o.payTo; $("qrisCode").textContent = "Kode " + o.code;
+    var nmid = (QRIS.match(/ID\d{13}/) || [""])[0]; $("qrisNmid").textContent = nmid ? "NMID: " + nmid : "";   // NMID ada di data QRIS (tag 51)
     try {
       var qr = qrcode(0, "M"); qr.addData(P.qrisAmount(QRIS, o.payAmt, o.code)); qr.make();
-      $("qrisQr").innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true, alt: "QRIS " + P.rp(o.payAmt) });
+      $("qrisQr").innerHTML = qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true, alt: "QRIS " + P.rp(o.payAmt) });
       $("qrisSave").hidden = !!window.Capacitor;   // APK: unduhan gambar tidak didukung WebView, pakai screenshot
-      $("qrisSave").href = qr.createDataURL(8, 16);
+      $("qrisSave").href = qr.createDataURL(8, 16);   // cadangan: QR polos, diganti gambar berdesain begitu selesai digambar
+      qrisImage(qr, nmid).then(function (u) { $("qrisSave").href = u; }).catch(function () {});
     } catch (e) { $("qrisQr").innerHTML = '<p class="qrnone">QR gagal dibuat. Pilih tunai atau minta QRIS ke admin.</p>'; o.payAmt = 0; }
+  }
+  /* Gambar QRIS untuk disimpan: kartu "Bayar dengan QRIS" yang sama dengan di layar, digambar di kanvas 3x agar QR tajam saat dipindai dari galeri. */
+  function qrisImage(qr, nmid) {
+    function load(src) { return new Promise(function (ok, no) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = no; i.src = src; }); }
+    return Promise.all([load("logo.png"), load("qris-logo.png"), load("gpn-logo.png"), load(qr.createDataURL(10, 0)), document.fonts ? document.fonts.ready : null]).then(function (r) {
+      var k = 3, Wd = 360, F = '"Plus Jakarta Sans", system-ui, sans-serif', c = document.createElement("canvas"), g = c.getContext("2d");
+      var bodyY = 120, bodyH = 352, footY = bodyY + bodyH + 14, Ht = footY + 44;
+      c.width = Wd * k; c.height = Ht * k; g.scale(k, k);
+      function rr(x, y, w, h, rad) { g.beginPath(); g.moveTo(x + rad, y); g.arcTo(x + w, y, x + w, y + h, rad); g.arcTo(x + w, y + h, x, y + h, rad); g.arcTo(x, y + h, x, y, rad); g.arcTo(x, y, x + w, y, rad); g.closePath(); }
+      function img(im, x, y, h) { var w = h * im.naturalWidth / im.naturalHeight; g.drawImage(im, x, y, w, h); return w; }
+      g.fillStyle = "#f3f8fe"; g.fillRect(0, 0, Wd, Ht);   // latar terang (bukan transparan) agar rapi di galeri
+      g.fillStyle = "#fff"; rr(0, 0, Wd, Ht, 22); g.fill(); g.save(); rr(0, 0, Wd, Ht, 22); g.clip();
+      var gr = g.createLinearGradient(0, 0, Wd, 170); gr.addColorStop(0, "#3d9bff"); gr.addColorStop(.55, "#1e7be6"); gr.addColorStop(1, "#0f5bb5");
+      g.fillStyle = gr; g.fillRect(0, 0, Wd, 166); g.restore();
+      g.fillStyle = "#fff"; g.textBaseline = "alphabetic"; g.font = "800 17px " + F; g.fillText("Bayar dengan QRIS", 20, 38);
+      var lw = 24 * r[0].naturalWidth / r[0].naturalHeight; rr(Wd - 20 - lw - 16, 16, lw + 16, 32, 10); g.fill(); img(r[0], Wd - 20 - lw - 8, 20, 24);
+      g.globalAlpha = .9; g.font = "500 13px " + F; g.fillText("Total yang dibayar", 20, 74); g.globalAlpha = 1;
+      g.font = "800 30px " + F; g.fillText(P.rp(o.payAmt), 20, 108);
+      g.save(); g.shadowColor = "rgba(11,37,69,.25)"; g.shadowBlur = 18; g.shadowOffsetY = 6; g.fillStyle = "#fff"; rr(14, bodyY, Wd - 28, bodyH, 18); g.fill(); g.restore();
+      img(r[1], 32, bodyY + 18, 26); var gw = 34 * r[2].naturalWidth / r[2].naturalHeight; img(r[2], Wd - 32 - gw, bodyY + 14, 34);
+      g.imageSmoothingEnabled = false; g.drawImage(r[3], (Wd - 220) / 2, bodyY + 64, 220, 220); g.imageSmoothingEnabled = true;
+      g.textAlign = "center"; g.fillStyle = "#0b2545"; g.font = "800 16px " + F; g.fillText(o.payTo, Wd / 2, bodyY + 310);
+      g.fillStyle = "#6a7f97"; g.font = "600 12px " + F; if (nmid) g.fillText("NMID: " + nmid, Wd / 2, bodyY + 330);
+      g.textAlign = "left"; g.font = "700 13px " + F; var ct = "Kode " + o.code, cw = g.measureText(ct).width + 24;
+      g.fillStyle = "#e6f1fd"; rr(18, footY, cw, 28, 14); g.fill(); g.fillStyle = "#0f5bb5"; g.fillText(ct, 30, footY + 19);
+      g.textAlign = "right"; g.fillStyle = "#6a7f97"; g.font = "600 12px " + F; g.fillText("Nominal sudah terisi", Wd - 18, footY + 19);
+      return c.toDataURL("image/png");
+    });
   }
   function renderSend() {
     o.nearest = P.nearestDriver(D.drivers, o.fromPt); // driver aktif terdekat, otomatis (untuk admin)
